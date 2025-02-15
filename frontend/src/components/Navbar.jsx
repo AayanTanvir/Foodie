@@ -12,6 +12,7 @@ const Navbar = () => {
 
       <Link to='/'>Home</Link>
       {user ? <Link onClick={logoutUser}>Logout</Link> : <Link to='/login'>Login</Link>}
+      {!user ? <Link to='/signup'>Signup</Link> : <></>}
     </div>
   )
 }
