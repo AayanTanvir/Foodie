@@ -18,18 +18,29 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
     
 class CustomUserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    password1 = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+    password2 = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
     
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password']
+        fields = ['username', 'email', 'password1', 'password2']
         
+    
+    def validate(self, data):
+        password1 = data.get('password1')
+        password2 = data.get('password2')
+        if password1 != password2:
+            raise serializers.ValidationError("Passwords do not match")
+        
+        return super().validate(data)
+    
     def create(self, validated_data):
         user = CustomUser(
             email=validated_data["email"],
             username=validated_data["username"]
         )
-        user.set_password(validated_data["password"])
+        user.set_password(validated_data["password1"])
         user.save()
         return user
+    
         

@@ -5,7 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .serializers import CustomUserSerializer
 
-class UserListCreateApiView(generics.ListCreateAPIView):
-    queryset = CustomUser.objects.all()
+class UserCreateApiView(generics.CreateAPIView):
+    queryset = CustomUser
     serializer_class = CustomUserSerializer
+    raise_exception = True
     

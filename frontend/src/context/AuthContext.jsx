@@ -12,6 +12,7 @@ export const AuthProvider = ({children}) => {
     let [user, setUser] = useState(localStorage.getItem("authTokens") ? jwtDecode(localStorage.getItem("authTokens")) : null);
     let [initialLoad, setInitialLoad] = useState(true);
     let [authError, setAuthError] = useState("");
+    let [successMessage, setSuccessMessage] = useState("");
 
     let loginUser = async (event) => {
         event.preventDefault();
@@ -53,37 +54,36 @@ export const AuthProvider = ({children}) => {
     let signupUser = async (event) => {
         event.preventDefault();
 
-        if (!event.target.password1 || !event.target.email.value || !event.target.username.value) {
+        if (
+            !event.target.email?.value.trim() || 
+            !event.target.password1?.value.trim() || 
+            !event.target.password2?.value.trim() || 
+            !event.target.username?.value.trim()
+        ) {
             setAuthError("Please fill all fields");
         }
-        else if (event.target.password1.value != event.target.password2.value){
-            setAuthError("Passwords don't match");
-        }
-        else {   
+
+        if (validateCredentials(event.target.password1.value, event.target.password2.value, event.target.username.value)) {
             let response = await fetch("http://127.0.0.1:8000/user/create/", {
                 method:"POST",
                 headers:{
                     'Content-Type':'application/json'
                 },
-                body:JSON.stringify({'username':event.target.username.value, 'email':event.target.email.value, 'password':event.target.password1.value})
+                body:JSON.stringify({'username':event.target.username.value, 'email':event.target.email.value, 'password1':event.target.password1.value, 'password2':event.target.password2.value})
             })
 
-            let data = await response.json()
+            let data = await response.json();
 
             if (response.status === 201) {
-                navigate("/login")
-                alert("Account Created!")
+                navigate("/login");
+                setSuccessMessage("Account Created!");
             } else {
                 error = Object.values(data).flat().join(" ");
                 setAuthError(error || "Something went wrong, please try again.");
             }
+
         }
     }
-
-    useEffect(() => {
-        const timeout = setTimeout(() => setAuthError(""), 3000);
-        return () => clearTimeout(timeout);
-    }, [authError])
     
     let updateToken = async () => {
         try {
@@ -108,6 +108,51 @@ export const AuthProvider = ({children}) => {
         }
     }
 
+    let validateCredentials = (password1, password2, username) => {
+        let regex_lowercase = /[a-z]/;
+        let regex_uppercase = /[A-Z]/;
+        let regex_digit = /\d/;
+        let regex_special = /[!@#$%^&*]/;
+        let regex_whitespace = /\s/;
+
+        if (password1.length < 8) {
+            setAuthError("Password must be at least 8 characters long");
+            return false;
+        }
+        if (!regex_lowercase.test(password1)) {
+            setAuthError("Password must contain atleast one lowercase letter");
+            return false;
+        }
+        if (!regex_uppercase.test(password1)) {
+            setAuthError("Password must contain atleast one uppercase letter");
+            return false;
+        }
+        if(regex_whitespace.test(password1)) {
+            setAuthError("Password must not contain whitespace");
+            return false;
+        }
+        if (!regex_digit.test(password1)) {
+            setAuthError("Password must contain atleast one digit");
+            return false;
+        }
+        if (!regex_special.test(password1)) {
+            setAuthError("Password must contain atleast one special character");
+            return false;
+        }
+        if (username.length < 4) {
+            setAuthError("Username must be at least 4 characters long");
+            return false;
+        }
+        if (regex_whitespace.test(username)) {
+            setAuthError("Username must not contain whitespace");
+            return false;
+        }
+        if (password1 !== password2) {
+            setAuthError("Passwords don't match");
+            return false;
+        }
+        return true;
+    }
 
     let context = {
         user:user,
@@ -116,6 +161,7 @@ export const AuthProvider = ({children}) => {
         logoutUser:logoutUser,
         signupUser:signupUser,
         authError:authError,
+        successMessage:successMessage,
     };
 
     useEffect(() => {
@@ -128,6 +174,16 @@ export const AuthProvider = ({children}) => {
         return () => clearInterval(interval);
 
     }, [authTokens, initialLoad]);
+
+    useEffect(() => {
+        const timeout = setTimeout(() => setAuthError(""), 3000);
+        return () => clearTimeout(timeout);
+    }, [authError]);
+    
+    useEffect(() => {
+        const timeout = setTimeout(() => setSuccessMessage(""), 3000);
+        return () => clearTimeout(timeout);
+    }, [successMessage]);
 
     return (
         <AuthContext.Provider value={context}>
