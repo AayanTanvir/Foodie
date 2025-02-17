@@ -161,7 +161,9 @@ export const AuthProvider = ({children}) => {
         logoutUser:logoutUser,
         signupUser:signupUser,
         authError:authError,
+        setAuthError:setAuthError,
         successMessage:successMessage,
+        setSuccessMessage:setSuccessMessage,
     };
 
     useEffect(() => {

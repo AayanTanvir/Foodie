@@ -1,10 +1,10 @@
 import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
-import AuthContext from '../context/AuthContext';
+import AuthContext from '../context/AuthContext'
 
 const LoginPage = () => {
 
-  const {loginUser, authError} = useContext(AuthContext)
+  const {loginUser, authError} = useContext(AuthContext);
 
   return (
     <div className="absolute top-0 left-0 w-full h-screen flex items-center justify-center flex-col">

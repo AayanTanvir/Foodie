@@ -2,6 +2,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import serializers
 from .models import CustomUser
+import jwt
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -43,4 +44,18 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user.save()
         return user
     
+
+class PasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    
+    def validate_email(self, value):
+        if not CustomUser.objects.filter(email=value).exists():
+            raise serializers.ValidationError("User with this email does not exist")
         
+        return value
+    
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    token = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)
+
