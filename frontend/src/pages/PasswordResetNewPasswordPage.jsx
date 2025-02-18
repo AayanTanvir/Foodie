@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
-import { jwtDecode } from "jwt-decode"
 
 
 const PasswordResetNewPasswordPage = () => {
@@ -18,7 +17,7 @@ const PasswordResetNewPasswordPage = () => {
             alert("Passwords do not match")
         } else {
             try {
-                const response = await fetch('http://localhost:8000/password-reset-confirm/', {
+                const response = await fetch('http://localhost:8000/password-reset/confirm/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

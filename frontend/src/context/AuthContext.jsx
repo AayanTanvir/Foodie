@@ -13,6 +13,8 @@ export const AuthProvider = ({children}) => {
     let [initialLoad, setInitialLoad] = useState(true);
     let [authError, setAuthError] = useState("");
     let [successMessage, setSuccessMessage] = useState("");
+    let [showOTPForm, setShowOTPForm] = useState(false);
+
 
     let loginUser = async (event) => {
         event.preventDefault();
@@ -154,16 +156,63 @@ export const AuthProvider = ({children}) => {
         return true;
     }
 
+    let verifyEmail = async () => {
+
+        let response = await fetch("http://localhost:8000/email-verification/", {
+            method:"POST",
+            headers:{
+                'Content-Type':'application/json',
+            },
+            body:JSON.stringify({'email':user.email}),
+        })
+        let data = await response.json();
+        if (response.status === 200) {
+            setSuccessMessage("Verification email sent!");
+            setShowOTPForm(true);
+        } else {
+            alert(data.email[0] || "Something went wrong, please try again.");
+        }
+    }
+
+    let submitVerifyEmailOTP = async (event) => {
+        event.preventDefault();
+
+        if (!event.target.otp.value) {
+            setAuthError("please enter your OTP");
+        } else {
+            let response = await fetch("http://localhost:8000/email-verification/verify-otp/", {
+                method:"POST",
+                headers:{
+                    'Content-Type':'application/json',
+                },
+                body:JSON.stringify({'email':user.email, 'otp':event.target.otp.value}),
+            })
+            let data = await response.json();
+            if (response.status === 200) {
+                setSuccessMessage("Email Verified!");
+                setShowOTPForm(false);
+            } else {
+                error = Object.values(data).flat().join(" ");
+                setAuthError(data || "Something went wrong, please try again.");
+            }
+        }
+
+    }
+
     let context = {
         user:user,
         authTokens:authTokens,
+        successMessage:successMessage,
+        authError:authError,
+        showOTPForm:showOTPForm,
         loginUser:loginUser,
         logoutUser:logoutUser,
         signupUser:signupUser,
-        authError:authError,
         setAuthError:setAuthError,
-        successMessage:successMessage,
         setSuccessMessage:setSuccessMessage,
+        setShowOTPForm:setShowOTPForm,
+        verifyEmail:verifyEmail,
+        submitVerifyEmailOTP:submitVerifyEmailOTP,
     };
 
     useEffect(() => {

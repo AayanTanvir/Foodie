@@ -2,7 +2,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import serializers
 from .models import CustomUser
-import jwt
+from django.core.cache import cache
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -59,3 +59,32 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
     token = serializers.CharField(required=True)
     password = serializers.CharField(required=True)
 
+
+class EmailVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    
+    def validate_email(self, value):
+        if not CustomUser.objects.filter(email=value).exists():
+            raise serializers.ValidationError("User with this email does not exist")
+        
+        return value
+    
+
+class OTPVerificationSerializer(serializers.Serializer):
+    otp = serializers.IntegerField(required=True)
+    email = serializers.EmailField(required=True)
+    
+    def validate(self, data):
+        otp = data.get('otp')
+        email = data.get('email')
+        cached_otp = cache.get(f"otp_{email}")
+        
+        if not CustomUser.objects.filter(email=email).exists():
+            raise serializers.ValidationError("User with this email does not exist")
+        elif cached_otp == None:
+            raise serializers.ValidationError("OTP has expired")
+        elif otp != cached_otp:
+            raise serializers.ValidationError("Invalid OTP")
+        
+        return super().validate(data)
+    
