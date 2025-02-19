@@ -70,24 +70,42 @@ class EmailVerificationAPIView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data.get('email')
+        mode = serializer.validated_data.get('mode')
         user = CustomUser.objects.get(email=email)
         
-        if cache.get(f"otp_{email}"):
-            return Response({'error': 'An OTP has already been sent to your email'}, status=status.HTTP_400_BAD_REQUEST)
-        elif user.is_email_verified:
-            return Response({'error':'Email has already been verified'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        otp = random.randint(100000, 999999)
-        subject = "Email Verification"
-        cache.set(f"otp_{email}", otp, timeout=300)
-        body = f"Copy and enter the code below to verify your email \n {str(otp)} \n the code expires in 5 minutes!"
-        data = {
-            'subject': subject,
-            'body': body,
-            'to': email
-        }
-        Utils.send_email(data)
-        return Response({'message': 'OTP code has been sent to your email'}, status=status.HTTP_200_OK)
+        if mode == 'send':
+            if cache.get(f"otp_{email}"):
+                return Response({'error': 'An OTP has already been sent to your email'}, status=status.HTTP_400_BAD_REQUEST)
+            elif user.is_email_verified:
+                return Response({'error':'Email has already been verified'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            otp = random.randint(100000, 999999)
+            subject = "Email Verification"
+            cache.set(f"otp_{email}", otp, timeout=300)
+            body = f"Copy and enter the code below to verify your email \n {str(otp)} \n the code expires in 5 minutes!"
+            data = {
+                'subject': subject,
+                'body': body,
+                'to': email
+            }
+            Utils.send_email(data)
+            return Response({'message': 'OTP code has been sent to your email'}, status=status.HTTP_200_OK)
+            
+        elif mode == 'resend':
+            if user.is_email_verified:
+                return Response({'error':'Email has already been verified'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            otp = random.randint(100000, 999999)
+            subject = "Email Verification"
+            cache.set(f"otp_{email}", otp, timeout=300)
+            body = f"Copy and enter the code below to verify your email \n {str(otp)} \n the code expires in 5 minutes!"
+            data = {
+                'subject': subject,
+                'body': body,
+                'to': email
+            }
+            Utils.send_email(data)
+            return Response({'message': 'OTP code has been sent to your email'}, status=status.HTTP_200_OK)
     
     
 class OTPVerificationAPIView(generics.GenericAPIView):

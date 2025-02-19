@@ -156,21 +156,21 @@ export const AuthProvider = ({children}) => {
         return true;
     }
 
-    let verifyEmail = async () => {
+    let verifyEmail = async (mode) => {
 
         let response = await fetch("http://localhost:8000/email-verification/", {
             method:"POST",
             headers:{
                 'Content-Type':'application/json',
             },
-            body:JSON.stringify({'email':user.email}),
+            body:JSON.stringify({'email':user.email, 'mode':mode}),
         })
         let data = await response.json();
         if (response.status === 200) {
-            setSuccessMessage("Verification email sent!");
+            setSuccessMessage("Verification email sent! (check spam)");
             setShowOTPForm(true);
         } else {
-            alert(data.email[0] || "Something went wrong, please try again.");
+            alert(data.error || "Something went wrong, please try again.");
         }
     }
 
@@ -192,8 +192,7 @@ export const AuthProvider = ({children}) => {
                 setSuccessMessage("Email Verified!");
                 setShowOTPForm(false);
             } else {
-                error = Object.values(data).flat().join(" ");
-                setAuthError(data || "Something went wrong, please try again.");
+                setAuthError(data.non_field_errors || "Something went wrong, please try again.");
             }
         }
 

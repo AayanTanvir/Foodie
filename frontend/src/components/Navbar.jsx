@@ -11,8 +11,8 @@ const Navbar = () => {
                       text-gray-50 z-50'>
 
         <Link to='/'>Home</Link>
-        {user ? <Link onClick={verifyEmail}>Verify Email</Link> : <></>}
-        {user ? <Link onClick={logoutUser}>Logout</Link> : <Link to='/login'>Login</Link>}
+        {user ? <Link onClick={() => verifyEmail("send")}>Verify Email</Link> : <></>}
+        {user ? <Link onClick={() => logoutUser}>Logout</Link> : <Link to='/login'>Login</Link>}
         {!user ? <Link to='/signup'>Signup</Link> : <></>}
 
       </div>

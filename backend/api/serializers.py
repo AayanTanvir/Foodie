@@ -62,6 +62,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
 class EmailVerificationSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
+    mode = serializers.CharField(required=True)
     
     def validate_email(self, value):
         if not CustomUser.objects.filter(email=value).exists():
