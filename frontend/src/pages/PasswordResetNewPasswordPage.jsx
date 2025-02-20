@@ -6,41 +6,40 @@ import AuthContext from '../context/AuthContext'
 const PasswordResetNewPasswordPage = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
-    const {setSuccessMessage, authError, setAuthError} = useContext(AuthContext);
+    const {setSuccessMessage, authError, setAuthError, validateCredentials} = useContext(AuthContext);
     let token = searchParams.get('token');
     let navigate = useNavigate();
 
     let submitNewPassword = async (event) => {
         event.preventDefault()
 
-        if (event.target.password1.value !== event.target.password2.value) {
-            alert("Passwords do not match")
-        } else {
-            try {
-                const response = await fetch('http://localhost:8000/password-reset/confirm/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        token: token,
-                        password: event.target.password1.value,
-                    })
+        if (!event.target.password1.value || !event.target.password2.value) {
+            setAuthError("Please fill all fields");
+    
+        } else if (validateCredentials(event.target.password1.value, event.target.password2.value)) {
+            let response = await fetch('http://localhost:8000/password-reset/confirm/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    token: token,
+                    password: event.target.password1.value,
                 })
-                const data = await response.json();
-                
-                if (response.ok) {
-                    navigate('/login');
-                    setSuccessMessage("Password reset successfully.");
-                } else {
-                    setAuthError(data.error);
-                    setTimeout(() => navigate('/'), 3000);
-                }
-            } 
-            catch (error) {
-                console.log(error);
+            })
+            const data = await response.json();
+            
+            if (response.ok) {
+                navigate('/login');
+                setSuccessMessage("Password reset successfully.");
+            } else if (response.status === 500) {
+                setFailureMessage("Internal Server Error 500");
+            } else {
+                setFailureMessage(data?.error);
+                setTimeout(() => navigate('/'), 3000);
             }
         }
+            
 
     } 
 

@@ -13,7 +13,10 @@ export const AuthProvider = ({children}) => {
     let [initialLoad, setInitialLoad] = useState(true);
     let [authError, setAuthError] = useState("");
     let [successMessage, setSuccessMessage] = useState("");
+    let [failureMessage, setFailureMessage] = useState("");
+    let [noticeMessage, setNoticeMessage] = useState("");
     let [showOTPForm, setShowOTPForm] = useState(false);
+    let [canResendOTP, setCanResendOTP] = useState(false);
 
 
     let loginUser = async (event) => {
@@ -36,12 +39,12 @@ export const AuthProvider = ({children}) => {
                 setUser(jwtDecode(data.access));
                 localStorage.setItem("authTokens", JSON.stringify(data));
                 navigate("/");
-            } else if(response.status === 401) {
+            } else if (response.status === 401) {
                 setAuthError("Invalid Credentials");
-            } else if(response.status === 500) {
-                setAuthError("Server Error");
+            } else if (response.status === 500) {
+                setFailureMessage("Internal Server Error 500");
             } else {
-                setAuthError(data.detail || "Something went wrong, please try again.");
+                setFailureMessage(data?.detail);
             }
         }
     }
@@ -79,9 +82,11 @@ export const AuthProvider = ({children}) => {
             if (response.status === 201) {
                 navigate("/login");
                 setSuccessMessage("Account Created!");
+            } else if (response.status === 500) {
+                setFailureMessage("Internal Server Error 500");
             } else {
                 error = Object.values(data).flat().join(" ");
-                setAuthError(error || "Something went wrong, please try again.");
+                setFailureMessage(error);
             }
 
         }
@@ -116,9 +121,14 @@ export const AuthProvider = ({children}) => {
         let regex_digit = /\d/;
         let regex_special = /[!@#$%^&*]/;
         let regex_whitespace = /\s/;
+        
 
         if (password1.length < 8) {
             setAuthError("Password must be at least 8 characters long");
+            return false;
+        }
+        if (password1 !== password2) {
+            setAuthError("Passwords don't match");
             return false;
         }
         if (!regex_lowercase.test(password1)) {
@@ -141,23 +151,20 @@ export const AuthProvider = ({children}) => {
             setAuthError("Password must contain atleast one special character");
             return false;
         }
-        if (username.length < 4) {
+        if (username?.length < 4) {
             setAuthError("Username must be at least 4 characters long");
             return false;
         }
-        if (regex_whitespace.test(username)) {
+        if (username && regex_whitespace.test(username)) {
             setAuthError("Username must not contain whitespace");
-            return false;
-        }
-        if (password1 !== password2) {
-            setAuthError("Passwords don't match");
             return false;
         }
         return true;
     }
 
     let verifyEmail = async (mode) => {
-
+        if (showOTPForm == false) setShowOTPForm(true);
+        
         let response = await fetch("http://localhost:8000/email-verification/", {
             method:"POST",
             headers:{
@@ -167,10 +174,18 @@ export const AuthProvider = ({children}) => {
         })
         let data = await response.json();
         if (response.status === 200) {
-            setSuccessMessage("Verification email sent! (check spam)");
-            setShowOTPForm(true);
+            setNoticeMessage("Verification email sent! (check spam)");
+            if (mode !== "resend") {
+                const timer_for_resend = 10000;
+                let timeout = setTimeout(() => {
+                    clearTimeout(timeout);
+                    setCanResendOTP(true);
+                }, timer_for_resend);
+            }
+        } else if (response.status === 500) {
+            setFailureMessage("Something went wrong, please try again.");
         } else {
-            alert(data.error || "Something went wrong, please try again.");
+            setNoticeMessage(data?.error);
         }
     }
 
@@ -191,8 +206,10 @@ export const AuthProvider = ({children}) => {
             if (response.status === 200) {
                 setSuccessMessage("Email Verified!");
                 setShowOTPForm(false);
+            } else if (response.status === 500) {
+                setFailureMessage("Internal Server Error 500");
             } else {
-                setAuthError(data.non_field_errors || "Something went wrong, please try again.");
+                setFailureMessage(data?.non_field_errors);
             }
         }
 
@@ -202,8 +219,11 @@ export const AuthProvider = ({children}) => {
         user:user,
         authTokens:authTokens,
         successMessage:successMessage,
+        failureMessage:failureMessage,
+        noticeMessage:noticeMessage,
         authError:authError,
         showOTPForm:showOTPForm,
+        canResendOTP:canResendOTP,
         loginUser:loginUser,
         logoutUser:logoutUser,
         signupUser:signupUser,
@@ -212,6 +232,10 @@ export const AuthProvider = ({children}) => {
         setShowOTPForm:setShowOTPForm,
         verifyEmail:verifyEmail,
         submitVerifyEmailOTP:submitVerifyEmailOTP,
+        setCanResendOTP:setCanResendOTP,
+        validateCredentials:validateCredentials,
+        setFailureMessage:setFailureMessage,
+        setNoticeMessage:setNoticeMessage,
     };
 
     useEffect(() => {
@@ -231,9 +255,9 @@ export const AuthProvider = ({children}) => {
     }, [authError]);
     
     useEffect(() => {
-        const timeout = setTimeout(() => setSuccessMessage(""), 3000);
+        const timeout = setTimeout(() => {setSuccessMessage(""), setNoticeMessage(""), setFailureMessage("")}, 3000);
         return () => clearTimeout(timeout);
-    }, [successMessage]);
+    }, [successMessage, noticeMessage, failureMessage]);
 
     return (
         <AuthContext.Provider value={context}>

@@ -9,7 +9,7 @@ from .utils import Utils
 from rest_framework import status
 from django.conf import settings
 from django.core.cache import cache
-import random
+import random, jwt
 
 
 class UserCreateApiView(generics.CreateAPIView):
@@ -27,7 +27,7 @@ class PasswordResetAPIView(generics.GenericAPIView):
         email = serializer.validated_data.get('email')
         user = CustomUser.objects.get(email=email)
         token = RefreshToken.for_user(user).access_token
-        redirect_link = 'http://localhost:5173/reset-password?token=' + str(token)
+        redirect_link = 'http://localhost:5173/reset-password/new-password?token=' + str(token)
         email_data = {
             'subject': 'Password Reset',
             'body': f'Follow the link to reset your password \n {redirect_link}',

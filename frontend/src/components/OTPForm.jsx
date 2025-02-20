@@ -3,27 +3,23 @@ import AuthContext from '../context/AuthContext';
 
 const OTPForm = () => {
 
-    let {showOTPForm, authError, submitVerifyEmailOTP, verifyEmail} = useContext(AuthContext);
-    let [canResendOTP, setCanResendOTP] = useState(false);
-    let [disableResendOTP, setDisableResendOTP] = useState(false);
-    let resendOTP = null;
+    let {
+      showOTPForm, 
+      authError, 
+      submitVerifyEmailOTP, 
+      verifyEmail, 
+      canResendOTP, 
+      setCanResendOTP,
+      setShowOTPForm,
+    } = useContext(AuthContext);
 
-    const timer_for_resend = 60000;
-    let timeout = setTimeout(() => {
-      clearTimeout(timeout);
-      setCanResendOTP(true);
-    }, timer_for_resend);
+    let resendOTP = canResendOTP ? <a onClick={() => {verifyEmail("resend"); setCanResendOTP(null);} } className='mt-6 text-blue-400 hover:cursor-pointer'>Resend OTP</a> : (<p className='mt-6 text-blue-400'>Resend OTP in a minute</p>);
 
-    if (canResendOTP && !disableResendOTP) {
+
+    if (canResendOTP == null) {
       resendOTP = (
-        <a onClick={() => {verifyEmail("resend"); setCanResendOTP(false); setDisableResendOTP(true)} } className='mt-8 text-blue-400 hover:cursor-pointer'>Resend OTP</a>
+        <a onClick={() => setShowOTPForm(false)} className='mt-6 text-blue-400 hover:cursor-pointer'>Exit</a>
       );
-    } else if (!canResendOTP && !disableResendOTP) {
-      resendOTP = (
-        <p className='mt-8 text-blue-400'>Resend OTP in a minute</p>
-      );
-    } else if (disableResendOTP) {
-      resendOTP = null;
     }
 
     if (showOTPForm == false) return null;

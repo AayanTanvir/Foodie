@@ -5,7 +5,7 @@ import AuthContext from '../context/AuthContext';
 const SignupPage = () => {
 
   const {signupUser, authError} = useContext(AuthContext)
-// auth error isn't disappearing
+
   return (
     <div className="absolute top-0 left-0 w-full h-screen flex items-center justify-center flex-col">
       <h1 className='mb-6 text-2xl text-gray-700 font-medium'>Signup</h1>

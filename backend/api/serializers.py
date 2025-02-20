@@ -12,6 +12,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         token['email'] = user.email
         token['username'] = user.username
+        token['is_email_verified'] = user.is_email_verified
 
         return token
     
