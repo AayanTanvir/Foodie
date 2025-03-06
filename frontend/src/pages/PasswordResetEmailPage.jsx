@@ -4,8 +4,12 @@ import { useNavigate } from 'react-router-dom';
 
 const PasswordResetEmailPage = () => {
 
-    let {authError, setFailureMessage, setAuthError} = useContext(AuthContext);
+    let {authError, setFailureMessage, user, setAuthError} = useContext(AuthContext);
     let navigate = useNavigate();
+
+    if (user) {
+        navigate('/');
+    }
 
     let submitEmail = async (event) => {
         event.preventDefault();
