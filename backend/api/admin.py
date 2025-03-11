@@ -29,10 +29,9 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(
-    Restaurant,
-    MenuItem,
-    MenuItemCategory,
-    RestaurantCategory,
-    Discount,
-    )
+admin.site.register(Restaurant)
+admin.site.register(MenuItem)
+admin.site.register(MenuItemCategory)
+admin.site.register(RestaurantCategory)
+
+
