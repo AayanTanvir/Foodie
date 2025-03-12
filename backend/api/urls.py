@@ -5,6 +5,7 @@ from .serializers import *
 from .views import *
 
 urlpatterns = [
+    #auth
     path('token/', MyTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path('token/refresh/', TokenRefreshView.as_view(), name="token_refresh"),
     path('user/create/', UserCreateApiView.as_view()),
@@ -12,4 +13,7 @@ urlpatterns = [
     path('password-reset/confirm/', PasswordResetConfirmAPIView.as_view()),
     path('email-verification/', EmailVerificationAPIView.as_view()),
     path('email-verification/verify-otp/', OTPVerificationAPIView.as_view()),
+    
+    path('restaurants/', RestaurantListAPIView.as_view()),
+    path('restaurants/<int:pk>', RestaurantAPIView.as_view()),
 ]

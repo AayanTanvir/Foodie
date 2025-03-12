@@ -21,13 +21,28 @@ class CustomUser(AbstractUser):
     
 
 class Restaurant(models.Model):
+    
+    class RestaurantCategories(models.TextChoices):
+        FINE_DINING = 'fine_dining', 'Fine Dining'
+        VEGAN = 'vegan', 'Vegan'
+        SEAFOOD = 'seafood', 'Seafood'
+        FAST_FOOD = 'fast_food', 'Fast Food'
+        DRINK_AND_BEVERAGES = 'drink_and_beverages', 'Drinks & Beverages'
+        DESSERTS = 'desserts', 'Desserts'
+        CAFE = 'cafe', 'Café'
+        HALAL = 'halal', 'Halal'
+        BBQ_AND_GRILLS = 'bbq_and_grills', 'BBQ & Grills'
+        OTHER = '', 'Other'
+        
+        __empty__ = '----------'
+    
     name = models.CharField(max_length=255, unique=True) 
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="restaurants")
     slug = models.SlugField(unique=True, blank=True)
     image = models.ImageField(upload_to="restaurants/", blank=True, null=True, default="restaurants/default.png")
     address = models.TextField(default="", unique=True)
     phone = models.CharField(max_length=15, blank=True, null=True, default="")
-    category = models.ManyToManyField('RestaurantCategory', blank=True, related_name='restaurants')
+    category = models.CharField(max_length=25, choices=RestaurantCategories.choices, default=RestaurantCategories.OTHER)
     opening_time = models.TimeField()
     closing_time = models.TimeField()
     is_verified = models.BooleanField(default=False)
@@ -38,10 +53,18 @@ class Restaurant(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
-        
+    
+    @property 
     def is_open(self):
-        now = timezone.localtime().time()
-        return self.is_maintained and (self.opening_time <= now <= self.closing_time)
+        now = timezone.now().time()
+        
+        if self.is_maintained:
+            if self.opening_time < self.closing_time:
+                return self.opening_time <= now <= self.closing_time
+            else:
+                return now >= self.opening_time or now <= self.closing_time
+        
+        return False
     
     def __str__(self):
         return self.name
@@ -66,10 +89,4 @@ class MenuItemCategory(models.Model):
 
     def __str__(self):
         return self.name
-    
-    
-class RestaurantCategory(models.Model):
-    name = models.CharField(max_length=255, unique=True)
 
-    def __str__(self):
-        return self.name

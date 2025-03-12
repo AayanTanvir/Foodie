@@ -1,14 +1,15 @@
 from django.shortcuts import render
-from .models import *
-from .serializers import *
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
-from .utils import Utils
-from rest_framework import status
+from django.db.models import Q
 from django.conf import settings
 from django.core.cache import cache
+from django.utils import timezone
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import status
+from .models import *
+from .utils import Utils
+from .serializers import *
 import random, jwt
 
 
@@ -120,3 +121,13 @@ class OTPVerificationAPIView(generics.GenericAPIView):
         user.save()
         cache.delete(f"otp_{email}")
         return Response({'message': 'OTP verification successful'}, status=status.HTTP_200_OK)
+    
+    
+class RestaurantListAPIView(generics.ListAPIView):
+    queryset = Restaurant.objects.all()
+    serializer_class = RestaurantListSerializer
+    
+
+class RestaurantAPIView(generics.RetrieveAPIView):
+    queryset = Restaurant.objects.all()
+    serializer_class = RestaurantSerializer

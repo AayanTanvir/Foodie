@@ -1,7 +1,7 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import serializers
-from .models import CustomUser
+from .models import *
 from django.core.cache import cache
 
 
@@ -90,3 +90,50 @@ class OTPVerificationSerializer(serializers.Serializer):
         
         return super().validate(data)
     
+    
+class MenuItemCategorySerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = MenuItemCategory
+        fields = ['name']
+    
+    
+class MenuItemSerializer(serializers.ModelSerializer):
+    category = MenuItemCategorySerializer()
+
+    class Meta:
+        model = MenuItem
+        fields = ['id', 'name', 'description', 'category', 'price',
+                  'image', 'is_available', 'created_at']
+    
+    
+class RestaurantSerializer(serializers.ModelSerializer):
+    menu_items = MenuItemSerializer(many=True, read_only=True)
+    is_open = serializers.SerializerMethodField(method_name='is_open')
+    
+    def is_open(self, obj):
+        return obj.is_open
+     
+    class Meta:
+        model = Restaurant
+        fields = [
+            'id', 'name', 'owner', 'slug', 'image',
+            'address', 'phone', 'category', 'is_open', 'opening_time',
+            'closing_time', 'is_verified', 'is_maintained', 'created_at', 'menu_items',
+        ]
+        
+    
+class RestaurantListSerializer(serializers.ModelSerializer):
+    is_open = serializers.SerializerMethodField(method_name='is_open')
+    category = serializers.SerializerMethodField()
+    
+    def is_open(self, obj):
+        return obj.is_open
+    
+    def get_category(self, obj):
+        return obj.get_category_display()
+    
+    class Meta:
+        model = Restaurant
+        fields = ['id', 'name', 'slug', 'image',
+                  'category', 'is_verified', 'is_open']

@@ -32,6 +32,5 @@ admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Restaurant)
 admin.site.register(MenuItem)
 admin.site.register(MenuItemCategory)
-admin.site.register(RestaurantCategory)
 
 
