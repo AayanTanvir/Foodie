@@ -12,6 +12,7 @@ import PasswordResetNewPasswordPage from './pages/PasswordResetNewPasswordPage';
 import PasswordResetEmailPage from './pages/PasswordResetEmailPage';
 import OTPForm from './components/OTPForm';
 import ProtectedRoutes from './utils/ProtectedRoutes';
+import RestaurantPage from './pages/RestaurantPage';
 
 
 function App() {
@@ -27,10 +28,15 @@ function App() {
             <Route element={<ProtectedRoutes/>}>
               <Route element={<HomePage/>} path='/' exact/> 
             </Route>
+
+            //auth
             <Route element={<LoginPage/>} path='/login'/>
             <Route element={<SignupPage/>} path='/signup'/>
             <Route element={<PasswordResetEmailPage/>} path='/reset-password'/>
             <Route element={<PasswordResetNewPasswordPage/>} path='/reset-password/new-password'/>
+
+            //restaurants
+            <Route element={<RestaurantPage/>} path='/r/:slug/:uuid'/>
           </Routes>
         </AuthProvider>
       </Router>

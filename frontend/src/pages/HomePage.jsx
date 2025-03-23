@@ -1,15 +1,17 @@
-import React, { useContext } from 'react'
-import AuthContext from '../context/AuthContext'
+import React, { useContext } from "react";
+import AuthContext from "../context/AuthContext";
+import PopularRestaurants from "../components/PopularRestaurants";
+import TrendingRestaurants from "../components/TrendingRestaurants";
 
 const HomePage = () => {
-  
-    const {user} = useContext(AuthContext)
+  const { user } = useContext(AuthContext);
 
-    return (
-      <div className='mt-4'>
-        {user ? <h1 className='text-center'>Welcome {user.username}!</h1> : <h1 className='text-center'>Welcome please login!</h1>}
-      </div>
-    )
-}
+  return (
+    <div className="container mx-auto p-4 min-h-screen overflow-auto">
+      <PopularRestaurants />
+      <TrendingRestaurants />
+    </div>
+  );
+};
 
-export default HomePage
+export default HomePage;

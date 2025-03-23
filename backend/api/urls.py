@@ -15,5 +15,5 @@ urlpatterns = [
     path('email-verification/verify-otp/', OTPVerificationAPIView.as_view()),
     
     path('restaurants/', RestaurantListAPIView.as_view()),
-    path('restaurants/<int:pk>', RestaurantAPIView.as_view()),
+    path('restaurants/<uuid>', RestaurantAPIView.as_view()),
 ]

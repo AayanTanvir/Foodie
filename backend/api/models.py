@@ -36,10 +36,11 @@ class Restaurant(models.Model):
         
         __empty__ = '----------'
     
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     name = models.CharField(max_length=255, unique=True) 
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="restaurants")
     slug = models.SlugField(unique=True, blank=True)
-    image = models.ImageField(upload_to="restaurants/", blank=True, null=True, default="restaurants/default.png")
+    image = models.ImageField(upload_to="restaurants/", blank=True, null=True, default="restaurants/default.jpg")
     address = models.TextField(default="", unique=True)
     phone = models.CharField(max_length=15, blank=True, null=True, default="")
     category = models.CharField(max_length=25, choices=RestaurantCategories.choices, default=RestaurantCategories.OTHER)

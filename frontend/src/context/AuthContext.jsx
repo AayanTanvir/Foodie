@@ -31,8 +31,8 @@ export const AuthProvider = ({children}) => {
                     'Content-Type':'application/json'
                 },
                 body:JSON.stringify({'email':event.target.email.value, 'password':event.target.password.value})
-            });
-        
+            })
+
             let data = await response.json();
             if(response.status === 200) {
                 setAuthTokens(data);
