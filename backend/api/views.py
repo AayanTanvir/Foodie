@@ -132,3 +132,4 @@ class RestaurantAPIView(generics.RetrieveAPIView):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantSerializer
     lookup_field = 'uuid'
+    

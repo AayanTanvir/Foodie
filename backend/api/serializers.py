@@ -91,39 +91,46 @@ class OTPVerificationSerializer(serializers.Serializer):
         return super().validate(data)
     
     
-class MenuItemCategorySerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = MenuItemCategory
-        fields = ['name']
-    
-    
 class MenuItemSerializer(serializers.ModelSerializer):
-    category = MenuItemCategorySerializer()
+    category = serializers.SlugRelatedField(
+        queryset=MenuItemCategory.objects.all(), slug_field='name'
+    )
 
     class Meta:
         model = MenuItem
         fields = ['id', 'name', 'description', 'category', 'price',
                   'image', 'is_available', 'created_at']
+        
+
+class MenuItemCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MenuItemCategory
+        fields = ['name', 'restaurant']
     
     
 class RestaurantSerializer(serializers.ModelSerializer):
     menu_items = MenuItemSerializer(many=True, read_only=True)
     is_open = serializers.SerializerMethodField(method_name='is_open')
-    category = serializers.SerializerMethodField()
+    restaurant_category = serializers.SerializerMethodField()
+    item_categories = serializers.SerializerMethodField()
     
-    def get_category(self, obj):
+    def get_restaurant_category(self, obj):
         return obj.get_category_display()
+    
+    def get_item_categories(self, obj):
+        return MenuItemCategorySerializer(MenuItemCategory.objects.filter(restaurant=obj), many=True).data
     
     def is_open(self, obj):
         return obj.is_open
-     
+    
+    
     class Meta:
         model = Restaurant
         fields = [
             'uuid', 'name', 'owner', 'slug', 'image',
-            'address', 'phone', 'category', 'is_open', 'opening_time',
+            'address', 'phone', 'restaurant_category', 'is_open', 'opening_time',
             'closing_time', 'is_verified', 'is_maintained', 'created_at', 'menu_items',
+            'item_categories',
         ]
         
     
@@ -140,4 +147,4 @@ class RestaurantListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant
         fields = ['uuid', 'name', 'slug', 'image',
-                  'category', 'is_verified', 'is_open']
+                  'category', 'is_verified', 'is_open', 'opening_time', 'closing_time']

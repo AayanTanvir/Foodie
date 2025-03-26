@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
+import { formatTime } from '../utils/Utils';
 
 const TrendingRestaurants = () => {
     const [restaurants, setRestaurants] = useState(null);
     const navigate = useNavigate();
+    let { setFailureMessage } = useContext(AuthContext);
 
     useEffect(() => {
         fetch("http://127.0.0.1:8000/restaurants/")
@@ -27,7 +30,7 @@ const TrendingRestaurants = () => {
 
     return (
       <div className="w-full min-h-full py-10">
-        <h1 className="font-roboto text-3xl font-bold mb-6">Trending Restaurants</h1>
+        <h1 className="font-roboto text-3xl font-bold mb-6">Popular Restaurants</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {restaurants.map((restaurant) => (
             <div
@@ -55,7 +58,7 @@ const TrendingRestaurants = () => {
               </div>
               <div className="p-4">
                 <h1 className="text-lg font-semibold">{restaurant.name}</h1>
-                <p className="text-gray-500">{restaurant.category}</p>
+                <p className="text-gray-500">{restaurant.is_open ? restaurant.category : `${formatTime(restaurant.opening_time)} - ${formatTime(restaurant.closing_time)}`}</p>
               </div>
             </div>
           ))}

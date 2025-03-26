@@ -10,6 +10,7 @@ export default {
         poppins: ['Poppins', 'sans-serif'],
         roboto: ['Roboto', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
+        notoserif: ['Noto Serif', 'serif'],
       }
     },
   },

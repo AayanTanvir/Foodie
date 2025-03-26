@@ -2,6 +2,9 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import AuthContext from '../context/AuthContext';
 import RestaurantInfo from '../components/RestaurantInfo';
+import RestaurantMenu from '../components/RestaurantMenu';
+import RestaurantDiscounts from '../components/RestaurantDiscounts';
+
 
 const RestaurantPage = () => {
   
@@ -27,8 +30,10 @@ const RestaurantPage = () => {
 
 
     return (
-        <div className="fixed top-0 left-0 w-full min-h-screen p-4 pt-12 overflow-auto">
+        <div className="absolute top-0 left-0 w-full min-h-screen p-4 pt-12">
             <RestaurantInfo restaurant={restaurant} />
+            <RestaurantDiscounts restaurant={restaurant} />
+            <RestaurantMenu restaurant={restaurant} />
         </div>
     )
 }

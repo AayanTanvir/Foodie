@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
+import { formatTime } from '../utils/Utils';
+
 
 const PopularRestaurants = () => {
     const [restaurants, setRestaurants] = useState(null);
     const navigate = useNavigate();
     let { setFailureMessage } = useContext(AuthContext);
-
 
     useEffect(() => {
         fetch("http://127.0.0.1:8000/restaurants/")
@@ -58,7 +59,7 @@ const PopularRestaurants = () => {
               </div>
               <div className="p-4">
                 <h1 className="text-lg font-semibold">{restaurant.name}</h1>
-                <p className="text-gray-500">{restaurant.category}</p>
+                <p className="text-gray-500">{restaurant.is_open ? restaurant.category : `${formatTime(restaurant.opening_time)} - ${formatTime(restaurant.closing_time)}`}</p>
               </div>
             </div>
           ))}

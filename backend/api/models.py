@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 from .managers import CustomUserManager
 import uuid
@@ -32,6 +33,10 @@ class Restaurant(models.Model):
         CAFE = 'cafe', 'Café'
         HALAL = 'halal', 'Halal'
         BBQ_AND_GRILLS = 'bbq_and_grills', 'BBQ & Grills'
+        INDIAN = 'indian', 'Indian'
+        CHINESE = 'chinese', 'Chinese'
+        ITALIAN = 'italian', 'Italian'
+        MEXICAN = 'mexican', 'Mexican'
         OTHER = '', 'Other'
         
         __empty__ = '----------'
@@ -74,9 +79,9 @@ class Restaurant(models.Model):
 class MenuItem(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="menu_items")
     name = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True, default="")
-    category = models.ForeignKey('MenuItemCategory', on_delete=models.SET_NULL, null=True, blank=True, related_name='menu_items') 
+    description = models.TextField(blank=True, null=True, default="") 
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    category = models.ForeignKey("MenuItemCategory", related_name="menu_items", on_delete=models.SET_NULL, null=True, blank=True)
     image = models.ImageField(upload_to="menu_items/", blank=True, null=True, default="menu_items/default.png")
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -87,7 +92,13 @@ class MenuItem(models.Model):
     
 class MenuItemCategory(models.Model):
     name = models.CharField(max_length=255, unique=True)
-
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="menu_item_categories")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["name", "restaurant"], name="unique_category_per_restaurant")
+        ]
+    
     def __str__(self):
-        return self.name
-
+        return f"{self.name} - {self.restaurant.name}"
