@@ -7,12 +7,12 @@ const RestaurantDiscounts = ({ restaurant }) => {
             <h1 className='absolute left-48 text-left font-roboto font-semibold text-3xl'>Discounts</h1>
         </div>
         <div className="min-h-[7rem] grid grid-cols-4 grid-rows-2 gap-4">
-            <div className='border-2 border-gray-300 rounded-xl'></div>
-            <div className='border-2 border-gray-300 rounded-xl'></div>
-            <div className='border-2 border-gray-300 rounded-xl'></div>
-            <div className='border-2 border-gray-300 rounded-xl'></div>
-            <div className='border-2 border-gray-300 rounded-xl'></div>
-            <div className='border-2 border-gray-300 rounded-xl'></div>
+            <div className='border-2 border-gray-300'></div>
+            <div className='border-2 border-gray-300'></div>
+            <div className='border-2 border-gray-300'></div>
+            <div className='border-2 border-gray-300'></div>
+            <div className='border-2 border-gray-300'></div>
+            <div className='border-2 border-gray-300'></div>
         </div>
     </div>
   )

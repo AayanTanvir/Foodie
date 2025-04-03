@@ -30,7 +30,7 @@ const RestaurantPage = () => {
 
 
     return (
-        <div className="absolute top-0 left-0 w-full min-h-screen p-4 pt-12">
+        <div className="absolute top-0 left-0 w-full min-h-screen  pt-12">
             <RestaurantInfo restaurant={restaurant} />
             <RestaurantDiscounts restaurant={restaurant} />
             <RestaurantMenu restaurant={restaurant} />
