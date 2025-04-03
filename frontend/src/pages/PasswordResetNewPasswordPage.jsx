@@ -45,7 +45,7 @@ const PasswordResetNewPasswordPage = () => {
 
     return (
         <div className="absolute top-0 left-0 w-full h-screen flex items-center justify-center flex-col">
-        <h1 className='mb-6 text-2xl text-gray-700 font-medium'>Enter New Password</h1>
+        <h1 className='mb-6 text-2xl text-neutral-800 font-medium'>Enter New Password</h1>
         <form onSubmit={submitNewPassword} className="w-1/4 bg-slate-100 border-0 rounded flex flex-col items-center p-6 gap-4">
             <input type="password" name="password1" placeholder="New Password" className="p-2 border rounded w-full"/>
             <input type="password" name="password2" placeholder="Confirm New Password" className="p-2 border rounded w-full"/>

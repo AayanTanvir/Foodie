@@ -68,7 +68,7 @@ const RestaurantMenu = ({ restaurant }) => {
             <div className='w-full flex-1 px-32 pt-12'>
                 {restaurant.item_categories.map((category) => (
                     <div id={category.name.toLowerCase()} key={category.name} className='w-full flex flex-col justify-start items-start mb-12 scroll-mt-28'>
-                        <h1 className='text-3xl font-poppins uppercase mb-2'>{category.name}</h1>
+                        <h1 className='text-3xl font-semibold font-poppins text-neutral-800 uppercase mb-4'>{category.name}</h1>
                         <div className='grid grid-cols-3 auto-rows-auto w-fit h-fit gap-x-6 gap-y-4'>
                             {restaurant.menu_items.filter(item => item.category === category.name).map((item) => (
                                 <div key={item.id} className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105'>

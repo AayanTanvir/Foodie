@@ -1,15 +1,17 @@
-import React, { useContext } from 'react'
-import AuthContext from '../context/AuthContext'
+import React, { useContext, useEffect } from 'react';
+import AuthContext from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const PasswordResetEmailPage = () => {
 
-    let {authError, setFailureMessage, user, setAuthError} = useContext(AuthContext);
+    let {authError, setFailureMessage, setNoticeMessage, user, setAuthError} = useContext(AuthContext);
     let navigate = useNavigate();
 
-    if (user) {
-        navigate('/');
-    }
+    useEffect(() => {
+        if (user) {
+            navigate('/');
+        }
+    }, [user, navigate]);
 
     let submitEmail = async (event) => {
         event.preventDefault();
@@ -26,7 +28,7 @@ const PasswordResetEmailPage = () => {
             })
             let data = await response.json();
             if (response.status === 200) {
-                navigate("/");
+                navigate("/login");
                 setNoticeMessage("Check your email for a password reset link.");
             } else if (response.status === 500) {
                 setFailureMessage("Internal Server Error 500");

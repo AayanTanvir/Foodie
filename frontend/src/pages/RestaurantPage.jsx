@@ -8,7 +8,7 @@ import RestaurantDiscounts from '../components/RestaurantDiscounts';
 
 const RestaurantPage = () => {
   
-    let { uuid, slug } = useParams();
+    let { uuid } = useParams();
     let { setFailureMessage } = useContext(AuthContext);
     const [restaurant, setRestaurant] = useState(null);
 
