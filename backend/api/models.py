@@ -2,13 +2,13 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 from django.utils import timezone
-from django.core.exceptions import ValidationError
 
 from .managers import CustomUserManager
 import uuid
 import pytz
 
 class CustomUser(AbstractUser):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     username = models.CharField(max_length=150, unique=True, default="")
     email = models.EmailField(unique=True)
     is_email_verified = models.BooleanField(default=False)
@@ -19,7 +19,7 @@ class CustomUser(AbstractUser):
     objects = CustomUserManager()
     
     def __str__(self):
-        return self.username
+        return str(self.username)
     
 
 class Restaurant(models.Model):
@@ -38,7 +38,7 @@ class Restaurant(models.Model):
         CHINESE = 'chinese', 'Chinese'
         ITALIAN = 'italian', 'Italian'
         MEXICAN = 'mexican', 'Mexican'
-        OTHER = '', 'Other'
+        OTHER = 'other', 'Other'
         
         __empty__ = '----------'
     
@@ -87,6 +87,7 @@ class MenuItem(models.Model):
     image = models.ImageField(upload_to="menu_items/", blank=True, null=True, default="menu_items/default.png")
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    
 
     def __str__(self):
         return f"{self.restaurant.name} - {self.name}"
@@ -104,3 +105,52 @@ class MenuItemCategory(models.Model):
     
     def __str__(self):
         return f"{self.name} - {self.restaurant.name}"
+    
+
+class Order(models.Model):
+    
+    class OrderStatus(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        IN_PROGRESS = 'in_progress', 'In Progress'
+        COMPLETED = 'completed', 'Completed'
+        CANCELLED = 'cancelled', 'Cancelled'
+        
+    
+    class OrderPaymentMethod(models.TextChoices):
+        CASH_ON_DELIVERY = 'cash_on_delivery', 'Cash On Delivery'
+        CARD = 'card', 'Card'
+        
+    
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="orders")
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="orders")
+    order_items = models.ManyToManyField(MenuItem, through="OrderItem")
+    order_status = models.CharField(max_length=25, choices=OrderStatus.choices, default=OrderStatus.PENDING)
+    payment_method = models.CharField(max_length=25, choices=OrderPaymentMethod.choices, default=OrderPaymentMethod.CASH_ON_DELIVERY)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    @property
+    def total_price(self):
+        total_price = 0
+        for order_item in self.order_items.all():
+            total_price += order_item.sub_total
+        return total_price
+    
+    def __str__(self):
+        return f"{self.uuid} | {self.user.email} - {self.restaurant.name}"
+    
+    
+class OrderItem(models.Model):
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+    #discount = something
+    
+    
+    @property
+    def sub_total(self):
+        #calculate discount here
+        return self.menu_item.price * self.quantity
+    
+    def __str__(self):
+        return f"{self.menu_item.name} - {self.order.uuid}"

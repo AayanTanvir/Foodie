@@ -9,8 +9,8 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
-    list_display = ("email", "is_email_verified", "is_staff", "is_active",)
-    list_filter = ("email", "is_email_verified", "is_staff", "is_active",)
+    list_display = ("uuid", "email", "is_staff", "is_active",)
+    list_filter = ("email", "uuid", "is_email_verified", "is_staff", "is_active",)
     fieldsets = (
         (None, {"fields": ("email", "username", "password", "is_email_verified",)}),
         ("Permissions", {"fields": ("is_staff", "is_active", "groups", "user_permissions")}),
@@ -24,7 +24,7 @@ class CustomUserAdmin(UserAdmin):
             )}
         ),
     )
-    search_fields = ("email", "username")
+    search_fields = ("username", "uuid", "email")
     ordering = ("email",)
 
 
@@ -32,5 +32,6 @@ admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Restaurant)
 admin.site.register(MenuItem)
 admin.site.register(MenuItemCategory)
-
+admin.site.register(Order)
+admin.site.register(OrderItem)
 
