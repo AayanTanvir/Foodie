@@ -34,4 +34,5 @@ admin.site.register(MenuItem)
 admin.site.register(MenuItemCategory)
 admin.site.register(Order)
 admin.site.register(OrderItem)
+admin.site.register(Discount)
 

@@ -74,6 +74,11 @@ class Restaurant(models.Model):
                          
         return False
     
+    @property
+    def popularity(self):
+        return self.orders.count()
+    
+    
     def __str__(self):
         return self.name
     
@@ -88,6 +93,9 @@ class MenuItem(models.Model):
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
+    @property
+    def popularity(self):
+        return self.order_items.values("order").distinct().count()
 
     def __str__(self):
         return f"{self.restaurant.name} - {self.name}"
@@ -128,29 +136,73 @@ class Order(models.Model):
     order_status = models.CharField(max_length=25, choices=OrderStatus.choices, default=OrderStatus.PENDING)
     payment_method = models.CharField(max_length=25, choices=OrderPaymentMethod.choices, default=OrderPaymentMethod.CASH_ON_DELIVERY)
     created_at = models.DateTimeField(auto_now_add=True)
+    discount = models.ForeignKey("Discount", blank=True, null=True, on_delete=models.SET_NULL, related_name="orders")
     
     @property
     def total_price(self):
-        total_price = 0
-        for order_item in self.order_items.all():
-            total_price += order_item.sub_total
+        return sum(item.sub_total for item in self.orderitem_set.all())
+    
+    @property
+    def discounted_price(self):
+        total_price = self.total_price
+        if self.discount:
+            if self.discount.valid_from <= timezone.now() <= self.discount.valid_to:
+                if total_price < self.discount.min_order_amount:
+                    return total_price
+                
+                if self.discount.discount_type == Discount.DiscountType.PERCENTAGE:
+                    total_price -= (total_price * self.discount.amount) / 100
+                elif self.discount.discount_type == Discount.DiscountType.FIXED_AMOUNT:
+                    total_price -= self.discount.amount
+                elif self.discount.discount_type == Discount.DiscountType.FREE_DELIVERY:
+                    return total_price
+                    
+                return total_price if total_price > 0 else 0
+            
         return total_price
+                
     
     def __str__(self):
-        return f"{self.uuid} | {self.user.email} - {self.restaurant.name}"
+        return f"{self.uuid} | {self.user.email} - {self.restaurant.name} - {self.total_price}"
     
     
 class OrderItem(models.Model):
-    menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, related_name="order_items")
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
-    #discount = something
     
     
     @property
     def sub_total(self):
-        #calculate discount here
         return self.menu_item.price * self.quantity
     
     def __str__(self):
         return f"{self.menu_item.name} - {self.order.uuid}"
+    
+    
+class Discount(models.Model):
+    
+    class DiscountType(models.TextChoices):
+        PERCENTAGE = 'percentage', 'Percentage'
+        FIXED_AMOUNT = 'fixed_amount', 'Fixed Amount'
+        FREE_DELIVERY = 'free_delivery', 'Free Delivery'
+       
+    
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="discounts")
+    valid_from = models.DateTimeField()
+    valid_to = models.DateTimeField()
+    discount_type = models.CharField(max_length=25, choices=DiscountType.choices, default=DiscountType.PERCENTAGE)
+    amount = models.IntegerField(default=0)
+    min_order_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        if self.discount_type == self.DiscountType.PERCENTAGE:
+            return f"{self.amount}% off on minimum Rs.{self.min_order_amount} orders - {self.restaurant.name}"
+        elif self.discount_type == self.DiscountType.FIXED_AMOUNT:
+            return f"Rs. {self.amount} off on minimum Rs.{self.min_order_amount} orders - {self.restaurant.name}"
+        elif self.discount_type == self.DiscountType.FREE_DELIVERY:
+            return f"Free Delivery on minimum Rs.{self.min_order_amount} orders - {self.restaurant.name}"
+        
+        return f"{self.discount_type} - {self.restaurant.name}"
+

@@ -95,11 +95,15 @@ class MenuItemSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
         queryset=MenuItemCategory.objects.all(), slug_field='name'
     )
+    popularity = serializers.SerializerMethodField()
+    
+    def get_popularity(self, obj):
+        return obj.popularity
 
     class Meta:
         model = MenuItem
         fields = ['id', 'name', 'description', 'category', 'price',
-                  'image', 'is_available', 'created_at']
+                  'image', 'is_available', 'created_at', 'popularity']
         
 
 class MenuItemCategorySerializer(serializers.ModelSerializer):
@@ -135,16 +139,21 @@ class RestaurantSerializer(serializers.ModelSerializer):
         
     
 class RestaurantListSerializer(serializers.ModelSerializer):
-    is_open = serializers.SerializerMethodField(method_name='is_open')
+    is_open = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
+    popularity = serializers.SerializerMethodField()
     
-    def is_open(self, obj):
+    def get_is_open(self, obj):
         return obj.is_open
     
     def get_category(self, obj):
         return obj.get_category_display()
     
+    def get_popularity(self, obj):
+        return obj.popularity
+    
     class Meta:
         model = Restaurant
         fields = ['uuid', 'name', 'slug', 'image',
-                  'category', 'is_verified', 'is_open', 'opening_time', 'closing_time']
+                  'category', 'is_verified', 'is_maintained', 'is_open', 'opening_time',
+                  'closing_time', 'popularity',]
