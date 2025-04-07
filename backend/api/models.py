@@ -53,7 +53,6 @@ class Restaurant(models.Model):
     opening_time = models.TimeField()
     closing_time = models.TimeField()
     is_verified = models.BooleanField(default=False)
-    is_maintained = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def save(self, *args, **kwargs):

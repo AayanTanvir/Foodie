@@ -133,7 +133,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
         fields = [
             'uuid', 'name', 'owner', 'slug', 'image',
             'address', 'phone', 'restaurant_category', 'is_open', 'opening_time',
-            'closing_time', 'is_verified', 'is_maintained', 'created_at', 'menu_items',
+            'closing_time', 'is_verified', 'created_at', 'menu_items',
             'item_categories',
         ]
         
@@ -155,5 +155,5 @@ class RestaurantListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant
         fields = ['uuid', 'name', 'slug', 'image',
-                  'category', 'is_verified', 'is_maintained', 'is_open', 'opening_time',
+                  'category', 'is_verified', 'is_open', 'opening_time',
                   'closing_time', 'popularity',]
