@@ -62,14 +62,13 @@ class Restaurant(models.Model):
     
     @property
     def is_open(self):
-        if self.is_maintained:
-            local_tz = pytz.timezone('Asia/Karachi')
-            now = timezone.now().astimezone(local_tz).time()
+        local_tz = pytz.timezone('Asia/Karachi')
+        now = timezone.now().astimezone(local_tz).time()
 
-            if self.opening_time < self.closing_time:
-                return self.opening_time <= now < self.closing_time
-            else:
-                return now >= self.opening_time or now < self.closing_time
+        if self.opening_time < self.closing_time:
+            return self.opening_time <= now < self.closing_time
+        else:
+            return now >= self.opening_time or now < self.closing_time
                          
         return False
     

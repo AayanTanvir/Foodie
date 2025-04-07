@@ -11,11 +11,13 @@ const PopularRestaurants = ({ restaurants }) => {
         return null;
     }
 
+    const sortedRestaurants = restaurants.sort((a, b) => b.popularity - a.popularity).slice(0, 10);
+
     return (
       <div className="w-full min-h-full py-10">
         <h1 className="font-roboto text-3xl font-bold mb-6 text-neutral-800">Popular Restaurants</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {restaurants.map((restaurant) => (
+          {sortedRestaurants.map((restaurant) => (
             <div
               key={restaurant.uuid}
               className={`shadow-lg rounded-lg overflow-hidden w-full cursor-pointer transform transition duration-300 ${
