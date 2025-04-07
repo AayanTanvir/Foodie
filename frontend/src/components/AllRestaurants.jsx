@@ -1,28 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "../context/AuthContext";
+
 import { formatTime } from '../utils/Utils';
 
-const TrendingRestaurants = () => {
-    const [restaurants, setRestaurants] = useState(null);
-    const navigate = useNavigate();
-    let { setFailureMessage } = useContext(AuthContext);
+const AllRestaurants = ({ restaurants }) => {
 
-    useEffect(() => {
-        fetch("http://127.0.0.1:8000/restaurants/")
-            .then((response) => response.json())
-            .then((data) => {
-                if (data) {
-                    setRestaurants(data); 
-                } else {
-                    setRestaurants(null);
-                }
-            })
-            .catch((error) => {
-                setFailureMessage(`${error}`);
-                setRestaurants(null);
-            });
-    }, []);
+    const navigate = useNavigate();
 
     if (!restaurants) {
         return null;
@@ -67,4 +50,4 @@ const TrendingRestaurants = () => {
     );
 }
 
-export default TrendingRestaurants
+export default AllRestaurants
