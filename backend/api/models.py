@@ -178,6 +178,25 @@ class OrderItem(models.Model):
         return f"{self.menu_item.name} - {self.order.uuid}"
     
     
+class MenuItemModifier(models.Model):
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, related_name="modifiers")
+    name = models.CharField(max_length=255)
+    is_required = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.name} | {self.order_item}"
+    
+    
+class MenuItemModifierChoice(models.Model):
+    modifier = models.ForeignKey(MenuItemModifier, on_delete=models.CASCADE, related_name="choices")
+    label = models.CharField(max_length=100)
+    price = models.DecimalField(decimal_places=2, max_digits=5)
+    
+    def __str__(self):
+        return f"{self.label} for {self.modifier}"
+    
+    
 class Discount(models.Model):
     
     class DiscountType(models.TextChoices):
