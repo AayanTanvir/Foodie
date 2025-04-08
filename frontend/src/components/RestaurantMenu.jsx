@@ -23,10 +23,6 @@ const RestaurantMenu = ({ restaurant }) => {
         window.addEventListener("resize", checkOverflow);
         return () => window.removeEventListener("resize", checkOverflow);
     }, [restaurant])
-    
-    if (!restaurant) {
-        return <><h1>Loading...</h1></>
-    }
 
     const handleScroll = (direction) => {
         if (scrollRef.current) {

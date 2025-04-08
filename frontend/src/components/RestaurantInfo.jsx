@@ -1,13 +1,8 @@
 import React from 'react'
 import { formatTime } from '../utils/Utils';
 
-
 const RestaurantInfo = ({ restaurant }) => {
-
-    if (!restaurant) {
-        return <><h1>Loading...</h1></>
-    }
-
+    
     const formattedTimings = `${formatTime(restaurant.opening_time)} - ${formatTime(restaurant.closing_time)}`;
 
     return (

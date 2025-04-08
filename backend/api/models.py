@@ -166,6 +166,7 @@ class Order(models.Model):
     
 class OrderItem(models.Model):
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, related_name="order_items")
+    side_items = models.ManyToManyField("SideItem", related_name="order_items")
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     
@@ -178,8 +179,8 @@ class OrderItem(models.Model):
         return f"{self.menu_item.name} - {self.order.uuid}"
     
     
-class OrderItemModifier(models.Model):
-    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE, related_name="modifiers")
+class MenuItemModifier(models.Model):
+    menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, related_name="modifiers")
     name = models.CharField(max_length=255)
     is_required = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -188,8 +189,8 @@ class OrderItemModifier(models.Model):
         return f"{self.name} | {self.order_item}"
     
     
-class OrderItemModifierChoice(models.Model):
-    modifier = models.ForeignKey(OrderItemModifier, on_delete=models.CASCADE, related_name="choices")
+class MenuItemModifierChoice(models.Model):
+    modifier = models.ForeignKey(MenuItemModifier, on_delete=models.CASCADE, related_name="choices")
     label = models.CharField(max_length=100)
     price = models.DecimalField(decimal_places=2, max_digits=5)
     
@@ -197,8 +198,7 @@ class OrderItemModifierChoice(models.Model):
         return f"{self.label} for {self.modifier}"
     
     
-class MenuSideItem(models.Model):
-    menu_items = models.ManyToManyField(MenuItem, related_name="addons")
+class SideItem(models.Model):
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='side_items/', blank=True, null=True, default="menu_items/default.png")
