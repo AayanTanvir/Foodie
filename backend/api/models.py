@@ -197,6 +197,17 @@ class MenuItemModifierChoice(models.Model):
         return f"{self.label} for {self.modifier}"
     
     
+class MenuSideItem(models.Model):
+    menu_items = models.ManyToManyField(MenuItem, related_name="addons")
+    name = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.ImageField(upload_to='side_items/', blank=True, null=True, default="menu_items/default.png")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.name} - {self.price}"
+    
+    
 class Discount(models.Model):
     
     class DiscountType(models.TextChoices):
