@@ -166,14 +166,15 @@ class Order(models.Model):
     
 class OrderItem(models.Model):
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, related_name="order_items")
-    side_items = models.ManyToManyField("SideItem", related_name="order_items")
+    side_items = models.ManyToManyField("SideItem", through="OrderItemSideItem", related_name="order_items")
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    remark = models.CharField(max_length=255, blank=True, null=True, default="")
     quantity = models.IntegerField(default=1)
     
     
     @property
     def sub_total(self):
-        return self.menu_item.price * self.quantity
+        return float((self.menu_item.price * self.quantity) + (self.side_items.aggregate(models.Sum('price'))['price__sum'] or 0))
     
     def __str__(self):
         return f"{self.menu_item.name} - {self.order.uuid}"
@@ -186,7 +187,7 @@ class MenuItemModifier(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return f"{self.name} | {self.order_item}"
+        return f"{self.name} | {self.menu_item}"
     
     
 class MenuItemModifierChoice(models.Model):
@@ -201,11 +202,21 @@ class MenuItemModifierChoice(models.Model):
 class SideItem(models.Model):
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='side_items/', blank=True, null=True, default="menu_items/default.png")
+    image = models.ImageField(upload_to='side_items/', blank=True, null=True, default="side_items/default.jpg")
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return f"{self.name} - {self.price}"
+    
+
+class OrderItemSideItem(models.Model):
+    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
+    side_item = models.ForeignKey(SideItem, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.quantity}x {self.side_item.name} for {self.order_item}"
+    
     
     
 class Discount(models.Model):
