@@ -22,8 +22,9 @@ export const AuthProvider = ({children}) => {
     let loginUser = async (event) => {
         event.preventDefault();
 
-        if (!event.target.password || !event.target.email) {
-            setAuthError("Please fill all fields");
+        
+        if (!event.target.password.value || !event.target.email.value) {
+            setAuthError("Please fill all fields")
         } else {
             let response = await fetch("http://127.0.0.1:8000/token/", {
                 method:"POST",

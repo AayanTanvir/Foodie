@@ -89,7 +89,7 @@ class OTPVerificationSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid OTP")
         
         return super().validate(data)
-    
+   
     
 class MenuItemSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
@@ -112,11 +112,25 @@ class MenuItemCategorySerializer(serializers.ModelSerializer):
         fields = ['name']
     
     
+class RestaurantDiscountSerializer(serializers.ModelSerializer):
+    is_valid = serializers.SerializerMethodField()
+    
+    def get_is_valid(self, obj):
+        return obj.is_valid
+    
+    
+    class Meta:
+        model = Discount
+        fields = ['valid_from', 'valid_to', 'discount_type', 'amount',
+                  'min_order_amount', 'is_valid']
+    
+    
 class RestaurantSerializer(serializers.ModelSerializer):
     menu_items = MenuItemSerializer(many=True, read_only=True)
     is_open = serializers.SerializerMethodField(method_name='is_open')
     restaurant_category = serializers.SerializerMethodField()
     item_categories = serializers.SerializerMethodField()
+    discounts = RestaurantDiscountSerializer(many=True, read_only=True)
     
     def get_restaurant_category(self, obj):
         return obj.get_category_display()
@@ -134,7 +148,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
             'uuid', 'name', 'owner', 'slug', 'image',
             'address', 'phone', 'restaurant_category', 'is_open', 'opening_time',
             'closing_time', 'is_verified', 'created_at', 'menu_items',
-            'item_categories',
+            'item_categories', 'discounts',
         ]
         
     
@@ -157,3 +171,5 @@ class RestaurantListSerializer(serializers.ModelSerializer):
         fields = ['uuid', 'name', 'slug', 'image',
                   'category', 'is_verified', 'is_open', 'opening_time',
                   'closing_time', 'popularity',]
+        
+        

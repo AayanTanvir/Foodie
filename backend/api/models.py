@@ -69,8 +69,7 @@ class Restaurant(models.Model):
             return self.opening_time <= now < self.closing_time
         else:
             return now >= self.opening_time or now < self.closing_time
-                         
-        return False
+
     
     @property
     def popularity(self):
@@ -234,6 +233,14 @@ class Discount(models.Model):
     amount = models.IntegerField(default=0)
     min_order_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    
+    @property
+    def is_valid(self):
+        local_tz = pytz.timezone('Asia/Karachi')
+        now = timezone.now().astimezone(local_tz)
+        
+        return now >= self.valid_from and now <= self.valid_to
     
     def __str__(self):
         if self.discount_type == self.DiscountType.PERCENTAGE:
