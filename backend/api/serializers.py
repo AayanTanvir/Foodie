@@ -121,7 +121,7 @@ class RestaurantDiscountSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Discount
-        fields = ['valid_from', 'valid_to', 'discount_type', 'amount',
+        fields = ['id', 'valid_from', 'valid_to', 'discount_type', 'amount',
                   'min_order_amount', 'is_valid']
     
     
