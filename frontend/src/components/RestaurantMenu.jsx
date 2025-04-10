@@ -9,8 +9,9 @@ const RestaurantMenu = ({ restaurant }) => {
 
     const scrollRef = useRef(null);
     const [isOverflowing, setIsOverflowing] = useState(false);
+    const popularTagElement = <h1 className='text-[0.7rem] text-green-600 py-[5px] px-2 bg-green-300 font-semibold font-roboto rounded-lg absolute bottom-2 left-12'>POPULAR</h1>;
+    let popularItems = restaurant.menu_items.sort((a, b) => b.popularity - a.popularity).slice(0, 5);
 
-    
     useEffect(() => {
         const checkOverflow = () => {
             if (scrollRef.current) {
@@ -33,6 +34,9 @@ const RestaurantMenu = ({ restaurant }) => {
         }
     };
 
+    const isItemPopular = (item) => {
+        return popularItems.some(popularItem => popularItem.id === item.id && popularItem.name === item.name);
+    }
 
     return (
         <div className='relative min-h-[60rem] w-full mt-6 flex flex-col justify-start items-center'>
@@ -49,6 +53,9 @@ const RestaurantMenu = ({ restaurant }) => {
                     </button>
                 )}
                 <div ref={scrollRef} className='flex-1 w-full h-full flex flex-row justify-start items-center overflow-x-auto whitespace-nowrap scrollbar-hide'>
+                    <a href='#popular_items' className='w-fit h-full px-5 py-2 cursor-pointer text-gray-500 hover:text-black'>
+                        <h1 className='text-lg text-nowrap text-center font-roboto'>Popular</h1>
+                    </a> 
                     {restaurant.item_categories.map(category => (
                         <a href={`#${category.name.toLowerCase()}`} className='w-fit h-full px-5 py-2 cursor-pointer text-gray-500 hover:text-black' key={category.name}>
                             <h1 className='text-lg text-nowrap text-center font-roboto'>{category.name}</h1>
@@ -62,12 +69,33 @@ const RestaurantMenu = ({ restaurant }) => {
                 )}
             </div>
             <div className='w-full flex-1 px-32 pt-12'>
+                <div id='popular_items' className='w-full flex flex-col justify-start items-start mb-12 scroll-mt-28'>
+                    <h1 className='text-3xl font-semibold font-poppins text-neutral-800 uppercase mb-4'>POPULAR</h1>
+                    <div className='grid grid-cols-3 auto-rows-auto w-fit h-fit gap-x-6 gap-y-4'>
+                        {popularItems.map((item) => (
+                            <div key={item.id} className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105 relative'>
+                                <div className='w-4/5 h-full text-left overflow-hidden'>
+                                    <h1 className='text-lg font-roboto truncate'>{item.name}</h1>
+                                    <h1 className='text-xl text-nowrap font-roboto font-semibold text-green-500'>${item.price}</h1>
+                                    <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
+                                    <button className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                        <img src={add} alt="add" className='w-full h-full'/>
+                                    </button>
+                                </div>
+                                <div className='w-1/2 h-4/5 flex justify-center items-center'>
+                                    <img src={item.image} alt="Image not found" className='w-full h-full rounded-xl object-cover'/>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
                 {restaurant.item_categories.map((category) => (
                     <div id={category.name.toLowerCase()} key={category.name} className='w-full flex flex-col justify-start items-start mb-12 scroll-mt-28'>
                         <h1 className='text-3xl font-semibold font-poppins text-neutral-800 uppercase mb-4'>{category.name}</h1>
                         <div className='grid grid-cols-3 auto-rows-auto w-fit h-fit gap-x-6 gap-y-4'>
                             {restaurant.menu_items.filter(item => item.category === category.name).map((item) => (
-                                <div key={item.id} className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105'>
+                                <div key={item.id} className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105 relative'>
+                                    {isItemPopular(item) ? popularTagElement : null}
                                     <div className='w-4/5 h-full text-left overflow-hidden'>
                                         <h1 className='text-lg font-roboto truncate'>{item.name}</h1>
                                         <h1 className='text-xl text-nowrap font-roboto font-semibold text-green-500'>${item.price}</h1>
