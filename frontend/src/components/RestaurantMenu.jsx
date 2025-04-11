@@ -41,16 +41,18 @@ const RestaurantMenu = ({ restaurant }) => {
         return popularItems.some(popularItem => popularItem.id === item.id && popularItem.name === item.name);
     }
 
-    const handleSearchBar = (e) => {
-        e.preventDefault()
-        
-        const query = e.target.search.value.trim().toLowerCase();
-        let queryItems = restaurant.menu_items.filter(item => 
-            item.name.toLowerCase().includes(query)
-        );
+    const handleSearching = (searchBar) => {
 
-        if (queryItems.length > 0) {
+        if (searchBar.target.value == "") {
+            setIsSearching(false);
+            setSearchedItems([]);
+        } else {
             setIsSearching(true);
+            
+            let queryItems = restaurant.menu_items.filter(item => 
+                item.name.toLowerCase().includes(searchBar.target.value)
+            );
+
             setSearchedItems(queryItems);
         }
     }
@@ -58,20 +60,13 @@ const RestaurantMenu = ({ restaurant }) => {
     return (
         <div className='relative min-h-[60rem] w-full mt-6 flex flex-col justify-start items-center'>
             <div className='sticky z-10 top-12 w-full h-12 border-b-2 border-gray-200 bg-white flex justify-start items-center flex-row'>
-                <form method='get' action="" className='relative w-[30%]' onSubmit={handleSearchBar}>
+                <form method='get' action="" onSubmit={(e) => {e.preventDefault()}} className='relative w-[30%]'>
                     <div className='w-[80%] h-8 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2'>
-                        {/* {isSearching ? (
-                            <>
-                                <img src={search} alt="" className='absolute top-[20%] left-[4%]'/>
-                                <input type="text" name='search' className='w-full h-full border-2 border-gray-300 rounded-2xl pl-8 focus:shadow-lg outline-gray-400'/>
-                            </>
-                        ) : (
-                            <>
-                                <img src={search} alt="" className='absolute top-[20%] left-[4%]'/>
-                                <input type="text" name='search' className='w-full h-full border-2 border-gray-300 rounded-2xl pl-8 focus:shadow-lg outline-gray-400'/>
-                            </>
-                        )} */}
-                        
+                        <img src={search} alt="" className='absolute top-[20%] left-[4%]'/>
+                        <button type='button' className={`absolute top-[20%] right-[4%] ${!isSearching ? "hidden" : ""}`} onClick={() => {setIsSearching(false); setSearchedItems([]);}}>
+                            <img src={close} alt="X"/>
+                        </button>
+                        <input onChange={handleSearching} type="text" name='search' className='w-full h-full border-2 border-gray-300 rounded-2xl pl-8 focus:shadow-lg outline-gray-400'/>
                     </div>
                 </form>
                 {isOverflowing && ( 
