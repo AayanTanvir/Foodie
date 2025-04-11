@@ -93,25 +93,27 @@ const RestaurantMenu = ({ restaurant }) => {
             <div className='w-full flex-1 px-32 pt-12'>
                 {isSearching ? (
                     searchedItems.length > 0 ? (
-                        searchedItems.map((item) => (
-                            <div
-                            key={item.id}
-                            className='w-[20rem] h-32 px-4 py-2 mb-5 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105 relative'
-                            >
-                                {isItemPopular(item) ? popularTagElement : null}
-                                <div className='w-4/5 h-full text-left overflow-hidden'>
-                                    <h1 className='text-lg font-roboto truncate'>{item.name}</h1>
-                                    <h1 className='text-xl text-nowrap font-roboto font-semibold text-green-500'>${item.price}</h1>
-                                    <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
-                                    <button className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
-                                    <img src={add} alt="add" className='w-full h-full' />
-                                    </button>
+                        <div className='grid grid-cols-3 auto-rows-auto w-fit h-fit gap-x-6 gap-y-4'>
+                            {searchedItems.map((item) => (
+                                <div
+                                key={item.id}
+                                className='w-[20rem] h-32 px-4 py-2 mb-5 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105 relative'
+                                >
+                                    {isItemPopular(item) ? popularTagElement : null}
+                                    <div className='w-4/5 h-full text-left overflow-hidden'>
+                                        <h1 className='text-lg font-roboto truncate'>{item.name}</h1>
+                                        <h1 className='text-xl text-nowrap font-roboto font-semibold text-green-500'>${item.price}</h1>
+                                        <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
+                                        <button className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                        <img src={add} alt="add" className='w-full h-full' />
+                                        </button>
+                                    </div>
+                                    <div className='w-1/2 h-4/5 flex justify-center items-center'>
+                                        <img src={item.image} alt="Image not found" className='w-full h-full rounded-xl object-cover' />
+                                    </div>
                                 </div>
-                                <div className='w-1/2 h-4/5 flex justify-center items-center'>
-                                    <img src={item.image} alt="Image not found" className='w-full h-full rounded-xl object-cover' />
-                                </div>
-                            </div>
-                        ))
+                            ))}
+                        </div>
                     ) : (
                         <div className='w-full h-full flex justify-center items-center'>
                             <h1 className='text-3xl font-semibold font-poppins text-neutral-800'>No results found</h1>
