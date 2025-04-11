@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import Navbar from './components/Navbar';
 import { AuthProvider } from './context/AuthContext';
+import { CartContextProvider } from './context/CartContext';
 import SignupPage from './pages/SignupPage';
 import SuccessMessage from './components/SuccessMessage';
 import FailureMessage from './components/FailureMessage';
@@ -13,33 +14,43 @@ import PasswordResetEmailPage from './pages/PasswordResetEmailPage';
 import OTPForm from './components/OTPForm';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import RestaurantPage from './pages/RestaurantPage';
+import CartWidget from './components/CartWidget';
 
 
 function App() {
     return (
-      <Router>
-        <AuthProvider>
-          <Navbar/>
-          <SuccessMessage/>
-          <FailureMessage/>
-          <NoticeMessage/>
-          <OTPForm/>
-          <Routes>
-            <Route element={<ProtectedRoutes/>}>
-              <Route element={<HomePage/>} path='/' exact/> 
-            </Route>
+        <Router>
+            <AuthProvider>
+                <Navbar/>
 
-            //auth
-            <Route element={<LoginPage/>} path='/login'/>
-            <Route element={<SignupPage/>} path='/signup'/>
-            <Route element={<PasswordResetEmailPage/>} path='/reset-password'/>
-            <Route element={<PasswordResetNewPasswordPage/>} path='/reset-password/new-password'/>
+                //messages
+                <SuccessMessage/>
+                <FailureMessage/>
+                <NoticeMessage/>
+                
+                //widgets
+                <OTPForm/>
+                <CartContextProvider>
+                    <CartWidget/>
+                </CartContextProvider>
 
-            //restaurants
-            <Route element={<RestaurantPage/>} path='/r/:slug/:uuid'/>
-          </Routes>
-        </AuthProvider>
-      </Router>
+               
+                    <Routes>
+                        <Route element={<ProtectedRoutes/>}>
+                        <Route element={<HomePage/>} path='/' exact/> 
+                        </Route>
+
+                        //auth
+                        <Route element={<LoginPage/>} path='/login'/>
+                        <Route element={<SignupPage/>} path='/signup'/>
+                        <Route element={<PasswordResetEmailPage/>} path='/reset-password'/>
+                        <Route element={<PasswordResetNewPasswordPage/>} path='/reset-password/new-password'/>
+
+                        //restaurants
+                            <Route element={<RestaurantPage/>} path='/r/:slug/:uuid'/>
+                    </Routes>
+            </AuthProvider>
+        </Router>
     )
 }
 

@@ -1,9 +1,10 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useContext } from 'react';
 import search from '../assets/search.svg';
 import arrow_right from '../assets/arrow_right.svg';
 import arrow_left from '../assets/arrow_left.svg';
 import add from '../assets/add.svg';
 import close from '../assets/close.svg';
+import CartContext from '../context/CartContext';
 
 
 const RestaurantMenu = ({ restaurant }) => {
