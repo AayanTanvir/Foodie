@@ -14,24 +14,22 @@ import PasswordResetEmailPage from './pages/PasswordResetEmailPage';
 import OTPForm from './components/OTPForm';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import RestaurantPage from './pages/RestaurantPage';
-import CartWidget from './components/CartWidget';
 
 
 function App() {
     return (
         <Router>
             <AuthProvider>
-                <Navbar/>
-
-                //messages
-                <SuccessMessage/>
-                <FailureMessage/>
-                <NoticeMessage/>
-                
-                //widgets
-                <OTPForm/>
                 <CartContextProvider>
-                    <CartWidget/>
+                    <Navbar/>
+
+                    {/* messages */}
+                    <SuccessMessage/>
+                    <FailureMessage/>
+                    <NoticeMessage/>
+                    
+                    {/* widgets */}
+                    <OTPForm/>
                 </CartContextProvider>
 
                

@@ -4,10 +4,10 @@ let CartContext = createContext()
 
 export const CartContextProvider = ({children}) => {
 
-    
+    const [isCartEmpty, setIsCartEmpty] = useState(true);
 
     let context = {
-        cart_name:"cart",
+        isCartEmpty:isCartEmpty,
     }
 
     return (
