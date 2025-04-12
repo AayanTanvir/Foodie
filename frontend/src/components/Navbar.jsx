@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
 import CartContext from '../context/CartContext';
 import cart_svg from '../assets/cart.svg';
@@ -11,23 +11,38 @@ const Navbar = () => {
 
     //verify email: <a className='hover:cursor-pointer transition hover:text-gray-300' onClick={() => verifyEmail("send")}>Verify Email</a>
 
+    const getPageNavLinkClass = (isActive) => {
+        return [
+          'relative transition hover:text-gray-300 cursor-pointer group',
+          'after:content-[""] after:absolute after:bottom-0 after:left-0',
+          'after:h-1 after:bg-gray-300 after:transition-all after:duration-300',
+          isActive ? 'text-gray-300 after:w-full' : 'after:w-0 hover:after:w-full',
+        ].join(' ');
+      };
 
     return (
         <div className='w-full h-12 bg-neutral-800 flex flex-row justify-evenly text-center fixed top-0 left-0 gap-4 text-gray-50 z-50'>
             <div className='font-poppins font-normal flex flex-row justify-center items-center h-full'>
-                <Link to='/' className='transition hover:text-gray-300'>Home</Link>
+                <NavLink to='/' className='transition hover:text-gray-300 cursor-pointer'>Home</NavLink>
             </div>
             <div className='font-poppins font-normal flex flex-row justify-center items-center h-full'>
-                <Link to="/cart" className='relative w-fit h-full p-1 bg-neutral-800 flex justify-center items-center transition hover:bg-neutral-900'>
-                    <img src={cart_svg} alt="Cart" className='w-6'/>
-                    {!isCartEmpty && (
-                        <div className='w-2 h-2 rounded-full bg-red-500 absolute top-[25%] right-[15%] flex justify-center items-center'>
-                            <div className='w-[0.3rem] h-[0.28rem] rounded-full bg-white '></div>
-                        </div>
-                    )}
-                </Link>
-                {user ? <a className='hover:cursor-pointer mx-5 transition hover:text-gray-300' onClick={logoutUser}>Logout</a> : <Link className='hover:cursor-pointer mx-5 transition hover:text-gray-300' to='/login'>Login</Link>}
-                {!user ? <Link className='hover:cursor-pointer mx-5 transition hover:text-gray-300' to='/signup'>Signup</Link> : <></>}
+                {user && (
+                    <NavLink to="/cart" className={({ isActive }) =>
+                         `relative w-fit h-full px-1 bg-neutral-800
+                          flex justify-center items-center transition hover:bg-neutral-900
+                          ${isActive ? 'bg-neutral-900' : ''}`}>
+
+                        <img src={cart_svg} alt="Cart" className='w-6'/>
+                        {!isCartEmpty && (
+                            <div className="w-2 h-2 rounded-full bg-red-500 absolute
+                                top-[25%] right-[15%] flex justify-center items-center
+                                after:content-[''] after:w-[0.3rem] after:h-[0.28rem] after:rounded-full after:bg-white">
+                            </div>
+                        )}
+                    </NavLink>
+                )}
+                {user ? <NavLink className='cursor-pointer mx-5 transition hover:text-gray-300 after:bg-gray-300;w-2' onClick={logoutUser}>Logout</NavLink> : <NavLink className='hover:cursor-pointer mx-5 transition hover:text-gray-300' to='/login'>Login</NavLink>}
+                {!user ? <NavLink className='cursor-pointer mx-5 transition hover:text-gray-300' to='/signup'>Signup</NavLink> : <></>}
             </div>
         </div>
     )

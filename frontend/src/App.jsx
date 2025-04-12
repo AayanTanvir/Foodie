@@ -15,6 +15,7 @@ import OTPForm from './components/OTPForm';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import RestaurantPage from './pages/RestaurantPage';
 import PageNotFound from './pages/PageNotFound';
+import CartPage from './pages/CartPage';
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
 
                             {/* restaurants */}
                             <Route element={<RestaurantPage/>} path='/r/:slug/:uuid'/>
+                            <Route element={<CartPage/>} path='/cart'/>
                         </Route>
 
                         {/* auth */}
