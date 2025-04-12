@@ -18,14 +18,14 @@ const Navbar = () => {
                 <Link to='/' className='transition hover:text-gray-300'>Home</Link>
             </div>
             <div className='font-poppins font-normal flex flex-row justify-center items-center h-full'>
-                <a href="/" className='relative w-fit h-full p-1 bg-neutral-800 flex justify-center items-center transition hover:bg-neutral-900'>
+                <Link to="/cart" className='relative w-fit h-full p-1 bg-neutral-800 flex justify-center items-center transition hover:bg-neutral-900'>
                     <img src={cart_svg} alt="Cart" className='w-6'/>
                     {!isCartEmpty && (
                         <div className='w-2 h-2 rounded-full bg-red-500 absolute top-[25%] right-[15%] flex justify-center items-center'>
                             <div className='w-[0.3rem] h-[0.28rem] rounded-full bg-white '></div>
                         </div>
                     )}
-                </a>
+                </Link>
                 {user ? <a className='hover:cursor-pointer mx-5 transition hover:text-gray-300' onClick={logoutUser}>Logout</a> : <Link className='hover:cursor-pointer mx-5 transition hover:text-gray-300' to='/login'>Login</Link>}
                 {!user ? <Link className='hover:cursor-pointer mx-5 transition hover:text-gray-300' to='/signup'>Signup</Link> : <></>}
             </div>

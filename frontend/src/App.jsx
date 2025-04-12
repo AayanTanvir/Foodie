@@ -14,6 +14,7 @@ import PasswordResetEmailPage from './pages/PasswordResetEmailPage';
 import OTPForm from './components/OTPForm';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import RestaurantPage from './pages/RestaurantPage';
+import PageNotFound from './pages/PageNotFound';
 
 
 function App() {
@@ -35,17 +36,19 @@ function App() {
                
                     <Routes>
                         <Route element={<ProtectedRoutes/>}>
-                        <Route element={<HomePage/>} path='/' exact/> 
+                            <Route element={<HomePage/>} path='/' exact/>
+
+                            {/* restaurants */}
+                            <Route element={<RestaurantPage/>} path='/r/:slug/:uuid'/>
                         </Route>
 
-                        //auth
+                        {/* auth */}
                         <Route element={<LoginPage/>} path='/login'/>
                         <Route element={<SignupPage/>} path='/signup'/>
                         <Route element={<PasswordResetEmailPage/>} path='/reset-password'/>
                         <Route element={<PasswordResetNewPasswordPage/>} path='/reset-password/new-password'/>
 
-                        //restaurants
-                            <Route element={<RestaurantPage/>} path='/r/:slug/:uuid'/>
+                        <Route element={<PageNotFound/>} path='*'/>
                     </Routes>
             </AuthProvider>
         </Router>
