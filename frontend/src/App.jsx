@@ -32,7 +32,6 @@ function App() {
                     
                     {/* widgets */}
                     <OTPForm/>
-                </CartContextProvider>
 
                
                     <Routes>
@@ -52,6 +51,7 @@ function App() {
 
                         <Route element={<PageNotFound/>} path='*'/>
                     </Routes>
+                </CartContextProvider>
             </AuthProvider>
         </Router>
     )

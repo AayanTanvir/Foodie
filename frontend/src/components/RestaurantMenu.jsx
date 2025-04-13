@@ -15,6 +15,7 @@ const RestaurantMenu = ({ restaurant }) => {
     let popularItems = restaurant.menu_items.sort((a, b) => b.popularity - a.popularity).slice(0, 5);
     const [isSearching, setIsSearching] = useState(false);
     const [searchedItems, setSearchedItems] = useState([]);
+    let { addItemToCart } = useContext(CartContext);
 
     useEffect(() => {
         const checkOverflow = () => {
@@ -100,14 +101,21 @@ const RestaurantMenu = ({ restaurant }) => {
                                 key={item.id}
                                 className='w-[20rem] h-32 px-4 py-2 mb-5 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105 relative'
                                 >
-                                    {isItemPopular(item) ? popularTagElement : null}
                                     <div className='w-4/5 h-full text-left overflow-hidden'>
                                         <h1 className='text-lg font-roboto truncate'>{item.name}</h1>
                                         <h1 className='text-xl text-nowrap font-roboto font-semibold text-green-500'>${item.price}</h1>
-                                        <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
-                                        <button className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
-                                        <img src={add} alt="add" className='w-full h-full' />
-                                        </button>
+                                        {item.is_available ? (
+                                            <>
+                                                <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
+                                                <button onClick={() => addItemToCart(item)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                    <img src={add} alt="add" className='w-full h-full' />
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <h1 className='text-md font-roboto font-semibold text-red-700 bg-red-400 w-fit px-2 rounded-lg'>Not Available</h1>
+                                            </>
+                                        )}
                                     </div>
                                     <div className='w-1/2 h-4/5 flex justify-center items-center'>
                                         <img src={item.image} alt="Image not found" className='w-full h-full rounded-xl object-cover' />
@@ -125,27 +133,34 @@ const RestaurantMenu = ({ restaurant }) => {
                         <div id='popular_items' className='w-full flex flex-col justify-start items-start mb-12 scroll-mt-28'>
                             <h1 className='text-3xl font-semibold font-poppins text-neutral-800 uppercase mb-4'>POPULAR</h1>
                             <div className='grid grid-cols-3 auto-rows-auto w-fit h-fit gap-x-6 gap-y-4'>
-                            {popularItems.map((item) => (
-                                <div
-                                key={item.id}
-                                className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105 relative'
-                                >
-                                    <div className='w-4/5 h-full text-left overflow-hidden'>
-                                        <h1 className='text-lg font-roboto truncate'>{item.name}</h1>
-                                        <h1 className='text-xl text-nowrap font-roboto font-semibold text-green-500'>${item.price}</h1>
-                                        <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
-                                        <button className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
-                                        <img src={add} alt="add" className='w-full h-full' />
-                                        </button>
+                                {popularItems.map((item) => (
+                                    <div
+                                    key={item.id}
+                                    className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105 relative'
+                                    >
+                                        <div className='w-4/5 h-full text-left overflow-hidden'>
+                                            <h1 className='text-lg font-roboto truncate'>{item.name}</h1>
+                                            <h1 className='text-xl text-nowrap font-roboto font-semibold text-green-500'>${item.price}</h1>
+                                            {item.is_available ? (
+                                                <>
+                                                    <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
+                                                    <button onClick={() => addItemToCart(item)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                        <img src={add} alt="add" className='w-full h-full' />
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <h1 className='text-md font-roboto font-semibold text-red-700 bg-red-400 w-fit px-2 rounded-lg'>Not Available</h1>
+                                                </>
+                                            )}
+                                        </div>
+                                        <div className='w-1/2 h-4/5 flex justify-center items-center'>
+                                            <img src={item.image} alt="Image not found" className='w-full h-full rounded-xl object-cover' />
+                                        </div>
                                     </div>
-                                    <div className='w-1/2 h-4/5 flex justify-center items-center'>
-                                        <img src={item.image} alt="Image not found" className='w-full h-full rounded-xl object-cover' />
-                                    </div>
-                                </div>
-                            ))}
+                                ))}
                             </div>
                         </div>
-
                         {restaurant.item_categories.map((category) => (
                             <div
                             id={category.name.toLowerCase()}
@@ -160,15 +175,23 @@ const RestaurantMenu = ({ restaurant }) => {
                                         <div
                                         key={item.id}
                                         className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105 relative'
-                                        >
-                                            {isItemPopular(item) ? popularTagElement : null}
+                                        >   
+                                            {item.is_available && isItemPopular(item) ? popularTagElement : null}
                                             <div className='w-4/5 h-full text-left overflow-hidden'>
                                                 <h1 className='text-lg font-roboto truncate'>{item.name}</h1>
                                                 <h1 className='text-xl text-nowrap font-roboto font-semibold text-green-500'>${item.price}</h1>
-                                                <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
-                                                <button className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
-                                                <img src={add} alt="add" className='w-full h-full' />
-                                                </button>
+                                                {item.is_available ? (
+                                                    <>
+                                                        <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
+                                                        <button onClick={() => addItemToCart(item)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                            <img src={add} alt="add" className='w-full h-full' />
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <h1 className='text-md font-roboto font-semibold text-red-700 bg-red-400 w-fit px-2 rounded-lg'>Not Available</h1>
+                                                    </>
+                                                )}
                                             </div>
                                             <div className='w-1/2 h-4/5 flex justify-center items-center'>
                                                 <img src={item.image} alt="Image not found" className='w-full h-full rounded-xl object-cover' />
