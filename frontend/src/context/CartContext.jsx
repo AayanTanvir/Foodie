@@ -13,46 +13,52 @@ export const CartContextProvider = ({children}) => {
     const [isCartEmpty, setIsCartEmpty] = useState(cartItems.length === 0);
 
     const doCartItemAction = (item, action) => {
-    setCartItems(prevItems => {
-        const itemInCart = prevItems.find(cartItem => cartItem.id === item.id);
-
-        switch (action) {
-        case "addItem":
-            if (itemInCart) {
-            // increase quantity
-            return prevItems.map(cartItem =>
-                cartItem.id === item.id
-                ? { ...cartItem, quantity: cartItem.quantity + 1 }
-                : cartItem
-            );
-            } else {
-            // add new item
-            return [...prevItems, { ...item, quantity: 1 }];
+        if (cartItems != []) {
+            if (cartItems.some(cartItem => cartItem.restaurant !== item.restaurant)) {
+                setCartItems([]);
             }
-
-        case "removeItem":
-            return prevItems.filter(cartItem => cartItem.id !== item.id);
-
-        case "addQuantity":
-            return prevItems.map(cartItem =>
-            cartItem.id === item.id
-                ? { ...cartItem, quantity: cartItem.quantity + 1 }
-                : cartItem
-            );
-
-        case "subtractQuantity":
-            return prevItems
-            .map(cartItem =>
-            cartItem.id === item.id
-                ? { ...cartItem, quantity: cartItem.quantity - 1 }
-                : cartItem
-            )
-            .filter(cartItem => cartItem.quantity > 0);
-
-        default:
-            return prevItems;
         }
-    });
+
+        setCartItems(prevItems => {
+            const itemInCart = prevItems.find(cartItem => cartItem.id === item.id);
+
+            switch (action) {
+            case "addItem":
+                if (itemInCart) {
+                // increase quantity
+                return prevItems.map(cartItem =>
+                    cartItem.id === item.id
+                    ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                    : cartItem
+                );
+                } else {
+                // add new item
+                return [...prevItems, { ...item, quantity: 1 }];
+                }
+
+            case "removeItem":
+                return prevItems.filter(cartItem => cartItem.id !== item.id);
+
+            case "addQuantity":
+                return prevItems.map(cartItem =>
+                cartItem.id === item.id
+                    ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                    : cartItem
+                );
+
+            case "subtractQuantity":
+                return prevItems
+                .map(cartItem =>
+                cartItem.id === item.id
+                    ? { ...cartItem, quantity: cartItem.quantity - 1 }
+                    : cartItem
+                )
+                .filter(cartItem => cartItem.quantity > 0);
+
+            default:
+                return prevItems;
+            }
+        });
     };
 
     
