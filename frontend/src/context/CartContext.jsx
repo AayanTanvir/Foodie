@@ -12,8 +12,13 @@ export const CartContextProvider = ({children}) => {
     const [cartItems, setCartItems] = useState(getInitialCartItems);
     const [isCartEmpty, setIsCartEmpty] = useState(cartItems.length === 0);
 
-    const addItemToCart = (item) => {
-        setCartItems(prev => ([...prev, item]));
+    const doCartItemAction = (item, action) => {
+        if (action === "add") {
+            setCartItems(prevItems => ([...prevItems, item]));
+        }
+        else if (action === "remove") {
+            setCartItems(prevItems => prevItems.filter(prevItem => prevItem.id !== item.id))
+        }
     }
     
     useEffect(() => {
@@ -24,7 +29,7 @@ export const CartContextProvider = ({children}) => {
     let context = {
         isCartEmpty:isCartEmpty,
         cartItems:cartItems,
-        addItemToCart:addItemToCart,
+        doCartItemAction:doCartItemAction,
     }
 
     return (
