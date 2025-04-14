@@ -107,7 +107,7 @@ const RestaurantMenu = ({ restaurant }) => {
                                         {item.is_available ? (
                                             <>
                                                 <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
-                                                <button onClick={() => doCartItemAction(item, "add")} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                <button onClick={() => doCartItemAction(item, "addItem")} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
                                                     <img src={add} alt="add" className='w-full h-full' />
                                                 </button>
                                             </>
@@ -144,7 +144,7 @@ const RestaurantMenu = ({ restaurant }) => {
                                             {item.is_available ? (
                                                 <>
                                                     <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
-                                                    <button onClick={() => doCartItemAction(item, "add")} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                    <button onClick={() => doCartItemAction(item, "addItem")} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
                                                         <img src={add} alt="add" className='w-full h-full' />
                                                     </button>
                                                 </>
@@ -183,7 +183,7 @@ const RestaurantMenu = ({ restaurant }) => {
                                                 {item.is_available ? (
                                                     <>
                                                         <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
-                                                        <button onClick={() => doCartItemAction(item, "add")} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                        <button onClick={() => doCartItemAction(item, "addItem")} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
                                                             <img src={add} alt="add" className='w-full h-full' />
                                                         </button>
                                                     </>
