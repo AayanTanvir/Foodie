@@ -11,6 +11,7 @@ export default {
         roboto: ['Roboto', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
         notoserif: ['Noto Serif', 'serif'],
+        hedwig: ['Hedwig Letters Sans', 'sans-serif'],
       }
     },
   },
