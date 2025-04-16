@@ -16,4 +16,5 @@ urlpatterns = [
     
     path('restaurants/', RestaurantListAPIView.as_view()),
     path('restaurants/<uuid>', RestaurantAPIView.as_view()),
+    path('discounts/<restaurant_uuid>', RestaurantDiscountsAPIView.as_view()),
 ]

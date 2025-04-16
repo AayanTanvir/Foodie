@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.cache import cache
+from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -130,3 +131,17 @@ class RestaurantAPIView(generics.RetrieveAPIView):
     serializer_class = RestaurantSerializer
     lookup_field = 'uuid'
     
+
+class RestaurantDiscountsAPIView(generics.GenericAPIView):
+    serializer_class = RestaurantDiscountSerializer
+    
+    def get(self, request, restaurant_uuid):
+        try:
+            restaurant = Restaurant.objects.get(uuid=restaurant_uuid)
+            discounts = restaurant.discounts.all()
+            serializer = self.get_serializer(discounts, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        except Restaurant.DoesNotExist:
+            return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
+        
