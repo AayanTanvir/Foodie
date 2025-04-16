@@ -1,9 +1,22 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 const RestaurantDiscounts = ({ restaurant }) => {
 
-    //return null if there are no discounts
-    if (!restaurant.discounts || restaurant.discounts.length === 0) {
+    const [discounts, setDiscounts] = useState([]);
+
+    useEffect(() => {
+        const getDiscounts = async () => {
+            const response = await fetch(`http://localhost:8000/discounts/${restaurant.uuid}`);
+            const data = await response.json();
+            setDiscounts(data);
+        };
+
+        if (restaurant?.uuid) {
+            getDiscounts();
+        }
+    }, [restaurant?.uuid]);
+
+    if (!discounts || discounts.length === 0) {
         return null;
     }
 
@@ -47,7 +60,7 @@ const RestaurantDiscounts = ({ restaurant }) => {
                 <h1 className='absolute left-48 text-left font-roboto font-semibold text-3xl text-neutral-800'>Discounts</h1>
             </div>
             <div className="h-fit grid grid-cols-4 auto-rows-auto gap-4">
-                {restaurant.discounts.map((discount) => (
+                {discounts.map((discount) => (
                     <div key={discount.id} className="relative w-full h-full border-2 border-gray-200 rounded-xl shadow-md p-2 flex flex-col justify-center items-start transition hover:border-gray-300 hover:bg-neutral-100">
                         {/* <h1 className='text-gray-500 font-roboto text-[0.75rem] absolute right-2 top-2'>Valid till: {</h1> */}
                         {discountInfo(discount)}

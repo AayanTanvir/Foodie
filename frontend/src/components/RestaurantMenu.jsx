@@ -13,7 +13,7 @@ const RestaurantMenu = ({ restaurant }) => {
     const [isOverflowing, setIsOverflowing] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
     const [searchedItems, setSearchedItems] = useState([]);
-    const popularTagElement = <h1 className='text-[0.7rem] text-green-600 py-[5px] px-2 bg-green-300 font-semibold font-roboto rounded-lg absolute bottom-2 left-12'>POPULAR</h1>;
+    const popularTagElement = <h1 className='text-[0.7rem] text-neutral-700 py-[5px] px-2 bg-green-300 font-semibold font-roboto rounded-lg absolute bottom-2 left-12'>POPULAR</h1>;
     let popularItems = restaurant.menu_items.sort((a, b) => b.popularity - a.popularity).slice(0, 5);
     let { doCartItemAction } = useContext(CartContext);
 
@@ -68,7 +68,7 @@ const RestaurantMenu = ({ restaurant }) => {
                         <button type='button' className={`absolute top-[20%] right-[4%] ${!isSearching ? "hidden" : ""}`} onClick={() => {setIsSearching(false); setSearchedItems([]);}}>
                             <img src={close} alt="X"/>
                         </button>
-                        <input onChange={handleSearching} type="text" name='search' className='w-full h-full border-2 border-gray-300 rounded-2xl pl-8 focus:shadow-lg outline-gray-400'/>
+                        <input onChange={handleSearching} type="text" name='search' placeholder='Search items' className='w-full h-full border-2 border-gray-300 rounded-2xl pl-8 focus:shadow-lg outline-gray-400'/>
                     </div>
                 </form>
                 {isOverflowing && ( 
@@ -102,8 +102,8 @@ const RestaurantMenu = ({ restaurant }) => {
                                 className='w-[20rem] h-32 px-4 py-2 mb-5 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105 relative'
                                 >
                                     <div className='w-4/5 h-full text-left overflow-hidden'>
-                                        <h1 className='text-lg font-roboto truncate'>{item.name}</h1>
-                                        <h1 className='text-xl text-nowrap font-roboto font-semibold text-green-500'>${item.price}</h1>
+                                        <h1 className='text-lg font-roboto font-semibold truncate text-neutral-700'>{item.name}</h1>
+                                        <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>${item.price}</h1>
                                         {item.is_available ? (
                                             <>
                                                 <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
@@ -131,7 +131,7 @@ const RestaurantMenu = ({ restaurant }) => {
                 ) : (
                     <>
                         <div id='popular_items' className='w-full flex flex-col justify-start items-start mb-12 scroll-mt-28'>
-                            <h1 className='text-3xl font-semibold font-poppins text-neutral-800 uppercase mb-4'>POPULAR</h1>
+                            <h1 className='text-3xl font-semibold font-hedwig text-neutral-800 uppercase mb-4'>POPULAR</h1>
                             <div className='grid grid-cols-3 auto-rows-auto w-fit h-fit gap-x-6 gap-y-4'>
                                 {popularItems.map((item) => (
                                     <div
@@ -139,8 +139,8 @@ const RestaurantMenu = ({ restaurant }) => {
                                     className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105 relative'
                                     >
                                         <div className='w-4/5 h-full text-left overflow-hidden'>
-                                            <h1 className='text-lg font-roboto truncate'>{item.name}</h1>
-                                            <h1 className='text-xl text-nowrap font-roboto font-semibold text-green-500'>${item.price}</h1>
+                                            <h1 className='text-lg font-roboto font-semibold truncate text-neutral-700'>{item.name}</h1>
+                                            <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>${item.price}</h1>
                                             {item.is_available ? (
                                                 <>
                                                     <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
@@ -178,8 +178,8 @@ const RestaurantMenu = ({ restaurant }) => {
                                         >   
                                             {item.is_available && isItemPopular(item) ? popularTagElement : null}
                                             <div className='w-4/5 h-full text-left overflow-hidden'>
-                                                <h1 className='text-lg font-roboto truncate'>{item.name}</h1>
-                                                <h1 className='text-xl text-nowrap font-roboto font-semibold text-green-500'>${item.price}</h1>
+                                                <h1 className='text-lg font-roboto font-semibold text-neutral-700 truncate'>{item.name}</h1>
+                                                <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>${item.price}</h1>
                                                 {item.is_available ? (
                                                     <>
                                                         <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
