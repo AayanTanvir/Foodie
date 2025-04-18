@@ -7,7 +7,8 @@ import cart_svg from '../assets/cart.svg';
 const Navbar = () => {
 
     let {user, logoutUser, verifyEmail} = useContext(AuthContext);
-    let { isCartEmpty } = useContext(CartContext);
+    let { isCartEmpty, cartItems } = useContext(CartContext);
+    const cartCount = cartItems.length
 
     //verify email: <a className='hover:cursor-pointer transition hover:text-gray-300' onClick={() => verifyEmail("send")}>Verify Email</a>
 
@@ -34,9 +35,11 @@ const Navbar = () => {
 
                         <img src={cart_svg} alt="Cart" className='w-6'/>
                         {!isCartEmpty && (
-                            <div className="w-2 h-2 rounded-full bg-red-500 absolute
-                                top-[25%] right-[15%] flex justify-center items-center
-                                after:content-[''] after:w-[0.3rem] after:h-[0.28rem] after:rounded-full after:bg-white">
+                            <div className="w-[0.9rem] h-[0.9rem] rounded-full bg-white absolute
+                                top-[15%] right-0 flex justify-center items-center">
+                                <div className='text-center rounded-full flex justify-center items-center'>
+                                    <p className='font-poppins text-neutral-700 text-[0.8rem]'>{cartCount}</p>
+                                </div>
                             </div>
                         )}
                     </NavLink>
