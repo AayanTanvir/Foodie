@@ -1,13 +1,13 @@
 import React, { useContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
-import CartContext from '../context/CartContext';
+import { CartContext } from '../context/CartContext';
 import cart_svg from '../assets/cart.svg';
 
 const Navbar = () => {
 
     let {user, logoutUser, verifyEmail} = useContext(AuthContext);
-    let {isCartEmpty} = useContext(CartContext);
+    let { isCartEmpty } = useContext(CartContext);
 
     //verify email: <a className='hover:cursor-pointer transition hover:text-gray-300' onClick={() => verifyEmail("send")}>Verify Email</a>
 

@@ -1,6 +1,6 @@
 import React, {createContext, useEffect, useState} from 'react'
 
-let CartContext = createContext()
+export const CartContext = createContext();
 
 export const CartContextProvider = ({ children }) => {
 
@@ -9,29 +9,52 @@ export const CartContextProvider = ({ children }) => {
         return cartItems ? JSON.parse(cartItems) : [];
     }
 
+    const [discounts, setDiscounts] = useState([]);
     const [cartItems, setCartItems] = useState(getInitialCartItems);
     const [isCartEmpty, setIsCartEmpty] = useState(cartItems.length === 0);
-    const [discounts, setDiscounts] = useState([]);
+    
+    if (!discounts) {
+        return <>{children}</>;
+    }
 
     useEffect(() => {
+        if (!cartItems.length) return;
+        
+        const restaurant_uuid = cartItems[0].restaurant_uuid;
+        
         const getDiscounts = async () => {
-            let restaurant_uuid = cartItems[0].restaurant_uuid
-            const response = await fetch(`http://localhost:8000/discounts/${restaurant_uuid}`);
-            const data = await response.json();
-            setDiscounts(data);
+            try {
+                const response = await fetch(`http://localhost:8000/discounts/${restaurant_uuid}`);
+                const data = await response.json();
+                setDiscounts(data);
+            } catch (err) {
+                console.error("Failed to fetch discounts", err);
+            }
         };
-
+        
         if (restaurant_uuid) {
             getDiscounts();
         }
     }, []);
+    
+    const getSubtotal = () => {
+        let subtotal = 0
+        cartItems.map((cartItem) => {
+            subtotal += cartItem.price * cartItem.quantity;
+        })
+        return parseFloat(subtotal.toFixed(2));
+    }
+    
+    const getApplicableDiscounts = () => {
+        const subtotal = getSubtotal();
+        let applicableDiscounts = discounts.filter((discount) => discount.is_valid && discount.min_order_amount <= subtotal);
 
-    if (!discounts || discounts.length === 0) {
-        return null;
+        return applicableDiscounts;
     }
 
+
     const doCartItemAction = (item, action) => {
-        if (cartItems != []) {
+        if (cartItems.length !== 0) {
             if (cartItems.some(cartItem => cartItem.restaurant !== item.restaurant)) {
                 setCartItems([]);
             }
@@ -79,40 +102,43 @@ export const CartContextProvider = ({ children }) => {
         });
     };
 
-    const getSubtotal = () => {
-        let subtotal = 0
-        cartItems.map((cartItem) => {
-            subtotal += cartItem.price * cartItem.quantity;
-        })
-        return parseFloat(subtotal.toFixed(2));
-    }
-
-    const getApplicableDiscounts = (discounts, subtotal) => {
-        //return only 1 discount if multiple discounts are available or do something else
-        if (!discounts.length) {
-            return null;
-        }
-
-        let applicableDiscounts = [];
-        discounts.forEach((discount) => {
-            const min_amount = parseFloat(discount.min_order_amount);
-            if (min_amount == 0 && discount.is_valid) {
-                applicableDiscounts.push(discount);
-            } else if (min_amount <= subtotal && discount.is_valid) {
-                applicableDiscounts.push(discount);
-            }
-        });
-        return applicableDiscounts
-    }
-
     const getShippingExpense = () => {
-        let shipping = 0
-        const discounts = [...discounts.filter(discount => discount.is_valid && discount.discount_type === "free_delivery")];
-        if (!discounts.length) {
-            shipping = 0;
-        } else {
-            
+        const bestDiscount = getBestDiscount();
+        return bestDiscount?.discount_type === "free_delivery" ? 0 : 150;
+    }
+
+    const getDiscountAmount = (discount) => {
+        //returns the amount saved by the discount
+        if (!discount) return;
+
+        if (discount.discount_type === "free_delivery") {
+            return 100;
         }
+        else if (discount.discount_type === "percentage") {
+            return (discount.amount / 100) * getSubtotal();
+        }
+        else if (discount.discount_type === "fixed_amount") {
+            return discount.amount;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    const getBestDiscount = () => {
+        const applicable = getApplicableDiscounts();
+        
+        let bestDiscount = null;
+        let bestValue = 0;
+
+        applicable.forEach((discount) => {
+            const discountAmount = getDiscountAmount(discount);
+            if (discountAmount > bestValue) {
+                bestDiscount = discount;
+                bestValue = discountAmount;
+            }
+        })
+        return bestDiscount;
     }
     
     useEffect(() => {
@@ -121,11 +147,12 @@ export const CartContextProvider = ({ children }) => {
     }, [cartItems])
 
     let context = {
-        isCartEmpty:isCartEmpty,
-        cartItems:cartItems,
-        doCartItemAction:doCartItemAction,
-        getSubtotal:getSubtotal,
-        getShippingExpense:getShippingExpense,
+        isCartEmpty: isCartEmpty,
+        cartItems: cartItems,
+        doCartItemAction: doCartItemAction,
+        getSubtotal: getSubtotal,
+        getShippingExpense: getShippingExpense,
+        getBestDiscount: getBestDiscount,
     }
 
     return (
@@ -135,5 +162,3 @@ export const CartContextProvider = ({ children }) => {
     )
 
 }
-
-export default CartContext
