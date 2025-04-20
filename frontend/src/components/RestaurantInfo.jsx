@@ -1,10 +1,11 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { formatTime } from '../utils/Utils';
 import star from '../assets/star.svg';
 
 const RestaurantInfo = ({ restaurant }) => {
     
     const formattedTimings = `${formatTime(restaurant.opening_time)} - ${formatTime(restaurant.closing_time)}`;
+    const [moreInfo, setMoreInfo] = useState(false);
 
     return (
         <div className='relative h-fit w-full py-2 pl-48 flex justify-start items-center gap-5'>
@@ -24,7 +25,16 @@ const RestaurantInfo = ({ restaurant }) => {
                         <h1 className='text-sm font-roboto text-center text-neutral-800'>4.1/5</h1>
                     </div>
                     <h1 className='text-sm font-roboto text-center text-neutral-800'>{formattedTimings}</h1>
-                    <button className='px-2 py-1 border-2 border-gray-200 rounded-lg hover:bg-gray-100 text-sm'>More Info</button>
+                    {moreInfo ? (
+                        <>
+                            <h1 className='text-sm font-roboto text-center text-neutral-800'>{restaurant.address}</h1>
+                            <h1 className='text-sm font-roboto text-center text-neutral-800'>{restaurant.phone}</h1>
+                        </>
+                    ) : (
+                        <>
+                            <button onClick={() => {setMoreInfo(!moreInfo)}} className='px-2 py-1 border-2 border-gray-200 rounded-lg hover:bg-gray-100 text-sm'>More Info</button>
+                        </>
+                    )}
                 </div>
             </div>
             <div className='h-fit absolute top-6 right-48'>
