@@ -26,7 +26,7 @@ const OTPForm = () => {
 
     if (showOTPForm == true) {
         return (
-          <div className="absolute z-50 top-0 left-0 w-full h-screen flex items-center justify-center flex-col bg-black/50">
+          <div className="fixed z-50 top-0 left-0 w-full h-screen flex items-center justify-center flex-col bg-black/50">
             <h1 className='mb-6 text-2xl text-zinc-50 font-medium'>Enter Your OTP</h1>
             <form onSubmit={submitVerifyEmailOTP} className="w-1/4 relative bg-slate-100 border-0 rounded flex flex-col items-center p-6 pt-12 gap-4">
               <input type="text" name="otp" placeholder="OTP" className="p-2 border rounded w-full"/>

@@ -12,7 +12,8 @@ export const CartContextProvider = ({ children }) => {
     const [discounts, setDiscounts] = useState([]);
     const [cartItems, setCartItems] = useState(getInitialCartItems);
     const [isCartEmpty, setIsCartEmpty] = useState(cartItems.length === 0);
-    
+    const [showChoicesPopup, setShowChoicesPopup] = useState(false);
+
     if (!discounts) {
         return <>{children}</>;
     }
@@ -140,7 +141,16 @@ export const CartContextProvider = ({ children }) => {
         })
         return bestDiscount;
     }
+
+    const getItemChoices = async(item) => {
+        console.log(item);
+    }
     
+    const activateChoicesPopup = (item) => {
+        setShowChoicesPopup(true);
+        getItemChoices(item);
+    }
+
     useEffect(() => {
         setIsCartEmpty(cartItems.length === 0);
         localStorage.setItem("cartItems", JSON.stringify(cartItems));
@@ -149,10 +159,13 @@ export const CartContextProvider = ({ children }) => {
     let context = {
         isCartEmpty: isCartEmpty,
         cartItems: cartItems,
+        showChoicesPopup: showChoicesPopup,
         doCartItemAction: doCartItemAction,
         getSubtotal: getSubtotal,
         getShippingExpense: getShippingExpense,
         getBestDiscount: getBestDiscount,
+        setShowChoicesPopup: setShowChoicesPopup,
+        activateChoicesPopup: activateChoicesPopup,
     }
 
     return (

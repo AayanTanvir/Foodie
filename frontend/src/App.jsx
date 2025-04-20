@@ -16,6 +16,7 @@ import ProtectedRoutes from './utils/ProtectedRoutes';
 import RestaurantPage from './pages/RestaurantPage';
 import PageNotFound from './pages/PageNotFound';
 import CartPage from './pages/CartPage';
+import ItemChoicesPopup from './components/ItemChoicesPopup';
 
 
 function App() {
@@ -30,9 +31,9 @@ function App() {
                     <FailureMessage/>
                     <NoticeMessage/>
                     
-                    {/* widgets */}
+                    {/* widgets/popups */}
                     <OTPForm/>
-
+                    <ItemChoicesPopup/>
                
                     <Routes>
                         <Route element={<ProtectedRoutes/>}>
