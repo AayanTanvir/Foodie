@@ -43,7 +43,7 @@ const PopularRestaurants = ({ restaurants }) => {
               </div>
               <div className="p-4">
                 <h1 className="text-lg font-semibold">{restaurant.name}</h1>
-                <p className="text-gray-500">{restaurant.is_open ? restaurant.category : `${formatTime(restaurant.opening_time)} - ${formatTime(restaurant.closing_time)}`}</p>
+                <p className="text-gray-500 font-hedwig">{restaurant.is_open ? restaurant.category : `${formatTime(restaurant.opening_time)} - ${formatTime(restaurant.closing_time)}`}</p>
               </div>
             </div>
           ))}

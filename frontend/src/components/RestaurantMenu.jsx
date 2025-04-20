@@ -13,7 +13,7 @@ const RestaurantMenu = ({ restaurant }) => {
     const [isOverflowing, setIsOverflowing] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
     const [searchedItems, setSearchedItems] = useState([]);
-    const popularTagElement = <h1 className='text-[0.7rem] text-neutral-700 py-[5px] px-2 bg-green-300 font-semibold font-roboto rounded-lg absolute bottom-2 left-12'>POPULAR</h1>;
+    const popularTagElement = <h1 className='text-[0.7rem] text-green-700 py-[5px] px-2 bg-green-300 font-semibold font-roboto rounded-lg absolute bottom-2 left-12'>POPULAR</h1>;
     let popularItems = restaurant.menu_items.sort((a, b) => b.popularity - a.popularity).slice(0, 5);
     let { doCartItemAction } = useContext(CartContext);
 
