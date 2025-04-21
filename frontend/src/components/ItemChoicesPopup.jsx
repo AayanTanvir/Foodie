@@ -4,7 +4,6 @@ import { CartContext } from '../context/CartContext'
 const ItemChoicesPopup = () => {
 
     let { showChoicesPopup } = useContext(CartContext);
-    if (!showChoicesPopup) return null;
 
     return (
         <div className='fixed z-50 top-0 left-0 w-full h-screen flex items-center justify-center flex-col bg-black/50'>
