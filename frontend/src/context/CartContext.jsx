@@ -9,34 +9,34 @@ export const CartContextProvider = ({ children }) => {
         return cartItems ? JSON.parse(cartItems) : [];
     }
 
-    const [discounts, setDiscounts] = useState([]);
+    // const [discounts, setDiscounts] = useState([]);
     const [cartItems, setCartItems] = useState(getInitialCartItems);
     const [isCartEmpty, setIsCartEmpty] = useState(cartItems.length === 0);
     const [showChoicesPopup, setShowChoicesPopup] = useState(false);
 
-    if (!discounts) {
-        return <>{children}</>;
-    }
+    // if (!discounts) {
+    //     return <>{children}</>;
+    // }
 
-    useEffect(() => {
-        if (!cartItems.length) return;
+    // useEffect(() => {
+    //     if (!cartItems.length) return;
         
-        const restaurant_uuid = cartItems[0].restaurant_uuid;
+    //     const restaurant_uuid = cartItems[0].restaurant_uuid;
         
-        const getDiscounts = async () => {
-            try {
-                const response = await fetch(`http://localhost:8000/discounts/${restaurant_uuid}`);
-                const data = await response.json();
-                setDiscounts(data);
-            } catch (err) {
-                console.error("Failed to fetch discounts", err);
-            }
-        };
+    //     const getDiscounts = async () => {
+    //         try {
+    //             const response = await fetch(`http://localhost:8000/discounts/${restaurant_uuid}`);
+    //             const data = await response.json();
+    //             setDiscounts(data);
+    //         } catch (err) {
+    //             console.error("Failed to fetch discounts", err);
+    //         }
+    //     };
         
-        if (restaurant_uuid) {
-            getDiscounts();
-        }
-    }, []);
+    //     if (restaurant_uuid) {
+    //         getDiscounts();
+    //     }
+    // }, []);
     
     const getSubtotal = () => {
         let subtotal = 0
@@ -46,12 +46,12 @@ export const CartContextProvider = ({ children }) => {
         return parseFloat(subtotal.toFixed(2));
     }
     
-    const getApplicableDiscounts = () => {
-        const subtotal = getSubtotal();
-        let applicableDiscounts = discounts.filter((discount) => discount.is_valid && discount.min_order_amount <= subtotal);
+    // const getApplicableDiscounts = () => {
+    //     const subtotal = getSubtotal();
+    //     let applicableDiscounts = discounts.filter((discount) => discount.is_valid && discount.min_order_amount <= subtotal);
 
-        return applicableDiscounts;
-    }
+    //     return applicableDiscounts;
+    // }
 
 
     const doCartItemAction = (item, action) => {
@@ -104,43 +104,44 @@ export const CartContextProvider = ({ children }) => {
     };
 
     const getShippingExpense = () => {
-        const bestDiscount = getBestDiscount();
-        return bestDiscount?.discount_type === "free_delivery" ? 0 : 150;
+        // const bestDiscount = getBestDiscount();
+        // return bestDiscount?.discount_type === "free_delivery" ? 0 : 150;
+        return 150;
     }
 
-    const getDiscountAmount = (discount) => {
-        //returns the amount saved by the discount
-        if (!discount) return;
+    // const getDiscountAmount = (discount) => {
+    //     //returns the amount saved by the discount
+    //     if (!discount) return;
 
-        if (discount.discount_type === "free_delivery") {
-            return 100;
-        }
-        else if (discount.discount_type === "percentage") {
-            return (discount.amount / 100) * getSubtotal();
-        }
-        else if (discount.discount_type === "fixed_amount") {
-            return discount.amount;
-        }
-        else {
-            return 0;
-        }
-    }
+    //     if (discount.discount_type === "free_delivery") {
+    //         return 100;
+    //     }
+    //     else if (discount.discount_type === "percentage") {
+    //         return (discount.amount / 100) * getSubtotal();
+    //     }
+    //     else if (discount.discount_type === "fixed_amount") {
+    //         return discount.amount;
+    //     }
+    //     else {
+    //         return 0;
+    //     }
+    // }
 
-    const getBestDiscount = () => {
-        const applicable = getApplicableDiscounts();
+    // const getBestDiscount = () => {
+    //     const applicable = getApplicableDiscounts();
         
-        let bestDiscount = null;
-        let bestValue = 0;
+    //     let bestDiscount = null;
+    //     let bestValue = 0;
 
-        applicable.forEach((discount) => {
-            const discountAmount = getDiscountAmount(discount);
-            if (discountAmount > bestValue) {
-                bestDiscount = discount;
-                bestValue = discountAmount;
-            }
-        })
-        return bestDiscount;
-    }
+    //     applicable.forEach((discount) => {
+    //         const discountAmount = getDiscountAmount(discount);
+    //         if (discountAmount > bestValue) {
+    //             bestDiscount = discount;
+    //             bestValue = discountAmount;
+    //         }
+    //     })
+    //     return bestDiscount;
+    // }
 
     const getItemChoices = async(item) => {
         console.log(item);
@@ -163,7 +164,6 @@ export const CartContextProvider = ({ children }) => {
         doCartItemAction: doCartItemAction,
         getSubtotal: getSubtotal,
         getShippingExpense: getShippingExpense,
-        getBestDiscount: getBestDiscount,
         setShowChoicesPopup: setShowChoicesPopup,
         activateChoicesPopup: activateChoicesPopup,
     }

@@ -90,6 +90,11 @@ class MenuItem(models.Model):
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["name", "restaurant"], name="unique_menu_item_per_restaurant")
+        ]
+    
     @property
     def popularity(self):
         return self.order_items.values("order").distinct().count()
@@ -99,7 +104,7 @@ class MenuItem(models.Model):
     
     
 class MenuItemCategory(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="menu_item_categories")
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -187,8 +192,8 @@ class MenuItemModifier(models.Model):
     
     def __str__(self):
         return f"{self.name} | {self.menu_item}"
-    
-    
+
+
 class MenuItemModifierChoice(models.Model):
     modifier = models.ForeignKey(MenuItemModifier, on_delete=models.CASCADE, related_name="choices")
     label = models.CharField(max_length=100)
@@ -196,9 +201,10 @@ class MenuItemModifierChoice(models.Model):
     
     def __str__(self):
         return f"{self.label} for {self.modifier}"
-    
-    
+
+
 class SideItem(models.Model):
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="side_items")
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='side_items/', blank=True, null=True, default="side_items/default.jpg")
@@ -206,7 +212,7 @@ class SideItem(models.Model):
     
     def __str__(self):
         return f"{self.name} - {self.price}"
-    
+
 
 class OrderItemSideItem(models.Model):
     order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
@@ -215,7 +221,6 @@ class OrderItemSideItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity}x {self.side_item.name} for {self.order_item}"
-    
     
     
 class Discount(models.Model):

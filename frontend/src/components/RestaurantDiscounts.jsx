@@ -6,7 +6,7 @@ const RestaurantDiscounts = ({ restaurant }) => {
 
     useEffect(() => {
         const getDiscounts = async () => {
-            const response = await fetch(`http://localhost:8000/discounts/${restaurant.uuid}`);
+            const response = await fetch(`http://localhost:8000/restaurants/${restaurant.uuid}/discounts`);
             const data = await response.json();
             setDiscounts(data);
         };
