@@ -12,7 +12,6 @@ export const AuthProvider = ({children}) => {
 
     let [authTokens, setAuthTokens] = useState(localStorage.getItem("authTokens") ? JSON.parse(localStorage.getItem("authTokens")) : null);
     let [user, setUser] = useState(localStorage.getItem("authTokens") ? jwtDecode(localStorage.getItem("authTokens")) : null);
-    let [initialLoad, setInitialLoad] = useState(true);
     let [authError, setAuthError] = useState("");
     let [successMessage, setSuccessMessage] = useState("");
     let [failureMessage, setFailureMessage] = useState("");
@@ -131,24 +130,25 @@ export const AuthProvider = ({children}) => {
     
     let updateToken = async () => {
         try {
-            let response = await fetch("http://127.0.0.1:8000/token/refresh/", {
-                method:"POST",
-                headers:{
-                    'Content-Type':'application/json',
-                },
-                body:JSON.stringify({'refresh':authTokens.refresh})
+            const response = await axiosClient.post("/token/refresh/", {
+                refresh: authTokens.refresh
             });
         
-            let data = await response.json()
-            if(response.ok) {
-                setAuthTokens(data);
-                setUser(jwtDecode(data.access));
-                localStorage.setItem("authTokens", JSON.stringify(data))
-            }else {
+            const data = response.data;
+            setAuthTokens(data);
+            setUser(jwtDecode(data.access));
+            localStorage.setItem("authTokens", JSON.stringify(data))
+            
+        } catch (error) {
+            const detail = error.response?.data.detail;
+
+            if (detail?.includes("expired")) {
+                setFailureMessage(detail || "Session Expired. Please login again.");
+                logoutUser();
+            } else {
+                setFailureMessage(detail || "Something went wrong. Please login again.");
                 logoutUser();
             }
-        } catch (error) {
-            logoutUser();
         }
     }
 
@@ -278,15 +278,16 @@ export const AuthProvider = ({children}) => {
     useEffect(() => {
         if (!authTokens) return;
 
-        const FOUR_MIN = 1000 * 60 * 4
         let interval = setInterval(() => {
             updateToken();
-        }, FOUR_MIN);
+        }, 1000 * 60 * 4);
         return () => clearInterval(interval);
 
-    }, [authTokens, initialLoad]);
+    }, [authTokens]);
 
     useEffect(() => {
+        if (authError === "") return;
+
         const timeout = setTimeout(() => setAuthError(""), 3000);
         return () => clearTimeout(timeout);
     }, [authError]);
