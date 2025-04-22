@@ -202,27 +202,30 @@ export const AuthProvider = ({children}) => {
     let verifyEmail = async (mode) => {
         if (showOTPForm == false) setShowOTPForm(true);
         
-        let response = await fetch("http://localhost:8000/email-verification/", {
-            method:"POST",
-            headers:{
-                'Content-Type':'application/json',
-            },
-            body:JSON.stringify({'email':user.email, 'mode':mode}),
-        })
-        let data = await response.json();
-        if (response.status === 200) {
-            setNoticeMessage("Verification email sent! (check spam)");
-            if (mode !== "resend") {
-                const timer_for_resend = 10000;
-                let timeout = setTimeout(() => {
-                    clearTimeout(timeout);
-                    setCanResendOTP(true);
-                }, timer_for_resend);
+        try {
+            const response = await axiosClient.post("/email-verification/", {
+                email: user.email,
+                mode: mode,
+            });
+
+            if (response.status === 200) {
+                setNoticeMessage("Verification email sent! (check spam)");
+        
+                if (mode !== "resend") {
+                    const timer_for_resend = 10000;
+                    let timeout = setTimeout(() => {
+                        clearTimeout(timeout);
+                        setCanResendOTP(true);
+                    }, timer_for_resend);
+                }
+            } else {
+                console.warn("Unexpected response:", response);
+                setNoticeMessage("Unexpected response from server.");
             }
-        } else if (response.status === 500) {
-            setFailureMessage("Something went wrong, please try again.");
-        } else {
-            setNoticeMessage(data?.error);
+        }
+        catch (error) {
+            setNoticeMessage(error.response?.data?.non_field_errors.join(" ") || "Something went wrong, please try again.");
+            navigate('/');
         }
     }
 
@@ -232,21 +235,31 @@ export const AuthProvider = ({children}) => {
         if (!event.target.otp.value) {
             setAuthError("please enter your OTP");
         } else {
-            let response = await fetch("http://localhost:8000/email-verification/verify-otp/", {
-                method:"POST",
-                headers:{
-                    'Content-Type':'application/json',
-                },
-                body:JSON.stringify({'email':user.email, 'otp':event.target.otp.value}),
-            })
-            let data = await response.json();
-            if (response.status === 200) {
-                setSuccessMessage("Email Verified!");
-                setShowOTPForm(false);
-            } else if (response.status === 500) {
-                setFailureMessage("Internal Server Error 500");
-            } else {
-                setFailureMessage(data?.non_field_errors);
+            try {
+                const response = await axiosClient.post("/email-verification/verify-otp/", {
+                    email: user.email,
+                    otp: event.target.otp.value,
+                });
+    
+                const data = response.data;
+                if (response.status === 200) {
+                    setSuccessMessage("Email Verified!");
+                    setShowOTPForm(false);
+                }
+            }
+            catch (error) {
+                const non_field_errors = error.response?.data?.non_field_errors;
+                const status = error.response?.status;
+                const detail = error.response?.data?.detail || "Something went wrong. Check internet connection";
+                
+                if (status === 400) {
+                    setFailureMessage(detail);
+                }
+                if (status === 500) {
+                    setFailureMessage("Internal Server Error (500)");
+                } else {
+                    setFailureMessage(non_field_errors || "Something went wrong. Retry later");
+                }
             }
         }
 
