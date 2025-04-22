@@ -1,6 +1,8 @@
 import { createContext, useState, useEffect } from 'react'
 import { jwtDecode } from "jwt-decode"
 import { useNavigate } from "react-router-dom"
+import axios from 'axios';
+import axiosClient from '../utils/axiosClient';
 
 let AuthContext = createContext()
 
@@ -26,26 +28,30 @@ export const AuthProvider = ({children}) => {
         if (!event.target.password.value || !event.target.email.value) {
             setAuthError("Please fill all fields")
         } else {
-            let response = await fetch("http://127.0.0.1:8000/token/", {
-                method:"POST",
-                headers:{
-                    'Content-Type':'application/json'
-                },
-                body:JSON.stringify({'email':event.target.email.value, 'password':event.target.password.value})
-            })
-
-            let data = await response.json();
-            if(response.status === 200) {
+            try {
+                const response = await axiosClient.post("/token/", {
+                    email: event.target.email.value,
+                    password: event.target.password.value
+                });
+            
+                const data = response.data;
+            
                 setAuthTokens(data);
-                setUser(jwtDecode(data.access));
                 localStorage.setItem("authTokens", JSON.stringify(data));
+                setUser(jwtDecode(data.access));
                 navigate("/");
-            } else if (response.status === 401) {
-                setAuthError("Invalid Credentials");
-            } else if (response.status === 500) {
-                setFailureMessage("Internal Server Error 500");
-            } else {
-                setFailureMessage(data?.detail);
+                
+            } catch (error) {
+                const status = error.response?.status;
+                const detail = error.response?.data?.detail || "Something went wrong. Check internet connection";
+            
+                if (status === 401) {
+                    setAuthError("Invalid Credentials");
+                } else if (status === 500) {
+                    setFailureMessage("Internal Server Error (500)");
+                } else {
+                    setFailureMessage(detail);
+                }
             }
         }
     }
@@ -70,24 +76,54 @@ export const AuthProvider = ({children}) => {
         }
 
         if (validateCredentials(event.target.password1.value, event.target.password2.value, event.target.username.value)) {
-            let response = await fetch("http://127.0.0.1:8000/user/create/", {
-                method:"POST",
-                headers:{
-                    'Content-Type':'application/json'
-                },
-                body:JSON.stringify({'username':event.target.username.value, 'email':event.target.email.value, 'password1':event.target.password1.value, 'password2':event.target.password2.value})
-            })
+            try{
+                const response = await axiosClient.post("/user/create/", {
+                    username: event.target.username.value,
+                    email: event.target.email.value,
+                    password1: event.target.password1.value,
+                    password2: event.target.password2.value
+                });
+    
+                if (response.status === 201) {
+                    try {
+                        const login_response = await axiosClient.post("/token/", {
+                            email: event.target.email.value,
+                            password: event.target.password1.value
+                        });
+                    
+                        setAuthTokens(login_response.data);
+                        localStorage.setItem("authTokens", JSON.stringify(login_response.data));
+                        setUser(jwtDecode(login_response.data.access));
+                        navigate("/");
+                        setSuccessMessage("Account Created Successfully!");
+                    }
+                    catch (error) {
+                        const status = error.response?.status;
+                        const detail = error.response?.data?.detail || "Something went wrong. Check internet connection";
+                    
+                        if (status === 401) {
+                            setFailureError("Invalid Credentials. Please try again");
+                        } else if (status === 500) {
+                            setFailureMessage("Internal Server Error (500)");  
+                        } else {
+                            setFailureMessage(detail);
+                        }
+                        navigate('/login');
+                    }
+                }
+            }
+            catch (error) {
+                const status = error.response?.status;
+                const detail = error.response?.data;
 
-            let data = await response.json();
-
-            if (response.status === 201) {
-                navigate("/login");
-                setSuccessMessage("Account Created!");
-            } else if (response.status === 500) {
-                setFailureMessage("Internal Server Error 500");
-            } else {
-                error = Object.values(data).flat().join(" ");
-                setFailureMessage(error);
+                if (status === 400) {
+                    setAuthError("User with this email already exists");
+                }
+                if (status === 500) {
+                    setFailureMessage("Internal Server Error 500");
+                } else {
+                    setFailureMessage(detail);
+                }
             }
 
         }

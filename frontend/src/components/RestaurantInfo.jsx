@@ -1,6 +1,7 @@
-import React, {useState} from 'react'
-import { formatTime } from '../utils/Utils';
+import React, {useState} from 'react';
 import star from '../assets/star.svg';
+import { formatTime } from '../utils/utils';
+
 
 const RestaurantInfo = ({ restaurant }) => {
     

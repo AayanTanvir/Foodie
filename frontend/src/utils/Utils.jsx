@@ -1,6 +1,5 @@
 import React from 'react'
 
-
 export const formatTime = (timeStr) => {
     const [hours, minutes] = timeStr.split(':');
     const date = new Date();
