@@ -243,26 +243,15 @@ export const AuthProvider = ({children}) => {
                     email: user.email,
                     otp: event.target.otp.value,
                 });
-    
-                const data = response.data;
+
                 if (response.status === 200) {
                     setSuccessMessage("Email Verified!");
                     setShowOTPForm(false);
                 }
             }
             catch (error) {
-                const non_field_errors = error.response?.data?.non_field_errors;
                 const status = error.response?.status;
-                const detail = error.response?.data?.detail || "Something went wrong. Check internet connection";
-                
-                if (status === 400) {
-                    setFailureMessage(detail);
-                }
-                if (status === 500) {
-                    setFailureMessage("Internal Server Error (500)");
-                } else {
-                    setFailureMessage(non_field_errors || "Something went wrong. Retry later");
-                }
+                setFailureMessage("Something went wrong. Retry later", status);
             }
         }
 

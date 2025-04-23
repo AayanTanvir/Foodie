@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
+import axiosClient from '../utils/axiosClient';
 
 
 const PasswordResetNewPasswordPage = () => {
@@ -15,28 +16,27 @@ const PasswordResetNewPasswordPage = () => {
 
         if (!event.target.password1.value || !event.target.password2.value) {
             setAuthError("Please fill all fields");
-    
-        } else if (validateCredentials(event.target.password1.value, event.target.password2.value)) {
-            let response = await fetch('http://localhost:8000/password-reset/confirm/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
+        } 
+        else if (validateCredentials(event.target.password1.value, event.target.password2.value)) {
+            try {
+                const response = await axiosClient.post('/password-reset/confirm/', {
                     token: token,
                     password: event.target.password1.value,
-                })
-            })
-            const data = await response.json();
-            
-            if (response.ok) {
+                });
+
+                if (response.status === 200) {
+                    navigate('/login');
+                    setSuccessMessage("Password reset successfully");
+                } else {
+                    navigate('/login');
+                    setNoticeMessage("Unexpected response from server.", response.status);
+                }
+
+            } catch (error) {
+                const data = error.response?.data;
+                const status = error.response?.status;
+                setFailureMessage(data || "Something went wrong. Try again", status);
                 navigate('/login');
-                setSuccessMessage("Password reset successfully.");
-            } else if (response.status === 500) {
-                setFailureMessage("Internal Server Error 500");
-            } else {
-                setFailureMessage(data?.error);
-                setTimeout(() => navigate('/'), 3000);
             }
         }
             

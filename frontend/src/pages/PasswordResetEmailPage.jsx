@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import AuthContext from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { data, useNavigate } from 'react-router-dom';
+import axiosClient from '../utils/axiosClient';
 
 const PasswordResetEmailPage = () => {
 
@@ -19,21 +20,23 @@ const PasswordResetEmailPage = () => {
         if (!event.target.email.value) {
             setAuthError("Please enter your Email");
         } else {
-            let response = await fetch("http://localhost:8000/password-reset/", {
-                method:"POST",
-                headers:{
-                    'Content-Type':'application/json',
-                },
-                body:JSON.stringify({'email':event.target.email.value}),
-            })
-            let data = await response.json();
-            if (response.status === 200) {
-                navigate("/login");
-                setNoticeMessage("Check your email for a password reset link.");
-            } else if (response.status === 500) {
-                setFailureMessage("Internal Server Error 500");
-            } else {
-                setFailureMessage(data?.email);           
+            try {
+                const response = await axiosClient.post("/password-reset/", {
+                    email:event.target.email.value
+                });
+
+                if (response.status === 200) {
+                    navigate('/login');
+                    setNoticeMessage("Password reset link sent to email. You can close this page");
+                } else {
+                    navigate('/login');
+                    setNoticeMessage("Unexpected response from server.", response.status);
+                }
+            } catch (error) {
+                const data = error.response?.data;
+                const status = error.response?.status;
+                setFailureMessage(data || "Something went wrong. Try again", status);
+                navigate('/login');
             }
         }
 
