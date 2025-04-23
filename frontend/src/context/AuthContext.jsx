@@ -221,10 +221,13 @@ export const AuthProvider = ({children}) => {
             } else {
                 console.warn("Unexpected response:", response);
                 setNoticeMessage("Unexpected response from server.");
+                setShowOTPForm(false);
             }
         }
         catch (error) {
-            setNoticeMessage(error.response?.data?.non_field_errors.join(" ") || "Something went wrong, please try again.");
+            const non_field_errors = error.response?.data?.non_field_errors;
+            setNoticeMessage(non_field_errors || "Something went wrong, please try again.");
+            setShowOTPForm(false);
             navigate('/');
         }
     }
