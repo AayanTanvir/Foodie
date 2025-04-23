@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import axiosClient from '../utils/axiosClient';
 
 const RestaurantDiscounts = ({ restaurant }) => {
 
@@ -6,9 +7,17 @@ const RestaurantDiscounts = ({ restaurant }) => {
 
     useEffect(() => {
         const getDiscounts = async () => {
-            const response = await fetch(`http://localhost:8000/restaurants/${restaurant.uuid}/discounts`);
-            const data = await response.json();
-            setDiscounts(data);
+            try {
+                const response = await axiosClient.get(`/restaurants/${restaurant.uuid}/discounts`);
+                if (response.status === 200) {
+                    setDiscounts(response.data);
+                } else {
+                    alert("Unexpected response", response.status)
+                }
+
+            } catch (error) {
+                alert("An error occurred while fetching discounts.", response.status);
+            }
         };
 
         if (restaurant?.uuid) {

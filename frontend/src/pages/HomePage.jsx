@@ -2,28 +2,41 @@ import React, {useState, useEffect, useContext} from "react";
 import PopularRestaurants from "../components/PopularRestaurants";
 import AllRestaurants from "../components/AllRestaurants";
 import AuthContext from "../context/AuthContext";
+import axiosClient from "../utils/axiosClient";
 
 const HomePage = () => {
 
     let { setFailureMessage } = useContext(AuthContext);
     const [restaurants, setRestaurants] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:8000/restaurants/")
-            .then((response) => response.json())
-            .then((data) => {
-                if (data) {
-                    setRestaurants(data); 
+        const fetchRestaurants = async () => {
+            if (loading === false) setLoading(true);
+            try {
+                const response = await axiosClient.get("/restaurants/");
+    
+                if (response.status === 200) {
+                    setRestaurants(response.data || null);
+                    setLoading(false);
                 } else {
-                    setRestaurants(null);
+                    setFailureMessage("Unexpected response.", response.status);
                 }
-            })
-            .catch((error) => {
-                setFailureMessage(`${error}`);
+    
+            } catch (error) {
+                setFailureMessage("An error occurred.", error.response?.status);
                 setRestaurants(null);
-            });
+                setLoading(false);
+            }
+        };
+    
+        fetchRestaurants();
     }, []);
+    
 
+    if (loading) {
+        return <div className="pt-12 text-center">Loading...</div>;
+    }
 
     return (
       <div className="container mx-auto p-4 min-h-screen">

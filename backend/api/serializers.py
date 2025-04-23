@@ -16,8 +16,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         return token
     
-class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
     
 class CustomUserSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})

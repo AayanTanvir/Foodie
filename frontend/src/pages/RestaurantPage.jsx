@@ -4,6 +4,7 @@ import AuthContext from '../context/AuthContext';
 import RestaurantInfo from '../components/RestaurantInfo';
 import RestaurantMenu from '../components/RestaurantMenu';
 import RestaurantDiscounts from '../components/RestaurantDiscounts';
+import axiosClient from '../utils/axiosClient';
 
 const RestaurantPage = () => {
     const { uuid } = useParams();
@@ -13,18 +14,27 @@ const RestaurantPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        setLoading(true);
-        fetch(`http://127.0.0.1:8000/restaurants/${uuid}`)
-            .then((response) => response.json())
-            .then((data) => {
-                setRestaurant(data || null);
-                setLoading(false);
-            })
-            .catch((error) => {
-                setFailureMessage(`${error}`);
+        const fetchRestaurant = async () => {
+            if (loading === false) setLoading(true);
+            try {
+                const response = await axiosClient.get(`/restaurants/${uuid}`);
+                
+                if (response.status === 200) {
+                    setRestaurant(response.data || null);
+                    setLoading(false);
+                } else {
+                    setFailureMessage("Unexpected response.", response.status);
+                }
+    
+            } catch (error) {
+                setFailureMessage("An error occurred.", error.response?.status);
                 setRestaurant(null);
                 setLoading(false);
-            });
+                navigate('/');
+            }
+        }
+
+        fetchRestaurant();
     }, [uuid]);
 
     useEffect(() => {

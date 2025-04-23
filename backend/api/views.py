@@ -3,7 +3,9 @@ from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import status
 from .models import *
 from .utils import Utils
@@ -11,14 +13,21 @@ from .serializers import *
 import random, jwt
 
 
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+    permission_classes = [AllowAny]
+
+
 class UserCreateApiView(generics.CreateAPIView):
     queryset = CustomUser
     serializer_class = CustomUserSerializer
+    permission_classes = [AllowAny]
     raise_exception = True
 
 
 class PasswordResetAPIView(generics.GenericAPIView):
     serializer_class = PasswordResetSerializer
+    permission_classes = [AllowAny]
     
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -38,6 +47,7 @@ class PasswordResetAPIView(generics.GenericAPIView):
 
 class PasswordResetConfirmAPIView(generics.GenericAPIView):
     serializer_class = PasswordResetConfirmSerializer
+    permission_classes = [AllowAny]
     
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -63,6 +73,7 @@ class PasswordResetConfirmAPIView(generics.GenericAPIView):
 
 class EmailVerificationAPIView(generics.GenericAPIView):
     serializer_class = EmailVerificationSerializer
+    
     
     def post(self, request):
         
