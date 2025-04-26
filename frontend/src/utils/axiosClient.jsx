@@ -2,7 +2,6 @@ import axios from 'axios';
 
 
 const baseURL = 'http://127.0.0.1:8000';
-let authTokens = JSON.parse(localStorage.getItem('authTokens')) || null;
 
 const axiosClient = axios.create({
     baseURL,
@@ -13,6 +12,7 @@ const axiosClient = axios.create({
 
 axiosClient.interceptors.request.use(
     (config) => {
+        let authTokens = JSON.parse(localStorage.getItem('authTokens'));
         if (authTokens) {
             config.headers.Authorization = `Bearer ${authTokens.access}`;
         }

@@ -9,7 +9,6 @@ const HomePage = () => {
     let { setFailureMessage } = useContext(AuthContext);
     const [restaurants, setRestaurants] = useState(null);
     const [loading, setLoading] = useState(true);
-    let { setNoticeMessage } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchRestaurants = async () => {
@@ -22,6 +21,7 @@ const HomePage = () => {
                     setLoading(false);
                 } else {
                     setFailureMessage("Unexpected response.", response.status);
+                    setLoading(false);
                 }
     
             } catch (error) {
