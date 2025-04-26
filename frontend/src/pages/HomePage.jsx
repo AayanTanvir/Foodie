@@ -9,6 +9,7 @@ const HomePage = () => {
     let { setFailureMessage } = useContext(AuthContext);
     const [restaurants, setRestaurants] = useState(null);
     const [loading, setLoading] = useState(true);
+    let { setNoticeMessage } = useContext(AuthContext);
 
     useEffect(() => {
         const fetchRestaurants = async () => {
