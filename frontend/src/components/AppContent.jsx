@@ -19,7 +19,7 @@ import React, { useContext } from 'react';
 import AuthContext from '../context/AuthContext';
 
 const AppContent = () => {
-    const { showChoicesPopup } = useContext(CartContext);
+    const { showChoicesPopup, choicesItem } = useContext(CartContext);
     const { successMessage, noticeMessage, failureMessage, showOTPForm } = useContext(AuthContext);
 
     return (
@@ -31,7 +31,7 @@ const AppContent = () => {
             {noticeMessage !== "" && <NoticeMessage />}
 
             {showOTPForm && <OTPForm />}
-            {showChoicesPopup && <ItemChoicesPopup />}
+            {showChoicesPopup && <ItemChoicesPopup item={choicesItem}/>}
 
             <Routes>
                 <Route element={<ProtectedRoutes/>}>

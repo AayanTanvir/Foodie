@@ -19,6 +19,7 @@ export const CartContextProvider = ({ children }) => {
     const [sideItems, setSideItems] = useState(null);
     const [menuItemModifiers, setMenuItemModifiers] = useState(null);
     const [restaurantUUID, setRestaurantUUID] = useState("");
+    const [choicesItem, setChoicesItem] = useState(null);
     let { setFailureMessage } = useContext(AuthContext);
 
     // if (!discounts) {
@@ -153,6 +154,7 @@ export const CartContextProvider = ({ children }) => {
     
     const activateChoicesPopup = (item) => {
         setShowChoicesPopup(true);
+        setChoicesItem(item);
     }
     
     useEffect(() => {
@@ -210,6 +212,7 @@ export const CartContextProvider = ({ children }) => {
         showChoicesPopup: showChoicesPopup,
         sideItems: sideItems,
         menuItemModifiers: menuItemModifiers,
+        choicesItem: choicesItem,
         setRestaurantUUID: setRestaurantUUID,
         doCartItemAction: doCartItemAction,
         getSubtotal: getSubtotal,
