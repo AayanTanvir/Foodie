@@ -172,13 +172,11 @@ class RestaurantListSerializer(serializers.ModelSerializer):
 
 
 class SideItemSerializer(serializers.ModelSerializer):
-    restaurant = serializers.SlugRelatedField(
-        queryset=Restaurant.objects.all(), slug_field='uuid'
-    )
+    restaurant_uuid = serializers.UUIDField(source="restaurant.uuid", read_only=True)
     
     class Meta:
         model = SideItem
-        fields = ['id', 'restaurant', 'name', 'price', 'image']
+        fields = ['id', 'restaurant_uuid', 'name', 'price', 'image']
 
 
 class MenuItemModifierChoiceSerializer(serializers.ModelSerializer):
@@ -194,5 +192,5 @@ class MenuItemModifierSerializer(serializers.ModelSerializer):
     )
     
     class Meta:
-        models = MenuItemModifier
-        fields = ['id', 'menu_item', 'name', 'is_required', 'created_at']
+        model = MenuItemModifier
+        fields = ['id', 'menu_item', 'name', 'is_required', 'created_at', 'choices']

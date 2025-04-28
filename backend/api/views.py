@@ -5,7 +5,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import status
 from .models import *
 from .utils import Utils
@@ -16,7 +16,6 @@ import random, jwt
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
     permission_classes = [AllowAny]
-
 
 class UserCreateApiView(generics.CreateAPIView):
     queryset = CustomUser
@@ -175,3 +174,18 @@ class RestaurantSideItemAPIView(generics.GenericAPIView):
         
         except Restaurant.DoesNotExist:
             return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        
+class MenuItemModifierAPIView(generics.GenericAPIView):
+    serializer_class = MenuItemModifierSerializer
+    
+    def get(self, request, restaurant_uuid):
+        try:
+            restaurant = Restaurant.objects.get(uuid=restaurant_uuid)
+            modifiers = restaurant.menu_item_modifiers.all()
+            serializer = self.get_serializer(modifiers, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Restaurant.DoesNotExist:
+            return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+    

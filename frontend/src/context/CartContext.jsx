@@ -1,4 +1,7 @@
-import React, {createContext, useEffect, useState} from 'react'
+import React, {createContext, useContext, useEffect, useState} from 'react'
+import axiosClient from '../utils/axiosClient';
+import AuthContext from '../context/AuthContext';
+
 
 export const CartContext = createContext();
 
@@ -13,6 +16,10 @@ export const CartContextProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState(getInitialCartItems);
     const [isCartEmpty, setIsCartEmpty] = useState(cartItems.length === 0);
     const [showChoicesPopup, setShowChoicesPopup] = useState(false);
+    const [sideItems, setSideItems] = useState(null);
+    const [menuItemModifiers, setMenuItemModifiers] = useState(null);
+    const [restaurantUUID, setRestaurantUUID] = useState("");
+    let { setFailureMessage } = useContext(AuthContext);
 
     // if (!discounts) {
     //     return <>{children}</>;
@@ -142,25 +149,68 @@ export const CartContextProvider = ({ children }) => {
     //     })
     //     return bestDiscount;
     // }
-
-    const getItemChoices = async(item) => {
-        console.log(item);
-    }
+    
     
     const activateChoicesPopup = (item) => {
         setShowChoicesPopup(true);
-        getItemChoices(item);
     }
-
+    
     useEffect(() => {
         setIsCartEmpty(cartItems.length === 0);
         localStorage.setItem("cartItems", JSON.stringify(cartItems));
     }, [cartItems])
 
+    useEffect(() => {
+        const getSideItems = async() => {
+            if (restaurantUUID !== "") {
+                try {
+                    const res = await axiosClient.get(`/restaurants/${restaurantUUID}/side_items`);
+                    const data = res.data;
+        
+                    if (res.status === 200) {
+                        setSideItems(data || null);
+                    } else {
+                        console.log("Unexpected response status", res.status);
+                        setSideItems(null);
+                    }
+                } catch (error) {
+                    setFailureMessage("An error occurred while fetching side items", error.response?.status);
+                    setSideItems(null);
+                }
+            }
+
+            return null;
+        }
+
+        const getMenuItemModifiers = async () => {
+            if (restaurantUUID === "") return;
+
+            try {
+                const res = await axiosClient.get(`/restaurants/${restaurantUUID}/menu_item_modifiers`);
+
+                if (res.status === 200) {
+                    setMenuItemModifiers(res.data || null);
+                } else {
+                    console.log("Unexpected response status", res.status);
+                    setMenuItemModifiers(null);
+                }
+            } catch (error) {
+                setFailureMessage("An error occurred while fetching item modifiers", error.response?.status);
+                setMenuItemModifiers(null);
+            }
+        }
+
+        getMenuItemModifiers()
+        getSideItems()
+    }, [restaurantUUID])
+    
     let context = {
         isCartEmpty: isCartEmpty,
         cartItems: cartItems,
         showChoicesPopup: showChoicesPopup,
+        sideItems: sideItems,
+        menuItemModifiers: menuItemModifiers,
+        setRestaurantUUID: setRestaurantUUID,
         doCartItemAction: doCartItemAction,
         getSubtotal: getSubtotal,
         getShippingExpense: getShippingExpense,

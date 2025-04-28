@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import { logout } from './Utils'
 
 const baseURL = 'http://127.0.0.1:8000';
 
@@ -31,7 +31,12 @@ axiosClient.interceptors.response.use(
         if (error.response.status === 401 && !originalRequest._retry && error.response.data?.code === 'token_not_valid') {
             originalRequest._retry = true;
 
-            const tokens = JSON.parse(localStorage.getItem("authTokens"))
+            const tokens = localStorage.getItem("authTokens");
+            if (!tokens) {
+                console.error("No auth tokens found");
+                logout();
+                return Promise.reject(error);
+            }
 
             try {
                 const response = await axios.post(`${baseURL}/token/refresh/`, { refresh: tokens?.refresh });
@@ -44,8 +49,7 @@ axiosClient.interceptors.response.use(
                 
             } catch (refreshError) {
                 console.error("Token refresh failed:", refreshError);
-                localStorage.removeItem("authTokens");
-                window.location.href = "/login";
+                logout();
                 return Promise.reject(refreshError);
             }
                 

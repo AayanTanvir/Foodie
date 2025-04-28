@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path
-from rest_framework_simplejwt.views import (TokenRefreshView)
+from rest_framework_simplejwt.views import TokenRefreshView
 from .views import *
 
 urlpatterns = [
@@ -17,4 +17,5 @@ urlpatterns = [
     path('restaurants/<restaurant_uuid>', RestaurantAPIView.as_view()),
     path('restaurants/<restaurant_uuid>/discounts', RestaurantDiscountsAPIView.as_view()),
     path('restaurants/<restaurant_uuid>/side_items', RestaurantSideItemAPIView.as_view()),
+    path('restaurants/<restaurant_uuid>/menu_item_modifiers', MenuItemModifierAPIView.as_view()),
 ]

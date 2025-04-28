@@ -185,10 +185,17 @@ class OrderItem(models.Model):
     
     
 class MenuItemModifier(models.Model):
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="menu_item_modifiers", null=True, blank=True)
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, related_name="modifiers")
     name = models.CharField(max_length=255)
     is_required = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["name", "menu_item"], name="unique_modifier_per_menu_item"),
+            models.UniqueConstraint(fields=["name", "restaurant"], name="unique_modifier_per_restaurant")
+        ]
     
     def __str__(self):
         return f"{self.name} | {self.menu_item}"
@@ -198,6 +205,11 @@ class MenuItemModifierChoice(models.Model):
     modifier = models.ForeignKey(MenuItemModifier, on_delete=models.CASCADE, related_name="choices")
     label = models.CharField(max_length=100)
     price = models.DecimalField(decimal_places=2, max_digits=5)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["label", "modifier"], name="unique_label_per_modifier")
+        ]
     
     def __str__(self):
         return f"{self.label} for {self.modifier}"
