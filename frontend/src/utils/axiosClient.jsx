@@ -31,13 +31,14 @@ axiosClient.interceptors.response.use(
         if (error.response.status === 401 && !originalRequest._retry && error.response.data?.code === 'token_not_valid') {
             originalRequest._retry = true;
 
-            const tokens = localStorage.getItem("authTokens");
-            if (!tokens) {
+            const tokensStr = localStorage.getItem("authTokens");
+            if (!tokensStr) {
                 console.error("No auth tokens found");
                 logout();
                 return Promise.reject(error);
             }
 
+            const tokens = JSON.parse(tokensStr);
             
             console.log("refresh token being sent:", tokens.refresh);
             console.log("typeof refresh:", typeof tokens.refresh); 

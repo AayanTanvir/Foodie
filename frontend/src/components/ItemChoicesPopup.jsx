@@ -4,10 +4,31 @@ import { CartContext } from '../context/CartContext'
 const ItemChoicesPopup = ({ item }) => {
 
     let { sideItems, menuItemModifiers } = useContext(CartContext);
+    const [selectedChoices, setSelectedChoices] = useState({});
 
     const getModifiers = (item, modifiers) => {
         return modifiers.filter((modifier) => modifier.menu_item === item.name);
-    }
+    };
+
+    const toggleChoice = (modifierId, choiceId, isMultiSelect) => {
+        setSelectedChoices((prev) => {
+          const current = prev[modifierId] || [];
+    
+          if (isMultiSelect) {
+            return {
+                ...prev,
+                [modifierId]: current.includes(choiceId)
+                    ? current.filter((id) => id !== choiceId)
+                    : [...current, choiceId],
+            };
+          } else {
+            return {
+                ...prev,
+                [modifierId]: current[0] === choiceId ? [] : [choiceId],
+            };
+          }
+        });
+      };
 
     const itemModifiers = getModifiers(item, menuItemModifiers);
 
@@ -27,19 +48,29 @@ const ItemChoicesPopup = ({ item }) => {
                                 )}
                             </div>
                             <div className='w-full h-fit flex flex-col justify-start items-center'>
-                                {modifier?.choices?.map((choice) => (
-                                    <div key={choice.id} className='w-[95%] h-8 rounded flex justify-between items-center p-4 mb-2 cursor-pointer transition duration-300 ease-out border-2 border-transparent hover:border-gray-300'>
-                                        <div className='w-fit h-fit flex justify-center items-center gap-2'>
-                                            <div className='w-4 h-4 rounded-full border-2 border-gray-400'></div>
-                                            <h1 className='font-poppins text-md text-neutral-800'>{choice.label}</h1>
+                                {modifier?.choices?.map((choice) => {
+                                    const isSelected = selectedChoices[modifier.id]?.includes(choice.id);
+                                    return (
+                                        <div onClick={() => toggleChoice(modifier.id, choice.id, false)} key={choice.id} className={`w-[95%] h-8 rounded flex 
+                                        justify-between items-center p-4 mb-2 
+                                        cursor-pointer transition duration-300 
+                                        ease-out border-2 border-transparent hover:border-gray-300 ${
+                                            isSelected && "bg-gray-300"
+                                        }`}>
+                                            <div className='w-fit h-fit flex justify-center items-center gap-2'>
+                                                <div className={`w-4 h-4 rounded-full border-2 border-gray-600 p-1 ${
+                                                    isSelected && "bg-gray-400"
+                                                }`}></div>
+                                                <h1 className='font-poppins text-md text-neutral-800'>{choice.label}</h1>
+                                            </div>
+                                            {choice.price != 0 ? (
+                                                <h1 className='font-hedwig text-md text-neutral-800'>+ Rs. {choice.price}</h1>
+                                            ) : (
+                                                <h1 className='font-hedwig text-md text-neutral-800'>Free</h1>
+                                            )}
                                         </div>
-                                        {choice.price != 0 ? (
-                                            <h1 className='font-hedwig text-md text-neutral-800'>+ Rs. {choice.price}</h1>
-                                        ) : (
-                                            <h1 className='font-hedwig text-md text-neutral-800'>Free</h1>
-                                        )}
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     ))}
