@@ -39,9 +39,17 @@ axiosClient.interceptors.response.use(
             }
 
             
+            console.log("refresh token being sent:", tokens.refresh);
+            console.log("typeof refresh:", typeof tokens.refresh); 
             try {
-                console.log("tokens: ", tokens);    
-                const response = await axios.post(`${baseURL}/token/refresh/`, { refresh: tokens?.refresh });
+                const response = await axios.post(`${baseURL}/token/refresh/`,
+                    { refresh: tokens.refresh },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    }
+                );
                 localStorage.setItem("authTokens", JSON.stringify(response.data));
 
                 axiosClient.defaults.headers.Authorization = `Bearer ${response.data.access}`;
