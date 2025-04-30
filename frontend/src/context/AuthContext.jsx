@@ -42,7 +42,7 @@ export const AuthProvider = ({children}) => {
                 
             } catch (error) {
                 const status = error.response?.status;
-                const detail = error.response?.data?.detail || "Something went wrong. Check internet connection";
+                const detail = error.response?.data?.detail || "Unknown server error. Check internet connection";
             
                 if (status === 401) {
                     setAuthError("Invalid Credentials");
