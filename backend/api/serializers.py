@@ -193,4 +193,4 @@ class MenuItemModifierSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = MenuItemModifier
-        fields = ['id', 'menu_item', 'name', 'is_required', 'created_at', 'choices']
+        fields = ['id', 'menu_item', 'name', 'is_required', 'is_multiselect', 'created_at', 'choices']

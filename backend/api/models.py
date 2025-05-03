@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 from .managers import CustomUserManager
 import uuid
@@ -189,13 +190,21 @@ class MenuItemModifier(models.Model):
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, related_name="modifiers")
     name = models.CharField(max_length=255)
     is_required = models.BooleanField(default=True)
+    is_multiselect = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=["name", "menu_item"], name="unique_modifier_per_menu_item"),
-            models.UniqueConstraint(fields=["name", "restaurant"], name="unique_modifier_per_restaurant")
         ]
+    
+    def clean(self):
+        if self.restaurant and self.menu_item.restaurant != self.restaurant:
+            raise ValidationError("MenuItem does not belong to the given Restaurant.")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return f"{self.name} | {self.menu_item}"

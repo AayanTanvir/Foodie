@@ -152,9 +152,14 @@ export const CartContextProvider = ({ children }) => {
     // }
     
     
-    const activateChoicesPopup = (item) => {
-        setShowChoicesPopup(true);
-        setChoicesItem(item);
+    const activateChoicesPopup = (item=null, isActivating) => {
+        if (isActivating) {
+            setChoicesItem(item);
+            setShowChoicesPopup(true);
+        } else {
+            setChoicesItem(null);
+            setShowChoicesPopup(false);
+        }
     }
     
     useEffect(() => {
