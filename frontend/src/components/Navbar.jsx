@@ -46,6 +46,7 @@ const Navbar = () => {
                 )}
                 {user ? <NavLink className='cursor-pointer mx-5 transition hover:text-gray-300 after:bg-gray-300;w-2' onClick={logoutUser}>Logout</NavLink> : <NavLink className='hover:cursor-pointer mx-5 transition hover:text-gray-300' to='/login'>Login</NavLink>}
                 {!user ? <NavLink className='cursor-pointer mx-5 transition hover:text-gray-300' to='/signup'>Signup</NavLink> : <></>}
+                <a className='hover:cursor-pointer transition hover:text-gray-300' onClick={() => verifyEmail("send")}>Verify Email</a>
             </div>
         </div>
     )

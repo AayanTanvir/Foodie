@@ -49,7 +49,7 @@ const PasswordResetEmailPage = () => {
             </div>
             <form onSubmit={submitEmail} className="w-1/4 border-0 rounded flex flex-col items-start gap-4">
                 <input type="email" name="email" placeholder="Email" className="p-2 border w-full outline-none transition-all duration-200 ease-in hover:border-neutral-500 font-hedwig" required/>
-                <input type="submit" className="p-2 mt-2 bg-neutral-800 text-white w-full cursor-pointer"/>
+                <input type="submit" className="p-2 mt-2 bg-neutral-800 text-neutral-100 w-full cursor-pointer"/>
                 <p className='text-red-600'>{authError}</p>
             </form>
         </div>

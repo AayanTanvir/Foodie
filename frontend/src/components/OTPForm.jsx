@@ -12,7 +12,7 @@ const OTPForm = () => {
       setShowOTPForm,
     } = useContext(AuthContext);
 
-    let resendOTP = canResendOTP ? <a onClick={() => {verifyEmail("resend"); setCanResendOTP(null);} } className='mt-6 text-blue-400 hover:cursor-pointer'>Resend OTP</a> : (<p className='mt-6 text-blue-400'>Resend OTP in a minute</p>);
+    let resendOTP = canResendOTP ? <a onClick={() => {verifyEmail("resend"); setCanResendOTP(null);} } className=' text-neutral-100 p-2 bg-neutral-800 hover:cursor-pointer'>Resend OTP</a> : (<p className='mt-6 text-blue-400'>Resend OTP in a minute</p>);
 
 
     if (canResendOTP == null) {
@@ -23,13 +23,12 @@ const OTPForm = () => {
 
     return (
         <div className="fixed z-50 top-0 left-0 w-full h-screen flex items-center justify-center flex-col bg-black/50">
-        <h1 className='mb-6 text-2xl text-neutral-800 font-medium'>Enter Your OTP</h1>
-        <form onSubmit={submitVerifyEmailOTP} className="w-1/4 relative bg-neutral-100 border-0 rounded flex flex-col items-center p-6 pt-12 gap-4">
-            <input type="text" name="otp" placeholder="OTP" className="p-2 border rounded w-full outline-none"/>
-            <input type="submit" className="p-2 bg-neutral-800 text-white w-full cursor-pointer"/>
-            <p className='text-red-600'>{authError}</p>
-            {resendOTP}
-        </form>
+            <form onSubmit={submitVerifyEmailOTP} className="w-1/4 relative border-0 rounded flex flex-col items-start pt-12 gap-4">
+                <input type="text" name="otp" placeholder="OTP" className="p-2 border w-full outline-none transition-all duration-200 ease-in hover:border-neutral-500 font-hedwig" required/>
+                <input type="submit" className="p-2 bg-neutral-800 text-neutral-100 w-full cursor-pointer"/>
+                <p className='text-red-600'>{authError}</p>
+                {resendOTP}
+            </form>
         </div>
     )
 
