@@ -48,52 +48,60 @@ const ItemChoicesPopup = ({ item }) => {
 
     return (
         <div className='fixed z-50 top-0 left-0 w-full h-screen flex items-center justify-center flex-col bg-black/50'>
-            <div className='w-2/4 h-3/4 bg-neutral-100 border-2 border-gray-200 flex flex-col justify-start items-center rounded-lg gap-4 overflow-y-auto pt-2 pb-4 px-5'>
-                <div className='w-full h-[2.5rem] border-b-2 border-gray-200 px-4 flex justify-between items-center'>
-                    <h1 className='text-left font-hedwig text-xl cursor-default text-neutral-800'>Modifications</h1>
-                    <img src={close} alt="Close" className='cursor-pointer' onClick={() => { activateChoicesPopup(null, false) }}/>
-                </div>
-                <div className='w-full h-fit flex flex-col justify-start items-center gap-5'>
-                    {itemModifiers?.map((modifier) => (
-                        <div key={modifier.id} className='w-[95%] h-fit border-2 border-gray-300 p-2 rounded'>
-                            <div className='w-full h-8 px-2 flex justify-between items-center mb-2'>
-                                <h1 className='text-left font-hedwig text-lg text-neutral-800 cursor-default'>{modifier.name}</h1>
-                                {modifier.is_required === false && (
-                                    <h1 className='text-right font-roboto text-md border-2 border-gray-300 cursor-default rounded-full px-2 bg-gray-200 text-gray-500'>Optional</h1>
-                                )}
-                            </div>
-                            <div className='w-full h-fit flex flex-col justify-start items-center'>
-                                {modifier?.choices?.map((choice) => {
-                                    const isSelected = selectedModifiers[modifier.id]?.includes(choice.id);
-                                    return (
-                                        <div onClick={() => toggleModifierChoices(modifier.id, choice.id, modifier.is_multiselect)} key={choice.id} className={`w-[95%] h-8 rounded flex 
-                                        justify-between items-center p-4 mb-2 
-                                        cursor-pointer transition duration-300 
-                                        ease-out border-2 border-transparent hover:border-gray-300 ${
-                                            isSelected && "bg-gray-300"
-                                        }`}>
-                                            <div className='w-fit h-fit flex justify-center items-center gap-2'>
-                                                <div className={`w-4 h-4 ${modifier.is_multiselect ? "rounded-sm" : "rounded-full"} border-2 border-gray-600 p-1 ${
-                                                    isSelected && "bg-gray-400"
-                                                }`}></div>
-                                                <h1 className='font-poppins text-md text-neutral-800'>{choice.label}</h1>
-                                            </div>
-                                            {choice.price != 0 ? (
-                                                <h1 className='font-hedwig text-md text-neutral-800'>+ Rs. {choice.price}</h1>
-                                            ) : (
-                                                <h1 className='font-hedwig text-md text-neutral-800'>Free</h1>
-                                            )}
-                                        </div>
-                                    );
-                                })}
-                            </div>
+            <div className='w-2/4 h-3/4 bg-neutral-100 border-2 border-gray-200 flex flex-col justify-start items-center rounded-lg overflow-y-auto pt-2 pb-4 px-5'>
+                {itemModifiers.length !== 0 ? (
+                    <>
+                        <div className='w-full h-[2.5rem] border-b-2 border-gray-200 px-4 flex justify-between items-center mb-4'>
+                            <h1 className='text-left font-hedwig text-xl cursor-default text-neutral-800'>Modifications</h1>
+                            <img src={close} alt="Close" className='cursor-pointer' onClick={() => { activateChoicesPopup(null, false) }}/>
                         </div>
-                    ))}
-                </div>
-                <div className='w-full h-[2.5rem] border-b-2 border-gray-200 px-4 mt-2'>
+                        <div className='w-full h-fit flex flex-col justify-start items-center gap-5 mb-5'>
+                            {itemModifiers?.map((modifier) => (
+                                <div key={modifier.id} className='w-[95%] h-fit border-2 border-gray-300 p-2 rounded'>
+                                    <div className='w-full h-8 px-2 flex justify-between items-center mb-2'>
+                                        <h1 className='text-left font-hedwig text-lg text-neutral-800 cursor-default'>{modifier.name}</h1>
+                                        {modifier.is_required === false && (
+                                            <h1 className='text-right font-roboto text-md border-2 border-gray-300 cursor-default rounded-full px-2 bg-gray-200 text-gray-500'>Optional</h1>
+                                        )}
+                                    </div>
+                                    <div className='w-full h-fit flex flex-col justify-start items-center'>
+                                        {modifier?.choices?.map((choice) => {
+                                            const isSelected = selectedModifiers[modifier.id]?.includes(choice.id);
+                                            return (
+                                                <div onClick={() => toggleModifierChoices(modifier.id, choice.id, modifier.is_multiselect)} key={choice.id} className={`w-[95%] h-8 rounded flex 
+                                                justify-between items-center p-4 mb-2 
+                                                cursor-pointer transition duration-300 
+                                                ease-out border-2 border-transparent hover:border-gray-300 ${
+                                                    isSelected && "bg-gray-300"
+                                                }`}>
+                                                    <div className='w-fit h-fit flex justify-center items-center gap-2'>
+                                                        <div className={`w-4 h-4 ${modifier.is_multiselect ? "rounded-sm" : "rounded-full"} border-2 border-gray-600 p-1 ${
+                                                            isSelected && "bg-gray-400"
+                                                        }`}></div>
+                                                        <h1 className='font-poppins text-md text-neutral-800'>{choice.label}</h1>
+                                                    </div>
+                                                    {choice.price != 0 ? (
+                                                        <h1 className='font-hedwig text-md text-neutral-800'>+ Rs. {choice.price}</h1>
+                                                    ) : (
+                                                        <h1 className='font-hedwig text-md text-neutral-800'>Free</h1>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
+                ) : (
+                    <div className='w-full h-[2.5rem] flex justify-end items-center px-2'>
+                        <img src={close} alt="Close" className='cursor-pointer' onClick={() => { activateChoicesPopup(null, false) }} />
+                    </div>
+                )}
+                <div className='w-full h-[2.5rem] border-b-2 border-gray-200 px-4'>
                     <h1 className='text-left font-hedwig text-xl cursor-default text-neutral-800'>Side Items</h1>
                 </div>
-                <div className='w-full h-fit grid grid-cols-3 auto-rows-auto gap-4'>
+                <div className='w-full h-fit grid grid-cols-3 auto-rows-auto gap-4 p-4 mb-4'>
                     {sideItems?.map((item) => {
                         const isSelected = selectedSideItems.includes(item.id);
                         return (
@@ -106,14 +114,20 @@ const ItemChoicesPopup = ({ item }) => {
                                         <h1 className='text-left font-poppins text-md text-neutral-800 whitespace-break-spaces text-wrap'>{item.name}</h1>
                                         <h1 className='text-left font-hedwig text-sm text-neutral-800 whitespace-break-spaces text-wrap'>Rs. {item.price}</h1>
                                     </div>
-                                    <div className={`w-4 h-4 rounded-full border-2 border-gray-600 ${isSelected && 'bg-gray-400'}`}>
+                                    <div className={`w-4 h-4 rounded-sm border-2 border-gray-600 ${isSelected && 'bg-gray-400'}`}>
                                     </div>
                                 </div>
                             </div>
                         )
                     })}
                 </div>
-                
+                <div className='w-full h-[2.5rem] border-b-2 border-gray-200 px-4 mb-4'>
+                    <h1 className='text-left font-hedwig text-xl cursor-default text-neutral-800'>Special Instructions</h1>
+                </div>
+                {/* TODO: useRef on this and submit button to go to cart with the desired selections */}
+                <div className='w-full h-fit flex flex-col justify-start items-start px-4'>
+                    <textarea type="text" placeholder='E.g. No peanuts' className='w-3/4 h-[5rem] outline-none border-2 border-neutral-300 p-2 rounded'/>
+                </div>
             </div>
         </div>
     )
