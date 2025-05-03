@@ -128,29 +128,29 @@ export const AuthProvider = ({children}) => {
         }
     }
     
-    let updateToken = async () => {
-        try {
-            const response = await axiosClient.post("/token/refresh/", {
-                refresh: authTokens.refresh
-            });
+    // let updateToken = async () => {
+    //     try {
+    //         const response = await axiosClient.post("/token/refresh/", {
+    //             refresh: authTokens.refresh
+    //         });
         
-            const data = response.data;
-            setAuthTokens(data);
-            setUser(jwtDecode(data.access));
-            localStorage.setItem("authTokens", JSON.stringify(data))
+    //         const data = response.data;
+    //         setAuthTokens(data);
+    //         setUser(jwtDecode(data.access));
+    //         localStorage.setItem("authTokens", JSON.stringify(data))
             
-        } catch (error) {
-            const detail = error.response?.data.detail;
+    //     } catch (error) {
+    //         const detail = error.response?.data.detail;
 
-            if (detail?.includes("expired")) {
-                setFailureMessage(detail || "Session Expired. Please login again.");
-                logoutUser();
-            } else {
-                setFailureMessage(detail || "Something went wrong. Please login again.");
-                logoutUser();
-            }
-        }
-    }
+    //         if (detail?.includes("expired")) {
+    //             setFailureMessage(detail || "Session Expired. Please login again.");
+    //             logoutUser();
+    //         } else {
+    //             setFailureMessage(detail || "Something went wrong. Please login again.");
+    //             logoutUser();
+    //         }
+    //     }
+    // }
 
     let validateCredentials = (password1, password2, username) => {
         let regex_lowercase = /[a-z]/;
@@ -280,15 +280,15 @@ export const AuthProvider = ({children}) => {
         setNoticeMessage: setNoticeMessage,
     };
 
-    useEffect(() => {
-        if (!authTokens) return;
+    // useEffect(() => {
+    //     if (!authTokens) return;
 
-        let interval = setInterval(() => {
-            updateToken();
-        }, 1000 * 60 * 4);
-        return () => clearInterval(interval);
+    //     let interval = setInterval(() => {
+    //         updateToken();
+    //     }, 1000 * 60 * 4);
+    //     return () => clearInterval(interval);
 
-    }, [authTokens]);
+    // }, [authTokens]);
 
     useEffect(() => {
         if (authError === "") return;

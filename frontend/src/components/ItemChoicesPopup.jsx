@@ -6,14 +6,15 @@ import close from '../assets/close.svg';
 const ItemChoicesPopup = ({ item }) => {
 
     let { sideItems, menuItemModifiers, activateChoicesPopup } = useContext(CartContext);
-    const [selectedChoices, setSelectedChoices] = useState({});
+    const [selectedModifiers, setSelectedModifiers] = useState({});
+    const [selectedSideItems, setSelectedSideItems] = useState([]);
 
     const getModifiers = (item, modifiers) => {
         return modifiers.filter((modifier) => modifier.menu_item === item.name);
     };
 
-    const toggleChoice = (modifierId, choiceId, isMultiSelect) => {
-        setSelectedChoices((prev) => {
+    const toggleModifierChoices = (modifierId, choiceId, isMultiSelect) => {
+        setSelectedModifiers((prev) => {
           const current = prev[modifierId] || [];
     
           if (isMultiSelect) {
@@ -30,13 +31,24 @@ const ItemChoicesPopup = ({ item }) => {
             };
           }
         });
-      };
+    };
+
+    const toggleSideItemChoices = (sideItemId) => {
+        setSelectedSideItems((prev) => {
+            const isSelected = selectedSideItems.includes(sideItemId);
+            if (isSelected) {
+                return selectedSideItems.filter((itemID) => itemID !== sideItemId);
+            } else {
+                return [...prev, sideItemId];
+            }
+        })
+    }
 
     const itemModifiers = getModifiers(item, menuItemModifiers);
 
     return (
         <div className='fixed z-50 top-0 left-0 w-full h-screen flex items-center justify-center flex-col bg-black/50'>
-            <div className='w-2/4 h-3/4 bg-slate-100 border-2 border-gray-200 flex flex-col justify-start items-center rounded-lg gap-4 overflow-y-auto pt-2 pb-4'>
+            <div className='w-2/4 h-3/4 bg-neutral-100 border-2 border-gray-200 flex flex-col justify-start items-center rounded-lg gap-4 overflow-y-auto pt-2 pb-4 px-5'>
                 <div className='w-full h-[2.5rem] border-b-2 border-gray-200 px-4 flex justify-between items-center'>
                     <h1 className='text-left font-hedwig text-xl cursor-default text-neutral-800'>Modifications</h1>
                     <img src={close} alt="Close" className='cursor-pointer' onClick={() => { activateChoicesPopup(null, false) }}/>
@@ -52,9 +64,9 @@ const ItemChoicesPopup = ({ item }) => {
                             </div>
                             <div className='w-full h-fit flex flex-col justify-start items-center'>
                                 {modifier?.choices?.map((choice) => {
-                                    const isSelected = selectedChoices[modifier.id]?.includes(choice.id);
+                                    const isSelected = selectedModifiers[modifier.id]?.includes(choice.id);
                                     return (
-                                        <div onClick={() => toggleChoice(modifier.id, choice.id, modifier.is_multiselect)} key={choice.id} className={`w-[95%] h-8 rounded flex 
+                                        <div onClick={() => toggleModifierChoices(modifier.id, choice.id, modifier.is_multiselect)} key={choice.id} className={`w-[95%] h-8 rounded flex 
                                         justify-between items-center p-4 mb-2 
                                         cursor-pointer transition duration-300 
                                         ease-out border-2 border-transparent hover:border-gray-300 ${
@@ -63,7 +75,7 @@ const ItemChoicesPopup = ({ item }) => {
                                             <div className='w-fit h-fit flex justify-center items-center gap-2'>
                                                 <div className={`w-4 h-4 ${modifier.is_multiselect ? "rounded-sm" : "rounded-full"} border-2 border-gray-600 p-1 ${
                                                     isSelected && "bg-gray-400"
-                                                }`}></div>              
+                                                }`}></div>
                                                 <h1 className='font-poppins text-md text-neutral-800'>{choice.label}</h1>
                                             </div>
                                             {choice.price != 0 ? (
@@ -78,6 +90,30 @@ const ItemChoicesPopup = ({ item }) => {
                         </div>
                     ))}
                 </div>
+                <div className='w-full h-[2.5rem] border-b-2 border-gray-200 px-4 mt-2'>
+                    <h1 className='text-left font-hedwig text-xl cursor-default text-neutral-800'>Side Items</h1>
+                </div>
+                <div className='w-full h-fit grid grid-cols-3 auto-rows-auto gap-4'>
+                    {sideItems?.map((item) => {
+                        const isSelected = selectedSideItems.includes(item.id);
+                        return (
+                            <div key={item.id} onClick={() => { toggleSideItemChoices(item.id) }} className='w-full h-fit border-2 border-gray-300 rounded flex justify-start items-center cursor-pointer transition duration-200 hover:scale-[102%]'>
+                                <div className='w-1/3 h-[5rem] flex justify-center items-center cursor-pointer'>
+                                    <img src={item.image} alt="Image not found" className='object-cover w-full h-full'/>
+                                </div>
+                                <div className='h-[5rem] flex-1 cursor-pointer flex justify-between items-center px-2'>
+                                    <div className='flex flex-col justify-start items-start'>
+                                        <h1 className='text-left font-poppins text-md text-neutral-800 whitespace-break-spaces text-wrap'>{item.name}</h1>
+                                        <h1 className='text-left font-hedwig text-sm text-neutral-800 whitespace-break-spaces text-wrap'>Rs. {item.price}</h1>
+                                    </div>
+                                    <div className={`w-4 h-4 rounded-full border-2 border-gray-600 ${isSelected && 'bg-gray-400'}`}>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+                
             </div>
         </div>
     )

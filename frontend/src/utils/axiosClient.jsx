@@ -39,9 +39,6 @@ axiosClient.interceptors.response.use(
             }
 
             const tokens = JSON.parse(tokensStr);
-            
-            console.log("refresh token being sent:", tokens.refresh);
-            console.log("typeof refresh:", typeof tokens.refresh); 
             try {
                 const response = await axios.post(`${baseURL}/token/refresh/`,
                     { refresh: tokens.refresh },
