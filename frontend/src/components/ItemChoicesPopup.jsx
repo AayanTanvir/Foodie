@@ -1,57 +1,65 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import { CartContext } from '../context/CartContext'
 import close from '../assets/close.svg';
-
+import { objArrayIncludes } from '../utils/Utils';
 
 const ItemChoicesPopup = ({ item }) => {
 
-    let { sideItems, menuItemModifiers, activateChoicesPopup } = useContext(CartContext);
+    let { sideItems, menuItemModifiers, activateChoicesPopup, doCartItemAction } = useContext(CartContext);
     const [selectedModifiers, setSelectedModifiers] = useState({});
     const [selectedSideItems, setSelectedSideItems] = useState([]);
+    const specialInstructionsRef = useRef(null);
+
+    // console.log(objArrayIncludes([{num: 2, price: 2}, {num: 3, price: 3}, {num: 4, price: 4}], {num: 4, price: 4}))
 
     const getModifiers = (item, modifiers) => {
         return modifiers.filter((modifier) => modifier.menu_item === item.name);
     };
 
-    const toggleModifierChoices = (modifierId, choiceId, isMultiSelect) => {
+    const toggleModifierChoices = (modifierId, choiceId, choicePrice, isMultiSelect) => {
+        const currentChoices = selectedModifiers[modifierId] || [];
         setSelectedModifiers((prev) => {
-          const current = prev[modifierId] || [];
-    
-          if (isMultiSelect) {
-            return {
-                ...prev,
-                [modifierId]: current.includes(choiceId)
-                    ? current.filter((id) => id !== choiceId)
-                    : [...current, choiceId],
-            };
-          } else {
-            return {
-                ...prev,
-                [modifierId]: current[0] === choiceId ? [] : [choiceId],
-            };
-          }
+            if (isMultiSelect) {
+                return {
+                    ...prev,
+                    [modifierId]: objArrayIncludes(currentChoices, {id: choiceId, price: choicePrice})
+                        ? currentChoices.filter(currentChoice => currentChoice.id !== choiceId)
+                        : [...currentChoices, { id: choiceId, price: choicePrice }],
+                };
+            } else {
+                return {
+                    ...prev,
+                    [modifierId]: currentChoices[0]?.id === choiceId ? [] : [{ id: choiceId, price: choicePrice }],
+                };
+            }
         });
     };
 
-    const toggleSideItemChoices = (sideItemId) => {
+    const toggleSideItemChoices = (sideItem) => {
         setSelectedSideItems((prev) => {
-            const isSelected = selectedSideItems.includes(sideItemId);
+            const isSelected = objArrayIncludes(selectedSideItems, sideItem);
             if (isSelected) {
-                return selectedSideItems.filter((itemID) => itemID !== sideItemId);
+                return selectedSideItems.filter((selectedSideItem) => selectedSideItem.id !== sideItem.id);
             } else {
-                return [...prev, sideItemId];
+                return [...prev, sideItem];
             }
         })
     }
 
     const itemModifiers = getModifiers(item, menuItemModifiers);
 
+    const handleSubmit = () => {
+        const specialInstructions = specialInstructionsRef.current.value || "";
+        doCartItemAction(item, "addItem", specialInstructions, selectedModifiers, selectedSideItems);
+        activateChoicesPopup(false);
+    }
+
     return (
         <div className='fixed z-50 top-0 left-0 w-full h-screen flex items-center justify-center flex-col bg-black/50'>
             <div className='w-2/4 h-3/4 bg-neutral-100 border-2 border-gray-200 flex flex-col justify-start items-center rounded-lg overflow-y-auto pt-2 pb-4 px-5'>
                 {itemModifiers.length !== 0 ? (
                     <>
-                        <div className='w-full h-[2.5rem] border-b-2 border-gray-200 px-4 flex justify-between items-center mb-4'>
+                        <div className='w-full h-[2.5rem] px-4 flex justify-between items-center mb-4'>
                             <h1 className='text-left font-hedwig text-xl cursor-default text-neutral-800'>Modifications</h1>
                             <img src={close} alt="Close" className='cursor-pointer' onClick={() => { activateChoicesPopup(null, false) }}/>
                         </div>
@@ -66,9 +74,9 @@ const ItemChoicesPopup = ({ item }) => {
                                     </div>
                                     <div className='w-full h-fit flex flex-col justify-start items-center'>
                                         {modifier?.choices?.map((choice) => {
-                                            const isSelected = selectedModifiers[modifier.id]?.includes(choice.id);
+                                            const isSelected = objArrayIncludes(selectedModifiers[modifier.id], choice);
                                             return (
-                                                <div onClick={() => toggleModifierChoices(modifier.id, choice.id, modifier.is_multiselect)} key={choice.id} className={`w-[95%] h-8 rounded flex 
+                                                <div onClick={() => toggleModifierChoices(modifier.id, choice.id, choice.price, modifier.is_multiselect)} key={choice.id} className={`w-[95%] h-8 rounded flex 
                                                 justify-between items-center p-4 mb-2 
                                                 cursor-pointer transition duration-300 
                                                 ease-out border-2 border-transparent hover:border-gray-300 ${
@@ -98,14 +106,15 @@ const ItemChoicesPopup = ({ item }) => {
                         <img src={close} alt="Close" className='cursor-pointer' onClick={() => { activateChoicesPopup(null, false) }} />
                     </div>
                 )}
-                <div className='w-full h-[2.5rem] border-b-2 border-gray-200 px-4'>
+                <div className='w-full h-[2.5rem] px-4'>
                     <h1 className='text-left font-hedwig text-xl cursor-default text-neutral-800'>Side Items</h1>
                 </div>
                 <div className='w-full h-fit grid grid-cols-3 auto-rows-auto gap-4 p-4 mb-4'>
                     {sideItems?.map((item) => {
-                        const isSelected = selectedSideItems.includes(item.id);
+                        const itemObj = {id: item.id, price: item.price};
+                        const isSelected = objArrayIncludes(selectedSideItems, itemObj);
                         return (
-                            <div key={item.id} onClick={() => { toggleSideItemChoices(item.id) }} className='w-full h-fit border-2 border-gray-300 rounded flex justify-start items-center cursor-pointer transition duration-200 hover:scale-[102%]'>
+                            <div key={item.id} onClick={() => { toggleSideItemChoices({id: item.id, price: item.price}) }} className='w-full h-fit border-2 border-gray-300 rounded flex justify-start items-center cursor-pointer transition duration-200 hover:scale-[102%]'>
                                 <div className='w-1/3 h-[5rem] flex justify-center items-center cursor-pointer'>
                                     <img src={item.image} alt="Image not found" className='object-cover w-full h-full'/>
                                 </div>
@@ -121,12 +130,18 @@ const ItemChoicesPopup = ({ item }) => {
                         )
                     })}
                 </div>
-                <div className='w-full h-[2.5rem] border-b-2 border-gray-200 px-4 mb-4'>
+                <div className='w-full h-[2.5rem] px-4 mb-4 flex justify-between items-center'>
                     <h1 className='text-left font-hedwig text-xl cursor-default text-neutral-800'>Special Instructions</h1>
+                    <h1 className='w-fit h-fit text-right font-roboto text-md border-2 border-gray-300 cursor-default rounded-full px-2 bg-gray-200 text-gray-500'>Optional</h1>
                 </div>
                 {/* TODO: useRef on this and submit button to go to cart with the desired selections */}
                 <div className='w-full h-fit flex flex-col justify-start items-start px-4'>
-                    <textarea type="text" placeholder='E.g. No peanuts' className='w-3/4 h-[5rem] outline-none border-2 border-neutral-300 p-2 rounded'/>
+                    <textarea ref={specialInstructionsRef} type="text" placeholder='E.g. No peanuts' className='w-3/4 h-[5rem] outline-none border-2 border-neutral-300 p-2 rounded'/>
+                </div>
+                <div className='w-full h-fit flex justify-end items-center p-2'>
+                    <button onClick={() => {handleSubmit()}} className='w-28 h-10 rounded bg-neutral-800 text-neutral-100 font-poppins text-nowrap whitespace-nowrap'>
+                        Add to Cart
+                    </button>
                 </div>
             </div>
         </div>

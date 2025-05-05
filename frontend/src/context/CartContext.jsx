@@ -62,7 +62,7 @@ export const CartContextProvider = ({ children }) => {
     // }
 
 
-    const doCartItemAction = (item, action) => {
+    const doCartItemAction = (item, action, specialInstructions="", modifiers={}, sideItems=[]) => {
         if (cartItems.length !== 0) {
             if (cartItems.some(cartItem => cartItem.restaurant !== item.restaurant)) {
                 setCartItems([]);
@@ -83,7 +83,7 @@ export const CartContextProvider = ({ children }) => {
                 );
                 } else {
                 // add new item
-                return [...prevItems, { ...item, quantity: 1 }];
+                return [...prevItems, { ...item, quantity: 1, specialInstructions: specialInstructions, modifiers: modifiers, sideItems: sideItems }];
                 }
 
             case "removeItem":

@@ -66,7 +66,7 @@ const RestaurantMenu = ({ restaurant }) => {
                 <form method='get' action="" onSubmit={(e) => {e.preventDefault()}} className='relative w-[30%]'>
                     <div className='w-[80%] h-8 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2'>
                         <img src={search} alt="" className='absolute top-[20%] left-[4%]'/>
-                        <button type='button' className={`absolute top-[20%] right-[4%] ${!isSearching ? "hidden" : ""}`} onClick={() => {setIsSearching(false); setSearchedItems([]);}}>
+                        <button type='button' className={`absolute top-[20%] right-[4%] ${!isSearching ? "hidden" : ""}`} onClick={(event) => {setIsSearching(false); setSearchedItems([]);}}>
                             <img src={close} alt="X"/>
                         </button>
                         <input onChange={handleSearching} type="text" name='search' placeholder='Search items' className='w-full h-full border-2 border-gray-300 rounded-2xl pl-8 focus:shadow-lg outline-gray-400'/>
@@ -100,11 +100,11 @@ const RestaurantMenu = ({ restaurant }) => {
                             {searchedItems.map((item) => (
                                 <div
                                 key={item.id}
-                                className='w-[20rem] h-32 px-4 py-2 mb-5 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105 relative'
+                                className='w-[20rem] h-32 px-4 py-2 mb-5 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-[101%] relative'
                                 >
                                     <div className='w-4/5 h-full text-left overflow-hidden'>
                                         <h1 className='text-lg font-roboto font-semibold truncate text-neutral-700'>{item.name}</h1>
-                                        <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>${item.price}</h1>
+                                        <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>Rs. {item.price}</h1>
                                         {item.is_available ? (
                                             <>
                                                 <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
@@ -137,11 +137,11 @@ const RestaurantMenu = ({ restaurant }) => {
                                 {popularItems.map((item) => (
                                     <div
                                     key={item.id}
-                                    className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105 relative'
+                                    className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-[101%] relative'
                                     >
                                         <div className='w-4/5 h-full text-left overflow-hidden'>
                                             <h1 className='text-lg font-roboto font-semibold truncate text-neutral-700'>{item.name}</h1>
-                                            <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>${item.price}</h1>
+                                            <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>Rs. {item.price}</h1>
                                             {item.is_available ? (
                                                 <>
                                                     <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
@@ -175,12 +175,12 @@ const RestaurantMenu = ({ restaurant }) => {
                                     .map((item) => (
                                         <div
                                         key={item.id}
-                                        className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-105 relative'
+                                        className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-[101%] relative'
                                         >   
                                             {item.is_available && isItemPopular(item) ? popularTagElement : null}
                                             <div className='w-4/5 h-full text-left overflow-hidden'>
                                                 <h1 className='text-lg font-roboto font-semibold text-neutral-700 truncate'>{item.name}</h1>
-                                                <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>${item.price}</h1>
+                                                <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>Rs. {item.price}</h1>
                                                 {item.is_available ? (
                                                     <>
                                                         <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>

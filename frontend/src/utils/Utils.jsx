@@ -12,3 +12,8 @@ export const logout = () => {
     localStorage.removeItem("authTokens");
     window.location.href = '/login';
 }
+
+export const objArrayIncludes = (arr = [], obj = {}) => {
+    /**returns if the given object is found inside the given array */
+    return arr.some(element => element.id === obj.id && element.price === obj.price);
+}

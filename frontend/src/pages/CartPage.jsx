@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { CartContext } from '../context/CartContext'
 import add from '../assets/add.svg';
 import remove from '../assets/remove.svg';
@@ -10,6 +10,7 @@ const CartPage = () => {
     let { cartItems, isCartEmpty, doCartItemAction, getSubtotal, getShippingExpense } = useContext(CartContext);
     const shippingExpense = getShippingExpense();
     const subtotal = getSubtotal();
+    const [infoElement, setInfoElement] = useState(null);
 
     const getDiscountLabel = (discount) => {
         if (!discount) return;
@@ -25,6 +26,19 @@ const CartPage = () => {
         }
     }
 
+    const showInfo = (show) => {
+        if (show) {
+            setInfoElement(
+                <div className='w-[15rem] h-fit p-2 flex flex-col justify-center items-center gap-2 rounded bg-neutral-100 border-2 border-neutral-300 absolute top-24 left-[55rem]'>
+                    <p className='font-poppins text-wrap whitespace-break-spaces text-md cursor-default'>* Side item's and modifier's prices are included in item price</p>
+                    <p className='font-poppins text-wrap whitespace-break-spaces text-md cursor-default'>* Special instructions are given to the restaurant</p>
+                </div>
+            );
+        } else {
+            setInfoElement(null);
+        }
+    }
+
     return (
         <div className="absolute top-0 left-0 w-full h-screen flex items-center justify-center flex-col pt-12">
                 {isCartEmpty ? (
@@ -37,7 +51,11 @@ const CartPage = () => {
                             <div className='row-start-1 row-end-7 col-start-1 col-end-5'>
                                 <div className='w-full h-full overflow-hidden flex flex-col justify-start items-center'>
                                     <div className='p-6 w-full flex-1 flex flex-col justify-start items-start overflow-y-auto gap-2'>
-                                        <h1 className='text-2xl font-notoserif text-neutral-700 w-full text-left cursor-default'>Shopping Cart</h1>
+                                        <div className='w-full h-fit flex justify-between items-center'>
+                                            <h1 className='text-2xl font-notoserif text-neutral-700 w-full text-left cursor-default'>Shopping Cart</h1>
+                                            <h1 onMouseEnter={() => showInfo(true)} onMouseLeave={() => showInfo(false)} className={`text-right font-roboto text-md border-2 border-gray-300 cursor-default rounded-full px-2 bg-gray-200 text-gray-500`}>Info</h1>
+                                            {infoElement}
+                                        </div>
                                         <table className='w-full h-fit table-auto border-collapse'>
                                             <thead className='border-b-2 border-gray-200'>
                                                 <tr className='pr-2 text-neutral-700'>
@@ -75,7 +93,7 @@ const CartPage = () => {
                                                                 </button>
                                                             </div>
                                                         </td>
-                                                        <td className='font-hedwig font-normal text-neutral-700 cursor-default'>Rs. {parseFloat((item.price * item.quantity).toFixed(2))}</td>
+                                                        <td className='font-hedwig font-normal text-neutral-700 cursor-default text-center'>Rs. {parseFloat((item.price * item.quantity).toFixed(2))}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -101,7 +119,7 @@ const CartPage = () => {
                                     <h1 className='text-lg font-hedwig text-neutral-700 text-left cursor-default'>Total</h1>
                                     <h1 className='text-lg font-hedwig text-neutral-700 text-left cursor-default'>{subtotal + shippingExpense}</h1>
                                 </div>
-                                <p className='font-hedwig text-neutral-800 text-sm'>Discounts to be applied at checkout</p>
+                                <p className='font-hedwig text-neutral-600 text-sm'>Discounts to be applied at checkout</p>
                                 <div className='w-full h-fit mt-10'>
                                     <button className='w-full h-10 bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-hedwig text-md'>
                                         Proceed to Checkout

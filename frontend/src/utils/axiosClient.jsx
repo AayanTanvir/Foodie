@@ -33,7 +33,7 @@ axiosClient.interceptors.response.use(
 
             const tokensStr = localStorage.getItem("authTokens");
             if (!tokensStr) {
-                console.error("No auth tokens found");
+                console.error("Session expired. No tokens found");
                 logout();
                 return Promise.reject(error);
             }
