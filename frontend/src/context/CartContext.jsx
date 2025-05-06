@@ -83,7 +83,7 @@ export const CartContextProvider = ({ children }) => {
                 );
                 } else {
                 // add new item
-                return [...prevItems, { ...item, quantity: 1, specialInstructions: specialInstructions, modifiers: modifiers, sideItems: sideItems }];
+                return [...prevItems, { ...item, quantity: 1, special_instructions: specialInstructions, modifiers: modifiers, side_items: sideItems }];
                 }
 
             case "removeItem":

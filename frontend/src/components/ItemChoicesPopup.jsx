@@ -10,26 +10,24 @@ const ItemChoicesPopup = ({ item }) => {
     const [selectedSideItems, setSelectedSideItems] = useState([]);
     const specialInstructionsRef = useRef(null);
 
-    // console.log(objArrayIncludes([{num: 2, price: 2}, {num: 3, price: 3}, {num: 4, price: 4}], {num: 4, price: 4}))
-
     const getModifiers = (item, modifiers) => {
         return modifiers.filter((modifier) => modifier.menu_item === item.name);
     };
 
-    const toggleModifierChoices = (modifierId, choiceId, choicePrice, isMultiSelect) => {
+    const toggleModifierChoices = (modifierId, choice, isMultiSelect) => {
         const currentChoices = selectedModifiers[modifierId] || [];
         setSelectedModifiers((prev) => {
             if (isMultiSelect) {
                 return {
                     ...prev,
-                    [modifierId]: objArrayIncludes(currentChoices, {id: choiceId, price: choicePrice})
-                        ? currentChoices.filter(currentChoice => currentChoice.id !== choiceId)
-                        : [...currentChoices, { id: choiceId, price: choicePrice }],
+                    [modifierId]: objArrayIncludes(currentChoices, choice)
+                        ? currentChoices.filter(currentChoice => currentChoice.id !== choice.id)
+                        : [...currentChoices, choice],
                 };
             } else {
                 return {
                     ...prev,
-                    [modifierId]: currentChoices[0]?.id === choiceId ? [] : [{ id: choiceId, price: choicePrice }],
+                    [modifierId]: currentChoices[0]?.id === choice.id ? [] : [choice],
                 };
             }
         });
@@ -41,9 +39,20 @@ const ItemChoicesPopup = ({ item }) => {
             if (isSelected) {
                 return selectedSideItems.filter((selectedSideItem) => selectedSideItem.id !== sideItem.id);
             } else {
-                return [...prev, sideItem];
+                return [...prev, {...sideItem, quantity: 1}];
             }
         })
+    }
+    
+    const handleSideItemQuantity = (sideItem, input) => {
+        setSelectedSideItems((prev) => {
+            return prev.map(prevSideItem => 
+                prevSideItem.id === sideItem.id
+                    ? { ...prevSideItem, quantity: input }
+                    : prevSideItem
+            );
+        })
+        console.log(selectedSideItems);
     }
 
     const itemModifiers = getModifiers(item, menuItemModifiers);
@@ -76,7 +85,7 @@ const ItemChoicesPopup = ({ item }) => {
                                         {modifier?.choices?.map((choice) => {
                                             const isSelected = objArrayIncludes(selectedModifiers[modifier.id], choice);
                                             return (
-                                                <div onClick={() => toggleModifierChoices(modifier.id, choice.id, choice.price, modifier.is_multiselect)} key={choice.id} className={`w-[95%] h-8 rounded flex 
+                                                <div onClick={() => toggleModifierChoices(modifier.id, choice, modifier.is_multiselect)} key={choice.id} className={`w-[95%] h-8 rounded flex 
                                                 justify-between items-center p-4 mb-2 
                                                 cursor-pointer transition duration-300 
                                                 ease-out border-2 border-transparent hover:border-gray-300 ${
@@ -111,19 +120,37 @@ const ItemChoicesPopup = ({ item }) => {
                 </div>
                 <div className='w-full h-fit grid grid-cols-3 auto-rows-auto gap-4 p-4 mb-4'>
                     {sideItems?.map((item) => {
-                        const itemObj = {id: item.id, price: item.price};
-                        const isSelected = objArrayIncludes(selectedSideItems, itemObj);
+                        const isSelected = objArrayIncludes(selectedSideItems, item);
                         return (
-                            <div key={item.id} onClick={() => { toggleSideItemChoices({id: item.id, price: item.price}) }} className='w-full h-fit border-2 border-gray-300 rounded flex justify-start items-center cursor-pointer transition duration-200 hover:scale-[102%]'>
-                                <div className='w-1/3 h-[5rem] flex justify-center items-center cursor-pointer'>
+                            <div key={item.id} className='w-full h-fit border-2 border-gray-300 rounded flex justify-start items-center cursor-pointer transition duration-200 hover:scale-[102%]'>
+                                <div onClick={() => { toggleSideItemChoices(item) }} className='w-1/3 h-[6rem] flex justify-center items-center cursor-pointer'>
                                     <img src={item.image} alt="Image not found" className='object-cover w-full h-full'/>
                                 </div>
-                                <div className='h-[5rem] flex-1 cursor-pointer flex justify-between items-center px-2'>
-                                    <div className='flex flex-col justify-start items-start'>
-                                        <h1 className='text-left font-poppins text-md text-neutral-800 whitespace-break-spaces text-wrap'>{item.name}</h1>
-                                        <h1 className='text-left font-hedwig text-sm text-neutral-800 whitespace-break-spaces text-wrap'>Rs. {item.price}</h1>
+                                <div className='h-[6rem] flex-1 cursor-pointer flex justify-between items-center px-2'>
+                                    <div className='h-full flex flex-col justify-center items-start py-1'>
+                                        {isSelected ? (
+                                            <>
+                                                <div onClick={() => { toggleSideItemChoices(item) }} className='w-fit h-fit'>
+                                                    <h1 className='text-left font-poppins text-md text-neutral-800 whitespace-break-spaces text-wrap'>{item.name}</h1>
+                                                    <h1 className='text-left font-hedwig text-sm text-neutral-800 whitespace-break-spaces text-wrap'>Rs. {item.price}</h1>
+                                                </div>
+                                                <div className='w-full h-fit flex justify-between items-center'>
+                                                    <p className='text-left font-poppins text-md text-neutral-800'>Qty. </p>
+                                                    <input onChange={(self) => handleSideItemQuantity(item, self.target.value) } className='w-8 pl-1' type="number" max={20} min={1} defaultValue={1}/>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div onClick={() => { toggleSideItemChoices(item) }} className='w-fit h-fit'>
+                                                    <h1 className='text-left font-poppins text-md text-neutral-800 whitespace-break-spaces text-wrap'>{item.name}</h1>
+                                                    <h1 className='text-left font-hedwig text-sm text-neutral-800 whitespace-break-spaces text-wrap'>Rs. {item.price}</h1>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
-                                    <div className={`w-4 h-4 rounded-sm border-2 border-gray-600 ${isSelected && 'bg-gray-400'}`}>
+                                    <div onClick={() => { toggleSideItemChoices(item) }} className='w-fit h-full flex justify-center items-center'>
+                                        <div className={`w-4 h-4 rounded-sm border-2 border-gray-600 ${isSelected && 'bg-gray-400'}`}>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

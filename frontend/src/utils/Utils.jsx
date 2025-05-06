@@ -14,6 +14,6 @@ export const logout = () => {
 }
 
 export const objArrayIncludes = (arr = [], obj = {}) => {
-    /**returns if the given object is found inside the given array */
-    return arr.some(element => element.id === obj.id && element.price === obj.price);
+    /**returns if the given object is found inside the given array*/
+    return arr.some(element => element?.id === obj?.id || element === obj);
 }
