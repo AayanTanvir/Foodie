@@ -46,10 +46,25 @@ export const CartContextProvider = ({ children }) => {
     //     }
     // }, []);
     
+    const getExtrasSubtotal = (extras) => {
+        if (Object.keys(extras.modifiers).length === 0 && extras.sideItems.length === 0) return 0;
+        const modifierPrices = Object.values(extras.modifiers).flatMap(choicesArray => choicesArray.map(choice => choice.price));
+        let subtotal = 0;
+
+        modifierPrices.forEach((price) => {
+            subtotal += Number(price);
+        })
+        extras.sideItems.forEach((item) => {
+            subtotal += Number(item.price) * Number(item.quantity);
+        })
+
+        return parseFloat(subtotal.toFixed(2));
+    }
+
     const getSubtotal = () => {
         let subtotal = 0
-        cartItems.map((cartItem) => {
-            subtotal += cartItem.price * cartItem.quantity;
+        cartItems.forEach((cartItem) => {
+            subtotal += (parseFloat((cartItem.price * cartItem.quantity).toFixed(2))) + getExtrasSubtotal({ modifiers: cartItem.modifiers, sideItems: cartItem.side_items }) ;
         })
         return parseFloat(subtotal.toFixed(2));
     }
@@ -221,6 +236,7 @@ export const CartContextProvider = ({ children }) => {
         setRestaurantUUID: setRestaurantUUID,
         doCartItemAction: doCartItemAction,
         getSubtotal: getSubtotal,
+        getExtrasSubtotal: getExtrasSubtotal,
         getShippingExpense: getShippingExpense,
         setShowChoicesPopup: setShowChoicesPopup,
         activateChoicesPopup: activateChoicesPopup,

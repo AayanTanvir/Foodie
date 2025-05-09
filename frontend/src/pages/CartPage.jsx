@@ -7,15 +7,12 @@ import close from '../assets/close.svg';
 
 const CartPage = () => {
 
-    let { cartItems, isCartEmpty, doCartItemAction, getSubtotal, getShippingExpense } = useContext(CartContext);
+    let { cartItems, isCartEmpty, doCartItemAction, getSubtotal, getExtrasSubtotal, getShippingExpense } = useContext(CartContext);
     const shippingExpense = getShippingExpense();
     const subtotal = getSubtotal();
     const [showExtrasCard, setShowExtrasCard] = useState(false);
     let [extrasCard, setExtrasCard] = useState(null);
 
-    const handleSideItemQuantity = () => {
-        
-    }
 
     const showExtras = (extras) => {
         if (!extras) return;
@@ -67,6 +64,11 @@ const CartPage = () => {
                                     <p className='font-poppins text-neutral-800 cursor-default text-md'>{extras.specialInstructions}</p>
                                 </div>
                             </div>
+                        </div>
+                    )}
+                    {(Object.keys(extras.modifiers).length === 0 && extras.sideItems.length === 0) ? null : (
+                        <div className='w-full h-fit flex justify-start items-center'>
+                            <h1 className='font-hedwig text-lg text-neutral-800 cursor-default'>Subtotal - Rs. {getExtrasSubtotal(extras)}</h1>
                         </div>
                     )}
                 </div>
@@ -135,7 +137,7 @@ const CartPage = () => {
                                                                 </button>
                                                             </div>
                                                         </td>
-                                                        <td className='font-hedwig font-normal text-neutral-700 cursor-default text-center'>Rs. {parseFloat((item.price * item.quantity).toFixed(2))}</td>
+                                                        <td className='font-hedwig font-normal text-neutral-700 cursor-default text-center'>Rs. {(parseFloat((item.price * item.quantity).toFixed(2))) + getExtrasSubtotal({modifiers: item.modifiers, sideItems: item.side_items})}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
