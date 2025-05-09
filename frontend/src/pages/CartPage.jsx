@@ -19,27 +19,56 @@ const CartPage = () => {
 
     const showExtras = (extras) => {
         if (!extras) return;
+        const modifierChoices = Object.values(extras.modifiers).flatMap(choicesArray => choicesArray);
         setShowExtrasCard(!showExtrasCard);
         setExtrasCard(
             <div className='absolute top-0 left-0 w-full h-screen flex items-center justify-center bg-black/50 z-40'>
-                <div className='w-[50rem] h-[30rem] z-10 p-4 flex flex-col justify-start items-start gap-2 rounded bg-neutral-100 border-2 border-neutral-300 absolute'>
-                    <h1 className='font-notoserif text-neutral-800 text-3xl cursor-default text-left'>Extras</h1>
-                    <div className='w-full h-fit grid grid-cols-4 auto-rows-auto gap-2'>
-                        {extras.sideItems?.map((sideItem) => (
-                            <div key={sideItem.id} className='w-full h-[8.5rem] border-2 border-gray-300 rounded flex flex-col justify-start items-center'>
-                                <div className='w-full h-[4.5rem] flex justify-center items-center'>
-                                    <img src={sideItem.image} alt="" className='object-cover w-full h-full'/>
-                                </div>
-                                <div className='w-full flex-1 p-2 flex flex-col justify-start items-start'>
-                                    <div className='w-full h-fit flex justify-between items-center'>
-                                        <p className='font-hedwig text-md text-neutral-800 cursor-default text-wrap whitespace-break-spaces'>{sideItem.name}</p>
-                                        <p className='font-hedwig text-md text-neutral-800 cursor-default text-wrap whitespace-break-spaces'>Qty. {sideItem.quantity}</p>
+                <div className='w-[50rem] h-[30rem] z-10 p-4 flex flex-col justify-start items-start gap-2 rounded bg-neutral-100 border-2 border-neutral-300 relative overflow-y-auto'>
+                    <button onClick={() => {setShowExtrasCard(false); setExtrasCard(null);}} className='absolute top-4 right-4'>
+                        <img src={close} alt="X" />
+                    </button>
+                    {extras.sideItems?.length !== 0 && (
+                        <>
+                            <h1 className='font-notoserif text-neutral-800 text-3xl cursor-default text-left'>Sides</h1>
+                            <div className='w-full h-fit grid grid-cols-4 auto-rows-auto gap-2 mb-2'>
+                                {extras.sideItems?.map((sideItem) => (
+                                    <div key={sideItem.id} className='w-full h-[8.5rem] border-2 border-gray-300 rounded flex flex-col justify-start items-center'>
+                                        <div className='w-full h-[4.5rem] flex justify-center items-center'>
+                                            <img src={sideItem.image} alt="" className='object-cover w-full h-full'/>
+                                        </div>
+                                        <div className='w-full flex-1 p-2 flex flex-col justify-start items-start'>
+                                            <div className='w-full h-fit flex justify-between items-center'>
+                                                <p className='font-hedwig text-md text-neutral-800 cursor-default text-wrap whitespace-break-spaces'>{sideItem.name}</p>
+                                                <p className='font-hedwig text-md text-neutral-800 cursor-default text-wrap whitespace-break-spaces'>Qty. {sideItem.quantity}</p>
+                                            </div>
+                                            <p className='font-hedwig text-md text-neutral-800 cursor-default text-wrap whitespace-break-spaces'>Rs. {sideItem.price}</p>
+                                        </div>
                                     </div>
-                                    <p className='font-hedwig text-md text-neutral-800 cursor-default text-wrap whitespace-break-spaces'>Rs. {sideItem.price}</p>
+                                ))}
+                            </div>
+                        </>
+                    )}
+                    {(Object.keys(extras.modifiers).length === 0 && extras.specialInstructions === "") ? null : (
+                        <div className='w-full h-fit flex justify-center items-start gap-2'>
+                            <div className='w-1/2 h-fit'>
+                                <h1 className='font-notoserif text-neutral-800 text-3xl cursor-default text-left'>Modifiers</h1>
+                                <div className='w-full h-fit flex flex-col justify-start items-start gap-2 mb-2'>
+                                    {modifierChoices?.map((modifierChoice) => (
+                                        <div key={modifierChoice.id} className='w-full h-12 border-2 border-gray-200 rounded flex justify-between items-center p-2'>
+                                            <h1 className='font-hedwig text-lg text-neutral-800 cursor-default'>{modifierChoice.label}</h1>
+                                            <h1 className='font-hedwig text-lg text-neutral-800 cursor-default'>Rs. {modifierChoice.price}</h1>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-                        ))}
-                    </div>
+                            <div className='w-1/2 h-fit '>
+                                <h1 className='font-notoserif text-neutral-800 text-3xl cursor-default text-left'>Instructions</h1>
+                                <div className='w-full h-fit rounded border-2 border-gray-300 p-3'>
+                                    <p className='font-poppins text-neutral-800 cursor-default text-md'>{extras.specialInstructions}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -80,9 +109,11 @@ const CartPage = () => {
                                                 {cartItems.map((item, index) => (
                                                     <tr key={item.id} className={`text-neutral-700 relative ${index === cartItems.length - 1 ? '' : 'border-b-2 border-gray-200'}`}>
                                                         <td className='relative mr-4'>
-                                                            <div className='absolute top-1 left-0 w-fit h-fit'>
-                                                                <h1 onClick={() => { showExtras({ modifiers: item.modifiers, specialInstructions: item.special_instructions, sideItems: item.side_items }) }} className={`text-right font-roboto text-md border-2 border-gray-300 cursor-pointer rounded-full px-2 bg-gray-200 text-gray-500`}>Extras</h1>
-                                                            </div>
+                                                            {(Object.keys(item.modifiers).length === 0 && item.special_instructions === "" && item.side_items.length === 0) ? null : (
+                                                                <div className='absolute top-1 left-0 w-fit h-fit'>
+                                                                    <h1 onClick={() => { showExtras({ modifiers: item.modifiers, specialInstructions: item.special_instructions, sideItems: item.side_items }) }} className={`text-right font-roboto text-md border-2 border-gray-300 cursor-pointer rounded-full px-2 bg-gray-200 text-gray-500`}>Extras</h1>
+                                                                </div>
+                                                            )}
                                                             <button onClick={() => {doCartItemAction(item, "removeItem")}}>
                                                                 <img src={close} alt="X" />
                                                             </button>

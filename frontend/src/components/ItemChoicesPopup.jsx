@@ -52,7 +52,6 @@ const ItemChoicesPopup = ({ item }) => {
                     : prevSideItem
             );
         })
-        console.log(selectedSideItems);
     }
 
     const itemModifiers = getModifiers(item, menuItemModifiers);
