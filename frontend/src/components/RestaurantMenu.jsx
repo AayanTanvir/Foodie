@@ -14,9 +14,9 @@ const RestaurantMenu = ({ restaurant }) => {
     const [isSearching, setIsSearching] = useState(false);
     const [searchedItems, setSearchedItems] = useState([]);
     const popularTagElement = <h1 className='text-[0.7rem] text-green-700 py-[5px] px-2 bg-green-300 font-semibold font-roboto rounded-lg absolute bottom-2 left-12'>POPULAR</h1>;
-    let { doCartItemAction, activateChoicesPopup, setRestaurantUUID, cartItems } = useContext(CartContext);
+    let { doCartItemAction, menuItemModifiers, activateChoicesPopup, setRestaurantUUID, cartItems } = useContext(CartContext);
     let popularItems = restaurant.menu_items.sort((a, b) => b.popularity - a.popularity).slice(0, 5);
-
+    
     useEffect(() => {
         const checkOverflow = () => {
             if (scrollRef.current) {
@@ -61,6 +61,15 @@ const RestaurantMenu = ({ restaurant }) => {
 
     const isInCart = (item) => {
         return cartItems.some(cartItem => cartItem.id === item.id);
+    }
+
+    const handleAdd = (item) => {
+        const hasModifiers = menuItemModifiers?.some(modifier => item.name === modifier.menu_item);
+        if (hasModifiers) {
+            activateChoicesPopup(item, true);
+        } else {
+            doCartItemAction(item, "addItem");
+        }
     }
 
     return (
@@ -112,9 +121,9 @@ const RestaurantMenu = ({ restaurant }) => {
                                             <>
                                                 <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
                                                 {isInCart(item) ? (
-                                                    <h1 className='text-sm font-roboto text-gray-600'>Item added to cart.</h1>
+                                                    <h1 className='text-lg font-roboto text-gray-600'>Added to cart</h1>
                                                 ) : (
-                                                    <button onClick={() => activateChoicesPopup(item, true)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                        <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
                                                         <img src={add} alt="add" className='w-full h-full' />
                                                     </button>
                                                 )}
@@ -155,7 +164,7 @@ const RestaurantMenu = ({ restaurant }) => {
                                                     {isInCart(item) ? (
                                                         <h1 className='text-lg font-roboto text-gray-600'>Added to cart</h1>
                                                     ) : (
-                                                        <button onClick={() => activateChoicesPopup(item, true)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                        <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
                                                             <img src={add} alt="add" className='w-full h-full' />
                                                         </button>
                                                     )}
@@ -188,7 +197,7 @@ const RestaurantMenu = ({ restaurant }) => {
                                         key={item.id}
                                         className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-[101%] relative'
                                         >   
-                                            {item.is_available && isItemPopular(item) ? popularTagElement : null}
+                                            {item.is_available && isItemPopular(item) && !isInCart(item) ? popularTagElement : null}
                                             <div className='w-4/5 h-full text-left overflow-hidden'>
                                                 <h1 className='text-lg font-roboto font-semibold text-neutral-700 truncate'>{item.name}</h1>
                                                 <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>Rs. {item.price}</h1>
@@ -196,9 +205,9 @@ const RestaurantMenu = ({ restaurant }) => {
                                                     <>
                                                         <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
                                                         {isInCart(item) ? (
-                                                            <h1 className='text-sm font-roboto text-gray-600'>Item added to cart.</h1>
+                                                            <h1 className='text-lg font-roboto text-gray-600'>Added to cart</h1>
                                                         ) : (
-                                                            <button onClick={() => activateChoicesPopup(item, true)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                            <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
                                                                 <img src={add} alt="add" className='w-full h-full' />
                                                             </button>
                                                         )}

@@ -45,8 +45,8 @@ const CartPage = () => {
                             </div>
                         </>
                     )}
-                    {(Object.keys(extras.modifiers).length === 0 && extras.specialInstructions === "") ? null : (
-                        <div className='w-full h-fit flex justify-center items-start gap-2'>
+                    <div className='w-full h-fit flex justify-start items-start gap-2'>
+                        {(Object.keys(extras.modifiers).length === 0) ? null : (
                             <div className='w-1/2 h-fit'>
                                 <h1 className='font-notoserif text-neutral-800 text-3xl cursor-default text-left'>Modifiers</h1>
                                 <div className='w-full h-fit flex flex-col justify-start items-start gap-2 mb-2'>
@@ -58,14 +58,16 @@ const CartPage = () => {
                                     ))}
                                 </div>
                             </div>
+                        )}
+                        {extras.specialInstructions === "" ? null : (
                             <div className='w-1/2 h-fit '>
                                 <h1 className='font-notoserif text-neutral-800 text-3xl cursor-default text-left'>Instructions</h1>
                                 <div className='w-full h-fit rounded border-2 border-gray-300 p-3'>
                                     <p className='font-poppins text-neutral-800 cursor-default text-md'>{extras.specialInstructions}</p>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
                     {(Object.keys(extras.modifiers).length === 0 && extras.sideItems.length === 0) ? null : (
                         <div className='w-full h-fit flex justify-start items-center'>
                             <h1 className='font-hedwig text-lg text-neutral-800 cursor-default'>Subtotal - Rs. {getExtrasSubtotal(extras)}</h1>
