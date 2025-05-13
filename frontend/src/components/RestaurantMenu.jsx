@@ -5,7 +5,6 @@ import arrow_left from '../assets/arrow_left.svg';
 import add from '../assets/add.svg';
 import close from '../assets/close.svg';
 import { CartContext } from '../context/CartContext';
-import { useParams } from 'react-router-dom';
 
 
 const RestaurantMenu = ({ restaurant }) => {
@@ -15,7 +14,7 @@ const RestaurantMenu = ({ restaurant }) => {
     const [isSearching, setIsSearching] = useState(false);
     const [searchedItems, setSearchedItems] = useState([]);
     const popularTagElement = <h1 className='text-[0.7rem] text-green-700 py-[5px] px-2 bg-green-300 font-semibold font-roboto rounded-lg absolute bottom-2 left-12'>POPULAR</h1>;
-    let { doCartItemAction, activateChoicesPopup, setRestaurantUUID } = useContext(CartContext);
+    let { doCartItemAction, activateChoicesPopup, setRestaurantUUID, cartItems } = useContext(CartContext);
     let popularItems = restaurant.menu_items.sort((a, b) => b.popularity - a.popularity).slice(0, 5);
 
     useEffect(() => {
@@ -58,6 +57,10 @@ const RestaurantMenu = ({ restaurant }) => {
 
             setSearchedItems(queryItems);
         }
+    }
+
+    const isInCart = (item) => {
+        return cartItems.some(cartItem => cartItem.id === item.id);
     }
 
     return (
@@ -108,9 +111,13 @@ const RestaurantMenu = ({ restaurant }) => {
                                         {item.is_available ? (
                                             <>
                                                 <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
-                                                <button onClick={() => activateChoicesPopup(item, true)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
-                                                    <img src={add} alt="add" className='w-full h-full' />
-                                                </button>
+                                                {isInCart(item) ? (
+                                                    <h1 className='text-sm font-roboto text-gray-600'>Item added to cart.</h1>
+                                                ) : (
+                                                    <button onClick={() => activateChoicesPopup(item, true)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                        <img src={add} alt="add" className='w-full h-full' />
+                                                    </button>
+                                                )}
                                             </>
                                         ) : (
                                             <>
@@ -145,9 +152,13 @@ const RestaurantMenu = ({ restaurant }) => {
                                             {item.is_available ? (
                                                 <>
                                                     <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
-                                                    <button onClick={() => activateChoicesPopup(item, true)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
-                                                        <img src={add} alt="add" className='w-full h-full' />
-                                                    </button>
+                                                    {isInCart(item) ? (
+                                                        <h1 className='text-lg font-roboto text-gray-600'>Added to cart</h1>
+                                                    ) : (
+                                                        <button onClick={() => activateChoicesPopup(item, true)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                            <img src={add} alt="add" className='w-full h-full' />
+                                                        </button>
+                                                    )}
                                                 </>
                                             ) : (
                                                 <>
@@ -184,9 +195,13 @@ const RestaurantMenu = ({ restaurant }) => {
                                                 {item.is_available ? (
                                                     <>
                                                         <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
-                                                        <button onClick={() => activateChoicesPopup(item, true)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
-                                                            <img src={add} alt="add" className='w-full h-full' />
-                                                        </button>
+                                                        {isInCart(item) ? (
+                                                            <h1 className='text-sm font-roboto text-gray-600'>Item added to cart.</h1>
+                                                        ) : (
+                                                            <button onClick={() => activateChoicesPopup(item, true)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                                <img src={add} alt="add" className='w-full h-full' />
+                                                            </button>
+                                                        )}
                                                     </>
                                                 ) : (
                                                     <>

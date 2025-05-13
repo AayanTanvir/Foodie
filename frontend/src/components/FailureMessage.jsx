@@ -2,9 +2,9 @@ import React from 'react'
 import { useContext } from 'react'
 import AuthContext from '../context/AuthContext';
 
-const SuccessMessage = () => {
+const FailureMessage = () => {
 
-    let { failureMessage } = useContext(AuthContext)
+    let { failureMessage } = useContext(AuthContext);
 
     return (
         <div className='absolute top-14 left-4 w-fit h-10 text-center bg-red-500 rounded shadow-md z-50'>
@@ -13,4 +13,4 @@ const SuccessMessage = () => {
     )
 }
 
-export default SuccessMessage
+export default FailureMessage

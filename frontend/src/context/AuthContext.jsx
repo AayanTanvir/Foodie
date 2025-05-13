@@ -2,6 +2,7 @@ import { createContext, useState, useEffect } from 'react'
 import { jwtDecode } from "jwt-decode"
 import { useNavigate } from "react-router-dom"
 import axiosClient from '../utils/axiosClient';
+import { logout } from '../utils/Utils';
 
 let AuthContext = createContext()
 
@@ -57,8 +58,7 @@ export const AuthProvider = ({children}) => {
     let logoutUser = () => {
         setAuthTokens(null);
         setUser(null);
-        localStorage.removeItem("authTokens");
-        navigate("/login");
+        logout();
     }
 
     let signupUser = async (event) => {

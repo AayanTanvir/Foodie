@@ -1,6 +1,8 @@
-import React, { useContext, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState, useMemo } from 'react'
 import { CartContext } from '../context/CartContext'
 import close from '../assets/close.svg';
+import remove from '../assets/remove.svg';
+import add from '../assets/add.svg';
 import { objArrayIncludes } from '../utils/Utils';
 
 const ItemChoicesPopup = ({ item }) => {
@@ -8,7 +10,10 @@ const ItemChoicesPopup = ({ item }) => {
     let { sideItems, menuItemModifiers, activateChoicesPopup, doCartItemAction } = useContext(CartContext);
     const [selectedModifiers, setSelectedModifiers] = useState({});
     const [selectedSideItems, setSelectedSideItems] = useState([]);
+    const [canAdd, setCanAdd] = useState(false);
     const specialInstructionsRef = useRef(null);
+    const [itemQuantity, setItemQuantity] = useState(1);
+
 
     const getModifiers = (item, modifiers) => {
         return modifiers.filter((modifier) => modifier.menu_item === item.name);
@@ -54,17 +59,52 @@ const ItemChoicesPopup = ({ item }) => {
         })
     }
 
-    const itemModifiers = getModifiers(item, menuItemModifiers);
+    const itemModifiers = useMemo(() => {
+        const modifiers = getModifiers(item, menuItemModifiers);
+        return [...modifiers].sort((a, b) => (b.is_required === true) - (a.is_required === true));
+    }, [item, menuItemModifiers]);
+
+    const requiredModifiers = itemModifiers.filter(modifier => modifier.is_required);
 
     const handleSubmit = () => {
         const specialInstructions = specialInstructionsRef.current.value || "";
-        doCartItemAction(item, "addItem", specialInstructions, selectedModifiers, selectedSideItems);
+        doCartItemAction(item, "addItem", specialInstructions, selectedModifiers, selectedSideItems, itemQuantity);
         activateChoicesPopup(false);
     }
 
+    useEffect(() => {
+        const autoSelections = {};
+
+        itemModifiers.forEach(modifier => {
+            if (
+                modifier.is_required &&
+                modifier.choices.length === 1
+            ) {
+                autoSelections[modifier.id] = [modifier.choices[0]];
+            }
+        });
+
+        if (Object.keys(autoSelections).length > 0) {
+            setSelectedModifiers(prev => ({
+                ...prev,
+                ...autoSelections,
+            }));
+        }
+    }, [itemModifiers]);
+      
+      
+
+    useEffect(() => {
+        const allRequiredSelected = requiredModifiers
+            .map(mod => mod.id)
+            .every(modId => selectedModifiers[modId]?.length > 0);
+            
+        setCanAdd(allRequiredSelected);
+    }, [selectedModifiers])
+
     return (
         <div className='fixed z-50 top-0 left-0 w-full h-screen flex items-center justify-center flex-col bg-black/50'>
-            <div className='w-2/4 h-3/4 bg-neutral-100 border-2 border-gray-200 flex flex-col justify-start items-center rounded-lg overflow-y-auto pt-2 pb-4 px-5'>
+            <div className='w-2/4 h-3/4 bg-neutral-100 border-2 border-gray-200 flex flex-col justify-start items-center rounded-t-lg overflow-y-auto py-4 px-5 relative'>
                 {itemModifiers.length !== 0 ? (
                     <>
                         <div className='w-full h-[2.5rem] px-4 flex justify-between items-center mb-4'>
@@ -73,7 +113,7 @@ const ItemChoicesPopup = ({ item }) => {
                         </div>
                         <div className='w-full h-fit flex flex-col justify-start items-center gap-5 mb-5'>
                             {itemModifiers?.map((modifier) => (
-                                <div key={modifier.id} className='w-[95%] h-fit border-2 border-gray-300 p-2 rounded'>
+                                <div key={modifier.id} className={`w-[95%] h-fit border-2 ${modifier.is_required ? 'border-neutral-500' : 'border-neutral-300'} p-2 rounded`}>
                                     <div className='w-full h-8 px-2 flex justify-between items-center mb-2'>
                                         <h1 className='text-left font-hedwig text-lg text-neutral-800 cursor-default'>{modifier.name}</h1>
                                         {modifier.is_required === false && (
@@ -160,14 +200,39 @@ const ItemChoicesPopup = ({ item }) => {
                     <h1 className='text-left font-hedwig text-xl cursor-default text-neutral-800'>Special Instructions</h1>
                     <h1 className='w-fit h-fit text-right font-roboto text-md border-2 border-gray-300 cursor-default rounded-full px-2 bg-gray-200 text-gray-500'>Optional</h1>
                 </div>
-                {/* TODO: useRef on this and submit button to go to cart with the desired selections */}
-                <div className='w-full h-fit flex flex-col justify-start items-start px-4'>
+                <div className='w-full h-fit flex flex-col justify-start items-start px-4 mb-4'>
                     <textarea ref={specialInstructionsRef} type="text" placeholder='E.g. No peanuts' className='w-3/4 h-[5rem] outline-none border-2 border-neutral-300 p-2 rounded'/>
                 </div>
-                <div className='w-full h-fit flex justify-end items-center p-2'>
-                    <button onClick={() => {handleSubmit()}} className='w-28 h-10 rounded bg-neutral-800 text-neutral-100 font-poppins text-nowrap whitespace-nowrap'>
-                        Add to Cart
-                    </button>
+            </div>
+            <div className='z-20 w-2/4 flex justify-between items-center bg-white p-4 rounded-b-lg'>
+                <div className='w-fit h-fit flex justify-start items-center gap-4'>
+                    <h1 className='text-left font-hedwig text-xl cursor-default text-neutral-800'>Quantity</h1>
+                    <div className='flex justify-center items-center gap-2'>
+                        {itemQuantity === 1 ? (
+                            <button className='w-fit h-fit rounded-2xl border-2 border-gray-300 flex justify-center items-center cursor-not-allowed bg-neutral-200'>
+                                <img src={remove} alt="-" className='w-full h-full' />
+                            </button>
+                        ) : (
+                            <button onClick={() => {setItemQuantity(itemQuantity - 1)}} className='w-fit h-fit rounded-2xl border-2 border-gray-300 flex justify-center items-center hover:bg-gray-100'>
+                                <img src={remove} alt="-" className='w-full h-full' />
+                            </button>
+                        )}
+                        <p className='text-center cursor-default text-lg text-neutral-800 font-hedwig'>{itemQuantity}</p>
+                        <button onClick={() => {setItemQuantity(itemQuantity + 1)}} className='w-fit h-fit rounded-2xl border-2 border-gray-300 flex justify-center items-center hover:bg-gray-100'>
+                            <img src={add} alt="+" className='w-full h-full' />
+                        </button>
+                    </div>
+                </div>
+                <div className=''>
+                    {canAdd ? (
+                        <button onClick={() => {handleSubmit()}} className='w-28 h-10 rounded bg-neutral-800 text-neutral-100 font-poppins text-nowrap whitespace-nowrap'>
+                            Add to Cart
+                        </button>
+                    ) : (
+                        <button className='w-28 h-10 rounded bg-neutral-400 text-neutral-100 font-poppins text-nowrap whitespace-nowrap cursor-default'>
+                            Add to Cart
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

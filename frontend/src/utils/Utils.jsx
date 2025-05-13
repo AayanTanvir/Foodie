@@ -10,6 +10,7 @@ export const formatTime = (timeStr) => {
 
 export const logout = () => {
     localStorage.removeItem("authTokens");
+    localStorage.removeItem("cartItems");
     window.location.href = '/login';
 }
 

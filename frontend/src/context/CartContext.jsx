@@ -52,21 +52,22 @@ export const CartContextProvider = ({ children }) => {
         let subtotal = 0;
 
         modifierPrices.forEach((price) => {
-            subtotal += Number(price);
+            subtotal += Math.round(Number(price) * 100);
         })
         extras.sideItems.forEach((item) => {
-            subtotal += Number(item.price) * Number(item.quantity);
+            const itemTotal = Number(item.price) * Number(item.quantity);
+            subtotal += Math.round(itemTotal * 100);
         })
 
-        return parseFloat(subtotal.toFixed(2));
+        return subtotal / 100;
     }
 
     const getSubtotal = () => {
         let subtotal = 0
         cartItems.forEach((cartItem) => {
-            subtotal += (parseFloat((cartItem.price * cartItem.quantity).toFixed(2))) + getExtrasSubtotal({ modifiers: cartItem.modifiers, sideItems: cartItem.side_items }) ;
+            subtotal += Math.round(((cartItem.price * cartItem.quantity) + getExtrasSubtotal({ modifiers: cartItem.modifiers, sideItems: cartItem.side_items })) * 100) / 100;
         })
-        return parseFloat(subtotal.toFixed(2));
+        return Math.round(subtotal * 100) / 100;
     }
     
     // const getApplicableDiscounts = () => {
@@ -76,8 +77,7 @@ export const CartContextProvider = ({ children }) => {
     //     return applicableDiscounts;
     // }
 
-
-    const doCartItemAction = (item, action, specialInstructions="", modifiers={}, sideItems=[]) => {
+    const doCartItemAction = (item, action, specialInstructions="", modifiers={}, sideItems=[], quantity=1) => {
         if (cartItems.length !== 0) {
             if (cartItems.some(cartItem => cartItem.restaurant !== item.restaurant)) {
                 setCartItems([]);
@@ -85,31 +85,32 @@ export const CartContextProvider = ({ children }) => {
         }
 
         setCartItems(prevItems => {
-            const itemInCart = prevItems.find(cartItem => cartItem.id === item.id);
-
             switch (action) {
-            case "addItem":
-                if (itemInCart) {
-                // increase quantity
-                return prevItems.map(cartItem =>
-                    cartItem.id === item.id
-                    ? { ...cartItem, quantity: cartItem.quantity + 1 }
-                    : cartItem
-                );
+                case "addItem":
+                    const itemInCart = prevItems.find(cartItem => cartItem.id === item.id);
+                    if (itemInCart) {
+                    // increase quantity
+                    return prevItems.map(cartItem =>
+                        cartItem.id === item.id
+                        ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                        : cartItem
+                    );
                 } else {
-                // add new item
-                return [...prevItems, { ...item, quantity: 1, special_instructions: specialInstructions, modifiers: modifiers, side_items: sideItems }];
+                    // add new item
+                    return [...prevItems, { ...item, quantity: quantity, special_instructions: specialInstructions, modifiers: modifiers, side_items: sideItems }];
                 }
 
             case "removeItem":
                 return prevItems.filter(cartItem => cartItem.id !== item.id);
 
             case "addQuantity":
-                return prevItems.map(cartItem =>
-                cartItem.id === item.id
-                    ? { ...cartItem, quantity: cartItem.quantity + 1 }
-                    : cartItem
-                );
+                return prevItems.map(cartItem => {
+                    if (cartItem.id === item.id) {
+                        if (Number(cartItem.quantity) >= 20) return cartItem;
+                        return { ...cartItem, quantity: Number(cartItem.quantity) + 1 };
+                    }
+                    return cartItem;
+                });
 
             case "subtractQuantity":
                 return prevItems
