@@ -9,8 +9,7 @@ export const formatTime = (timeStr) => {
 }
 
 export const logout = () => {
-    localStorage.removeItem("authTokens");
-    localStorage.removeItem("cartItems");
+    localStorage.clear();
     window.location.href = '/login';
 }
 
@@ -18,3 +17,8 @@ export const objArrayIncludes = (arr = [], obj = {}) => {
     /**returns if the given object is found inside the given array*/
     return arr.some(element => element?.id === obj?.id || element === obj);
 }
+
+export const isExpiredSeconds = (exp) => {
+    const now = Math.floor(Date.now() / 1000);
+    return exp < now;
+} 

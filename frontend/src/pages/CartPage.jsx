@@ -139,7 +139,7 @@ const CartPage = () => {
                                                                 </button>
                                                             </div>
                                                         </td>
-                                                        <td className='font-hedwig font-normal text-neutral-700 cursor-default text-center'>Rs. {Math.round(((item.price * item.quantity) + getExtrasSubtotal({ modifiers: item.modifiers, sideItems: item.side_items })) * 100) / 100}</td>
+                                                        <td className='font-hedwig font-normal text-neutral-700 cursor-default text-center'>Rs. {(item.price * item.quantity) + getExtrasSubtotal({ modifiers: item.modifiers, sideItems: item.side_items })}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>
@@ -163,7 +163,7 @@ const CartPage = () => {
                                 </div>
                                 <div className='w-full h-fit px-4 py-2 rounded-xl border-2 border-dashed border-gray-300 flex justify-between items-center mb-4'>
                                     <h1 className='text-lg font-hedwig text-neutral-700 text-left cursor-default'>Total</h1>
-                                    <h1 className='text-lg font-hedwig text-neutral-700 text-left cursor-default'>{parseFloat((subtotal + shippingExpense).toFixed(2))}</h1>
+                                    <h1 className='text-lg font-hedwig text-neutral-700 text-left cursor-default'>{(subtotal + shippingExpense)}</h1>
                                 </div>
                                 <p className='font-hedwig text-neutral-600 text-sm'>Discounts to be applied at checkout</p>
                                 <div className='w-full h-fit mt-10'>

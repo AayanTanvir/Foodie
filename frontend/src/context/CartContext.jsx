@@ -52,22 +52,22 @@ export const CartContextProvider = ({ children }) => {
         let subtotal = 0;
 
         modifierPrices.forEach((price) => {
-            subtotal += Math.round(Number(price) * 100);
+            subtotal += price;
         })
         extras.sideItems.forEach((item) => {
-            const itemTotal = Number(item.price) * Number(item.quantity);
-            subtotal += Math.round(itemTotal * 100);
+            const itemTotal = item.price * item.quantity;
+            subtotal += itemTotal;
         })
 
-        return subtotal / 100;
+        return subtotal;
     }
 
     const getSubtotal = () => {
         let subtotal = 0
         cartItems.forEach((cartItem) => {
-            subtotal += Math.round(((cartItem.price * cartItem.quantity) + getExtrasSubtotal({ modifiers: cartItem.modifiers, sideItems: cartItem.side_items })) * 100) / 100;
+            subtotal += (cartItem.price * cartItem.quantity) + getExtrasSubtotal({ modifiers: cartItem.modifiers, sideItems: cartItem.side_items });
         })
-        return Math.round(subtotal * 100) / 100;
+        return subtotal;
     }
     
     // const getApplicableDiscounts = () => {

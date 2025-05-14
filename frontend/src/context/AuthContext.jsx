@@ -2,7 +2,7 @@ import { createContext, useState, useEffect } from 'react'
 import { jwtDecode } from "jwt-decode"
 import { useNavigate } from "react-router-dom"
 import axiosClient from '../utils/axiosClient';
-import { logout } from '../utils/Utils';
+import { logout, isExpiredSeconds } from '../utils/Utils';
 
 let AuthContext = createContext()
 
@@ -34,10 +34,15 @@ export const AuthProvider = ({children}) => {
                 });
             
                 const data = response.data;
-            
+                const refresh = jwtDecode(data.refresh);
+                const access = jwtDecode(data.access);
+                
                 setAuthTokens(data);
+                setUser(access);
                 localStorage.setItem("authTokens", JSON.stringify(data));
-                setUser(jwtDecode(data.access));
+                localStorage.setItem("refreshTokenExp", refresh.exp);
+                localStorage.setItem("accessTokenExp", access.exp);
+                
                 navigate("/");
                 
             } catch (error) {
@@ -300,6 +305,13 @@ export const AuthProvider = ({children}) => {
         const timeout = setTimeout(() => {setSuccessMessage(""), setNoticeMessage(""), setFailureMessage("")}, 3000);
         return () => clearTimeout(timeout);
     }, [successMessage, noticeMessage, failureMessage]);
+
+    useEffect(() => {
+        const exp = parseInt(localStorage.getItem("refreshTokenExp"), 10);
+        if (isExpiredSeconds(exp)) {
+            logoutUser();
+        }
+    }, [])
 
     return (
         <AuthContext.Provider value={context}>

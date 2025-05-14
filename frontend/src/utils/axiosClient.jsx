@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { logout } from './Utils'
+import { jwtDecode } from 'jwt-decode';
 
 const baseURL = 'http://127.0.0.1:8000';
 
@@ -48,8 +49,13 @@ axiosClient.interceptors.response.use(
                         }
                     }
                 );
-                localStorage.setItem("authTokens", JSON.stringify(response.data));
+                
+                const refresh = jwtDecode(response.data.refresh);
+                const access = jwtDecode(response.data.access);
 
+                localStorage.setItem("authTokens", JSON.stringify(response.data));
+                localStorage.setItem("refreshTokenExp", refresh.exp);
+                localStorage.setItem("accessTokenExp", access.exp);
                 axiosClient.defaults.headers.Authorization = `Bearer ${response.data.access}`;
                 originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
                 return axiosClient(originalRequest);

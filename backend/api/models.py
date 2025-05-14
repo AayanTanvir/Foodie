@@ -85,7 +85,7 @@ class MenuItem(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="menu_items")
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True, default="") 
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.IntegerField()
     category = models.ForeignKey("MenuItemCategory", related_name="menu_items", on_delete=models.SET_NULL, null=True, blank=True)
     image = models.ImageField(upload_to="menu_items/", blank=True, null=True, default="menu_items/default.png")
     is_available = models.BooleanField(default=True)
@@ -121,7 +121,6 @@ class MenuItemCategory(models.Model):
 class Order(models.Model):
     
     class OrderStatus(models.TextChoices):
-        PENDING = 'pending', 'Pending'
         IN_PROGRESS = 'in_progress', 'In Progress'
         COMPLETED = 'completed', 'Completed'
         CANCELLED = 'cancelled', 'Cancelled'
@@ -130,13 +129,12 @@ class Order(models.Model):
     class OrderPaymentMethod(models.TextChoices):
         CASH_ON_DELIVERY = 'cash_on_delivery', 'Cash On Delivery'
         CARD = 'card', 'Card'
-        
     
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="orders")
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="orders")
     order_items = models.ManyToManyField(MenuItem, through="OrderItem")
-    order_status = models.CharField(max_length=25, choices=OrderStatus.choices, default=OrderStatus.PENDING)
+    order_status = models.CharField(max_length=25, choices=OrderStatus.choices, default=OrderStatus.IN_PROGRESS)
     payment_method = models.CharField(max_length=25, choices=OrderPaymentMethod.choices, default=OrderPaymentMethod.CASH_ON_DELIVERY)
     created_at = models.DateTimeField(auto_now_add=True)
     discount = models.ForeignKey("Discount", blank=True, null=True, on_delete=models.SET_NULL, related_name="orders")
@@ -213,7 +211,7 @@ class MenuItemModifier(models.Model):
 class MenuItemModifierChoice(models.Model):
     modifier = models.ForeignKey(MenuItemModifier, on_delete=models.CASCADE, related_name="choices")
     label = models.CharField(max_length=100)
-    price = models.DecimalField(decimal_places=2, max_digits=5)
+    price = models.IntegerField()
     
     class Meta:
         constraints = [
@@ -227,7 +225,7 @@ class MenuItemModifierChoice(models.Model):
 class SideItem(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="side_items")
     name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.IntegerField()
     image = models.ImageField(upload_to='side_items/', blank=True, null=True, default="side_items/default.jpg")
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -256,8 +254,8 @@ class Discount(models.Model):
     valid_from = models.DateTimeField()
     valid_to = models.DateTimeField()
     discount_type = models.CharField(max_length=25, choices=DiscountType.choices, default=DiscountType.PERCENTAGE)
-    amount = models.IntegerField(default=0)
-    min_order_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    amount = models.IntegerField()
+    min_order_amount = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     
     
