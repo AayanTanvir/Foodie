@@ -136,6 +136,7 @@ class Order(models.Model):
     order_items = models.ManyToManyField(MenuItem, through="OrderItem")
     order_status = models.CharField(max_length=25, choices=OrderStatus.choices, default=OrderStatus.IN_PROGRESS)
     payment_method = models.CharField(max_length=25, choices=OrderPaymentMethod.choices, default=OrderPaymentMethod.CASH_ON_DELIVERY)
+    delivery_address = models.TextField();
     created_at = models.DateTimeField(auto_now_add=True)
     discount = models.ForeignKey("Discount", blank=True, null=True, on_delete=models.SET_NULL, related_name="orders")
     
