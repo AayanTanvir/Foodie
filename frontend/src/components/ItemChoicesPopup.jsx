@@ -132,7 +132,7 @@ const ItemChoicesPopup = ({ item }) => {
                                                 }`}>
                                                     <div className='w-fit h-fit flex justify-center items-center gap-2'>
                                                         <div className={`w-4 h-4 ${modifier.is_multiselect ? "rounded-sm" : "rounded-full"} border-2 border-gray-600 p-1 ${
-                                                            isSelected && "bg-gray-400"
+                                                            isSelected && "bg-neutral-400"
                                                         }`}></div>
                                                         <h1 className='font-poppins text-md text-neutral-800'>{choice.label}</h1>
                                                     </div>
@@ -188,7 +188,7 @@ const ItemChoicesPopup = ({ item }) => {
                                         )}
                                     </div>
                                     <div onClick={() => { toggleSideItemChoices(item) }} className='w-fit h-full flex justify-center items-center'>
-                                        <div className={`w-4 h-4 rounded-sm border-2 border-gray-600 ${isSelected && 'bg-gray-400'}`}>
+                                        <div className={`w-4 h-4 rounded-sm border-2 border-gray-600 ${isSelected && 'bg-neutral-400'}`}>
                                         </div>
                                     </div>
                                 </div>
