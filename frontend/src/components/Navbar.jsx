@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
 import { CartContext } from '../context/CartContext';
-import cart_svg from '../assets/cart.svg';
+import shopping_bag from '../assets/shopping_bag.svg';
 
 const Navbar = () => {
 
@@ -33,12 +33,12 @@ const Navbar = () => {
                           flex justify-center items-center transition hover:bg-neutral-900
                           ${isActive ? 'bg-neutral-900' : ''}`}>
 
-                        <img src={cart_svg} alt="Cart" className='w-6'/>
+                        <img src={shopping_bag} alt="Cart" className='w-6'/>
                         {!isCartEmpty && (
-                            <div className="w-[0.9rem] h-[0.9rem] rounded-full bg-white absolute
+                            <div className="w-[0.9rem] h-[0.9rem] rounded-full bg-gray-200 absolute
                                 top-[15%] right-0 flex justify-center items-center">
                                 <div className='text-center rounded-full flex justify-center items-center'>
-                                    <p className='font-poppins text-neutral-700 text-[0.8rem]'>{cartCount}</p>
+                                    <p className='font-poppins text-neutral-800 text-[0.8rem]'>{cartCount}</p>
                                 </div>
                             </div>
                         )}
