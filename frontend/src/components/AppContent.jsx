@@ -7,6 +7,7 @@ import PageNotFound from '../pages/PageNotFound';
 import PasswordResetNewPasswordPage from '../pages/PasswordResetNewPasswordPage';
 import PasswordResetEmailPage from '../pages/PasswordResetEmailPage';
 import RestaurantPage from '../pages/RestaurantPage';
+import CheckoutPage from '../pages/CheckoutPage';
 import ProtectedRoutes from '../utils/ProtectedRoutes';
 import { CartContext } from '../context/CartContext';
 import Navbar from './Navbar';
@@ -15,7 +16,7 @@ import FailureMessage from './FailureMessage';
 import NoticeMessage from './NoticeMessage';
 import OTPForm from './OTPForm';
 import ItemChoicesPopup from './ItemChoicesPopup';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import AuthContext from '../context/AuthContext';
 
 const AppContent = () => {
@@ -36,10 +37,9 @@ const AppContent = () => {
             <Routes>
                 <Route element={<ProtectedRoutes/>}>
                     <Route element={<HomePage/>} path='/' exact/>
-
-                    {/* restaurants */}
                     <Route element={<RestaurantPage/>} path='/r/:slug/:uuid'/>
                     <Route element={<CartPage/>} path='/cart'/>
+                    <Route element={<CheckoutPage/>} path='/checkout'/>
                 </Route>
 
                 {/* auth */}

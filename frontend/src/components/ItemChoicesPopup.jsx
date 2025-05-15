@@ -201,7 +201,7 @@ const ItemChoicesPopup = ({ item }) => {
                     <h1 className='w-fit h-fit text-right font-roboto text-md border-2 border-gray-300 cursor-default rounded-full px-2 bg-gray-200 text-gray-500'>Optional</h1>
                 </div>
                 <div className='w-full h-fit flex flex-col justify-start items-start px-4 mb-4'>
-                    <textarea ref={specialInstructionsRef} type="text" placeholder='E.g. No peanuts' className='w-3/4 h-[5rem] outline-none border-2 border-neutral-300 p-2 rounded'/>
+                    <textarea ref={specialInstructionsRef} type="text" placeholder='E.g. No peanuts' className='w-3/4 h-[5rem] outline-none resize-none border-2 border-neutral-300 p-2 rounded'/>
                 </div>
             </div>
             <div className='z-20 w-2/4 flex justify-between items-center bg-white p-4 rounded-b-lg'>
