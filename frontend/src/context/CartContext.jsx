@@ -69,6 +69,10 @@ export const CartContextProvider = ({ children }) => {
         })
         return subtotal;
     }
+
+    const getTotal = () => {
+        return getSubtotal() + getShippingExpense();
+    }
     
     // const getApplicableDiscounts = () => {
     //     const subtotal = getSubtotal();
@@ -239,6 +243,7 @@ export const CartContextProvider = ({ children }) => {
         getSubtotal: getSubtotal,
         getExtrasSubtotal: getExtrasSubtotal,
         getShippingExpense: getShippingExpense,
+        getTotal: getTotal,
         setShowChoicesPopup: setShowChoicesPopup,
         activateChoicesPopup: activateChoicesPopup,
     }

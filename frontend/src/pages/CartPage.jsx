@@ -3,6 +3,7 @@ import { CartContext } from '../context/CartContext'
 import add from '../assets/add.svg';
 import remove from '../assets/remove.svg';
 import close from '../assets/close.svg';
+import { useNavigate } from 'react-router-dom';
 
 
 const CartPage = () => {
@@ -12,6 +13,7 @@ const CartPage = () => {
     const subtotal = getSubtotal();
     const [showExtrasCard, setShowExtrasCard] = useState(false);
     let [extrasCard, setExtrasCard] = useState(null);
+    let navigate = useNavigate();
 
 
     const showExtras = (extras) => {
@@ -163,11 +165,11 @@ const CartPage = () => {
                                 </div>
                                 <div className='w-full h-fit px-4 py-2 rounded-xl border-2 border-dashed border-gray-300 flex justify-between items-center mb-4'>
                                     <h1 className='text-lg font-hedwig text-neutral-700 text-left cursor-default'>Total</h1>
-                                    <h1 className='text-lg font-hedwig text-neutral-700 text-left cursor-default'>{(subtotal + shippingExpense)}</h1>
+                                    <h1 className='text-lg font-hedwig text-neutral-700 text-left cursor-default'>Rs. {(subtotal + shippingExpense)}</h1>
                                 </div>
                                 <p className='font-hedwig text-neutral-600 text-sm'>Discounts to be applied at checkout</p>
                                 <div className='w-full h-fit mt-10'>
-                                    <button onClick={() => {window.location.href = '/checkout'}} className='w-full h-10 bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-hedwig text-md'>
+                                    <button onClick={() => { navigate('/checkout') }} className='w-full h-10 bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-hedwig text-md'>
                                         Proceed to Checkout
                                     </button>
                                 </div>

@@ -1,18 +1,61 @@
-import { useRef, useState } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import card from '../assets/card.svg';
 import cash from '../assets/cash.svg';
+import { CartContext } from '../context/CartContext';
+import axiosClient from '../utils/axiosClient';
+import discount_svg from '../assets/discount.svg';
 
 
 const CheckoutPage = () => {
 
     const [deliveryAddress, setDeliveryAddress] = useState("");
     const [paymentMethod, setPaymentMethod] = useState('cash');
+    const [discounts, setDiscounts] = useState([]);
+    const [selectedDiscount, setSelectedDiscount] = useState(null);
     const [cardDetails, setCardDetails] = useState({
         cardNumber: '',
         expiryDate: '',
         cvc: '',
         cardHolderName: ''
     });
+    let { cartItems, getSubtotal, getTotal } = useContext(CartContext);
+
+    const getDiscountLabel = (discount) => {
+        if (discount.discount_type === 'percentage') {
+            return `${discount.amount}% off`;
+        } else if (discount.discount_type === 'fixed_amount') {
+            return `Rs. ${discount.amount} off`;
+        } else if (discount.discount_type === 'free_delivery') {
+            return 'Free Delivery';
+        }
+        return '';
+    }
+
+    const getEligibleDiscounts = () => {
+        let total = getTotal();
+        let eligibleDiscounts = discounts.filter((discount) => discount.is_valid && discount.min_order_amount <= total);
+        return eligibleDiscounts;
+    }
+
+    useEffect(() => {
+        if (!cartItems.length) return;
+        
+        const restaurant_uuid = cartItems[0].restaurant_uuid;
+        
+        const getDiscounts = async () => {
+            try {
+                const response = await axiosClient.get(`/restaurants/${restaurant_uuid}/discounts`);
+                const data = response.data;
+                setDiscounts(data);
+            } catch (err) {
+                console.error("Failed to fetch discounts", err);
+            }
+        };
+        
+        if (restaurant_uuid) {
+            getDiscounts();
+        }
+    }, []);
 
     return (
         <div className='absolute top-0 left-0 w-full h-full flex justify-center items-center gap-4 bg-gray-100'>
@@ -115,6 +158,51 @@ const CheckoutPage = () => {
                                 </div>
                             </div>
                         )}
+                    </div>
+                </div>
+                <div className='w-full flex flex-col justify-start items-start gap-2'>
+                    <h1 className='text-3xl font-notoserif text-neutral-700 text-left cursor-default'>Discounts</h1>
+                    <div className='w-full h-fit grid auto-rows-auto grid-cols-3 gap-2'>
+                        {getEligibleDiscounts().map((discount) => {
+                            let validTill = new Date(discount.valid_to).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+                            return (
+                                selectedDiscount?.id === discount.id ? (
+                                    <div key={discount.id} className='w-full h-fit border-2 border-neutral-500 rounded-l-md flex justify-between items-center cursor-pointer scale-[101%]'>
+                                        <div className='h-full w-fit ml-2 flex justify-center items-center'>
+                                            <img src={discount_svg} alt='' className='w-5 h-5' />
+                                        </div>
+                                        <div className='h-full flex-1 p-2 flex flex-col justify-start items-start'>
+                                            <h1 className='font-poppins font-semibold text-lg text-neutral-600'>{getDiscountLabel(discount)}</h1>
+                                            <p className='text-sm text-neutral-700'>Valid till <span className='tracking-wider font-hedwig'>{validTill}</span></p>
+                                            <p className='text-sm text-neutral-700'>{discount.min_order_amount === 0 ? "No minimum order amount" : `On orders above Rs. ${discount.min_order_amount}`}</p>
+                                        </div>
+                                        <div className='h-[100px] w-fit flex flex-col justify-evenly items-center mx-2 border-l-2 border-dashed pl-2 border-neutral-300'>
+                                            <div className='w-3 h-3 border-2 border-neutral-300 rounded-full'></div>
+                                            <div className='w-3 h-3 border-2 border-neutral-300 rounded-full'></div>
+                                            <div className='w-3 h-3 border-2 border-neutral-300 rounded-full'></div>
+                                            <div className='w-3 h-3 border-2 border-neutral-300 rounded-full'></div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div key={discount.id} onClick={() => {setSelectedDiscount(discount)}} className='w-full h-fit border-2 border-neutral-300 rounded-l-md flex justify-between items-center cursor-pointer transition duration-150 ease-out hover:border-neutral-500 hover:scale-[101%]'>
+                                        <div className='h-full w-fit ml-2 flex justify-center items-center'>
+                                                <img src={discount_svg} alt='' className='w-5 h-5' />
+                                        </div>
+                                        <div className='h-full flex-1 p-2 flex flex-col justify-start items-start'>
+                                            <h1 className='font-poppins font-semibold text-lg text-neutral-600'>{getDiscountLabel(discount)}</h1>
+                                            <p className='text-sm text-neutral-700'>Valid till <span className='tracking-wider font-hedwig'>{validTill}</span></p>
+                                            <p className='text-sm text-neutral-700'>{discount.min_order_amount === 0 ? "No minimum order amount" : `On orders above Rs. ${discount.min_order_amount}`}</p>
+                                        </div>
+                                        <div className='h-[100px] w-fit flex flex-col justify-evenly items-center mx-2 border-l-2 border-dashed pl-2 border-neutral-300'>
+                                            <div className='w-3 h-3 border-2 border-neutral-300 rounded-full'></div>
+                                            <div className='w-3 h-3 border-2 border-neutral-300 rounded-full'></div>
+                                            <div className='w-3 h-3 border-2 border-neutral-300 rounded-full'></div>
+                                            <div className='w-3 h-3 border-2 border-neutral-300 rounded-full'></div>
+                                        </div>
+                                    </div>
+                                )
+                            );
+                        })}
                     </div>
                 </div>
             </div>
