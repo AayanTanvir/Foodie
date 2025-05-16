@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axiosClient from '../utils/axiosClient';
+import discount_svg from '../assets/discount.svg';
+
 
 const RestaurantDiscounts = ({ restaurant }) => {
 
@@ -56,9 +58,9 @@ const RestaurantDiscounts = ({ restaurant }) => {
 
         return (
             <>
-                <h1 className='text-lg font-semibold font-roboto text-neutral-800 whitespace-nowrap cursor-default'>{discountLabel}</h1>
-                <p className='text-sm font-roboto text-gray-500 whitespace-nowrap cursor-default'>{discountInfo}</p>
-                <p className='text-[0.8rem] font-roboto text-gray-500 whitespace-nowrap cursor-default'>Valid until: {validTill}</p>
+                <h1 className='font-poppins font-semibold text-lg text-neutral-600'>{discountLabel}</h1>
+                <p className='text-sm text-neutral-700 text-nowrap'>Valid till <span className='tracking-wider font-hedwig'>{validTill}</span></p>
+                <p className='text-sm font-roboto text-neutral-700 text-nowrap'>{discountInfo}</p>
             </>
         )
     }
@@ -68,11 +70,21 @@ const RestaurantDiscounts = ({ restaurant }) => {
             <div className='w-full h-[3rem]'>
                 <h1 className='absolute left-48 text-left font-roboto font-semibold text-3xl text-neutral-800'>Discounts</h1>
             </div>
-            <div className="h-fit grid grid-cols-4 auto-rows-auto gap-4">
+            <div className='w-[80%] h-fit grid grid-cols-3 auto-rows-auto gap-x-4 gap-y-2 '>
                 {discounts.map((discount) => (
-                    <div key={discount.id} className="relative w-full h-full border-2 border-gray-200 rounded-xl shadow-md p-2 flex flex-col justify-center items-start transition hover:border-gray-300 hover:bg-neutral-100">
-                        {/* <h1 className='text-gray-500 font-roboto text-[0.75rem] absolute right-2 top-2'>Valid till: {</h1> */}
-                        {discountInfo(discount)}
+                    <div key={discount.id} className='w-full h-fit border-2 border-neutral-300 rounded-l-md flex justify-between items-center cursor-pointer transition duration-150 ease-out hover:border-neutral-500 hover:scale-[101%]'>
+                        <div className='h-full w-fit ml-2 flex justify-center items-center'>
+                            <img src={discount_svg} alt='' className='w-5 h-5' />
+                        </div>
+                        <div className='h-full flex-1 p-2 flex flex-col justify-start items-start'>
+                            {discountInfo(discount)}
+                        </div>
+                        <div className='h-[100px] w-fit flex flex-col justify-evenly items-center mx-2 border-l-2 border-dashed pl-2 border-neutral-300'>
+                            <div className='w-3 h-3 border-2 border-neutral-300 rounded-full'></div>
+                            <div className='w-3 h-3 border-2 border-neutral-300 rounded-full'></div>
+                            <div className='w-3 h-3 border-2 border-neutral-300 rounded-full'></div>
+                            <div className='w-3 h-3 border-2 border-neutral-300 rounded-full'></div>
+                        </div>
                     </div>
                 ))}
             </div>

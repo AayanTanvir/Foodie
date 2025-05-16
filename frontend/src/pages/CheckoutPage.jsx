@@ -173,8 +173,8 @@ const CheckoutPage = () => {
                                         </div>
                                         <div className='h-full flex-1 p-2 flex flex-col justify-start items-start'>
                                             <h1 className='font-poppins font-semibold text-lg text-neutral-600'>{getDiscountLabel(discount)}</h1>
-                                            <p className='text-sm text-neutral-700'>Valid till <span className='tracking-wider font-hedwig'>{validTill}</span></p>
-                                            <p className='text-sm text-neutral-700'>{discount.min_order_amount === 0 ? "No minimum order amount" : `On orders above Rs. ${discount.min_order_amount}`}</p>
+                                            <p className='text-sm font-roboto text-neutral-700'>Valid till <span className='tracking-wider font-hedwig'>{validTill}</span></p>
+                                            <p className='text-sm font-roboto text-neutral-700'>{discount.min_order_amount === 0 ? "No minimum order amount" : `On orders above Rs. ${discount.min_order_amount}`}</p>
                                         </div>
                                         <div className='h-[100px] w-fit flex flex-col justify-evenly items-center mx-2 border-l-2 border-dashed pl-2 border-neutral-300'>
                                             <div className='w-3 h-3 border-2 border-neutral-300 rounded-full'></div>
