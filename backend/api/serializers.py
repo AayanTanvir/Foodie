@@ -95,13 +95,14 @@ class MenuItemSerializer(serializers.ModelSerializer):
     )
     popularity = serializers.SerializerMethodField()
     restaurant_uuid = serializers.UUIDField(source='restaurant.uuid', read_only=True)
+    restaurant_name = serializers.SlugField(source='restaurant.name', read_only=True)
     
     def get_popularity(self, obj):
         return obj.popularity
 
     class Meta:
         model = MenuItem
-        fields = ['id', 'restaurant_uuid', 'name', 'description', 'category', 'price',
+        fields = ['id', 'restaurant_uuid', 'restaurant_name', 'name', 'description', 'category', 'price',
                   'image', 'is_available', 'created_at', 'popularity']
         
 
