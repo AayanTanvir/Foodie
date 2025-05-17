@@ -16,7 +16,6 @@ export const CartContextProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState(getInitialCartItems);
     const [isCartEmpty, setIsCartEmpty] = useState(cartItems.length === 0);
     const [showChoicesPopup, setShowChoicesPopup] = useState(false);
-    const [sideItems, setSideItems] = useState(null);
     const [menuItemModifiers, setMenuItemModifiers] = useState(null);
     const [restaurantUUID, setRestaurantUUID] = useState("");
     const [choicesItem, setChoicesItem] = useState(null);
@@ -188,27 +187,6 @@ export const CartContextProvider = ({ children }) => {
     }, [cartItems])
 
     useEffect(() => {
-        const getSideItems = async() => {
-            if (restaurantUUID !== "") {
-                try {
-                    const res = await axiosClient.get(`/restaurants/${restaurantUUID}/side_items`);
-                    const data = res.data;
-        
-                    if (res.status === 200) {
-                        setSideItems(data || null);
-                    } else {
-                        console.log("Unexpected response status", res.status);
-                        setSideItems(null);
-                    }
-                } catch (error) {
-                    setFailureMessage("An error occurred while fetching side items", error.response?.status);
-                    setSideItems(null);
-                }
-            }
-
-            return null;
-        }
-
         const getMenuItemModifiers = async () => {
             if (restaurantUUID === "") return;
 
@@ -228,14 +206,12 @@ export const CartContextProvider = ({ children }) => {
         }
 
         getMenuItemModifiers()
-        getSideItems()
     }, [restaurantUUID])
     
     let context = {
         isCartEmpty: isCartEmpty,
         cartItems: cartItems,
         showChoicesPopup: showChoicesPopup,
-        sideItems: sideItems,
         menuItemModifiers: menuItemModifiers,
         choicesItem: choicesItem,
         setRestaurantUUID: setRestaurantUUID,

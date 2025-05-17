@@ -107,7 +107,7 @@ const CheckoutPage = () => {
                                     <div className='w-4 h-4 rounded-full border-2 border-gray-600 bg-neutral-400'></div>
                                     <div className='w-fit h-fit flex justify-center items-center gap-2'>
                                         <img src={card} alt='' className='w-6 h-6' />
-                                        <h1 className='text-lg font-roboto text-neutral-700 text-left cursor-default'>Credit or Debit Card</h1>
+                                        <h1 className='text-lg font-roboto text-neutral-700 text-left cursor-default'>Card</h1>
                                     </div>
                                 </div>
                                 <div className='w-full h-fit flex flex-col justify-start items-start gap-2'>
@@ -170,7 +170,7 @@ const CheckoutPage = () => {
                                 <div className='w-4 h-4 rounded-full border-2 border-gray-600'></div>
                                 <div className='w-fit h-fit flex justify-center items-center gap-2'>
                                     <img src={card} alt='' className='w-6 h-6' />
-                                    <h1 className='text-lg font-roboto text-neutral-700 text-left'>Credit or Debit Card</h1>
+                                    <h1 className='text-lg font-roboto text-neutral-700 text-left'>Card</h1>
                                 </div>
                             </div>
                         )}
@@ -251,7 +251,7 @@ const CheckoutPage = () => {
                         <h1 className='text-md font-hedwig text-neutral-600 text-left cursor-default'>Rs. {getSubtotal()}</h1>
                     </div>
                     <div className='w-full h-fit flex justify-between items-center'>
-                        <h1 className='text-md font-hedwig text-neutral-600 text-left cursor-default'>Shipping</h1>
+                        <h1 className='text-md font-hedwig text-neutral-600 text-left cursor-default'>Delivery Charges</h1>
                         <h1 className='text-md font-hedwig text-neutral-600 text-left cursor-default'>{getShippingExpense(selectedDiscount) === "Free" ? "Free" : `Rs. ${getShippingExpense(selectedDiscount)}`}</h1>
                     </div>
                     {(selectedDiscount && selectedDiscount?.discount_type !== "free_delivery") && (

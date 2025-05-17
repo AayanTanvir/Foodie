@@ -89,6 +89,7 @@ class MenuItem(models.Model):
     category = models.ForeignKey("MenuItemCategory", related_name="menu_items", on_delete=models.SET_NULL, null=True, blank=True)
     image = models.ImageField(upload_to="menu_items/", blank=True, null=True, default="menu_items/default.png")
     is_available = models.BooleanField(default=True)
+    is_side_item = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -148,7 +149,7 @@ class Order(models.Model):
     def discounted_price(self):
         total_price = self.total_price
         if self.discount:
-            if self.discount.valid_from <= timezone.now() <= self.discount.valid_to:
+            if self.discount.is_valid:
                 if total_price < self.discount.min_order_amount:
                     return total_price
                 
@@ -170,16 +171,16 @@ class Order(models.Model):
     
 class OrderItem(models.Model):
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, related_name="order_items")
-    side_items = models.ManyToManyField("SideItem", through="OrderItemSideItem", related_name="order_items")
+    modifiers = models.ManyToManyField("MenuItemModifierChoice", blank=True, related_name="order_items")
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    remark = models.CharField(max_length=255, blank=True, null=True, default="")
+    special_instruction = models.CharField(max_length=255, blank=True, null=True, default="")
     quantity = models.IntegerField(default=1)
     
     
     @property
-    def sub_total(self):
-        return float((self.menu_item.price * self.quantity) + (self.side_items.aggregate(models.Sum('price'))['price__sum'] or 0))
-    
+    def subtotal(self):
+        return (self.menu_item.price * self.quantity) + (self.modifiers.aggregate(models.Sum('price'))['price__sum'] or 0)
+
     def __str__(self):
         return f"{self.menu_item.name} - {self.order.uuid}"
     
@@ -223,28 +224,8 @@ class MenuItemModifierChoice(models.Model):
         return f"{self.label} for {self.modifier}"
 
 
-class SideItem(models.Model):
-    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="side_items")
-    name = models.CharField(max_length=255)
-    price = models.IntegerField()
-    image = models.ImageField(upload_to='side_items/', blank=True, null=True, default="side_items/default.jpg")
-    created_at = models.DateTimeField(auto_now_add=True)
-    
-    def __str__(self):
-        return f"{self.name} - {self.price}"
-
-
-class OrderItemSideItem(models.Model):
-    order_item = models.ForeignKey(OrderItem, on_delete=models.CASCADE)
-    side_item = models.ForeignKey(SideItem, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
-
-    def __str__(self):
-        return f"{self.quantity}x {self.side_item.name} for {self.order_item}"
-    
-    
 class Discount(models.Model):
-    
+
     class DiscountType(models.TextChoices):
         PERCENTAGE = 'percentage', 'Percentage'
         FIXED_AMOUNT = 'fixed_amount', 'Fixed Amount'

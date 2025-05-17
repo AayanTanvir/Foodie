@@ -6,6 +6,8 @@ import RestaurantMenu from '../components/RestaurantMenu';
 import RestaurantDiscounts from '../components/RestaurantDiscounts';
 import axiosClient from '../utils/axiosClient';
 
+
+//IM GONNA BE HONEST, I DONT HAVE THE COURAGE TO REFACTOR EVERYTHING BUT I HAVE TO DO IT BECAUSE I NEED TO ADD SIDE ITEMS AS A SEPARATE THING😭
 const RestaurantPage = () => {
     const { uuid } = useParams();
     const { setFailureMessage } = useContext(AuthContext);

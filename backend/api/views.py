@@ -161,19 +161,6 @@ class RestaurantDiscountsAPIView(generics.GenericAPIView):
         except Restaurant.DoesNotExist:
             return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
         
-
-class RestaurantSideItemAPIView(generics.GenericAPIView):
-    serializer_class = SideItemSerializer
-    
-    def get(self, request, restaurant_uuid):
-        try:
-            restaurant = Restaurant.objects.get(uuid=restaurant_uuid)
-            side_items = restaurant.side_items.all()
-            serializer = self.get_serializer(side_items, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        except Restaurant.DoesNotExist:
-            return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
         
         
 class MenuItemModifierAPIView(generics.GenericAPIView):
