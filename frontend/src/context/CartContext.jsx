@@ -70,10 +70,10 @@ export const CartContextProvider = ({ children }) => {
         return subtotal;
     }
 
-    const getTotal = () => {
-        return getSubtotal() + getShippingExpense();
+    const getItemSubtotal = (item) => {
+        return (item.price * item.quantity) + getExtrasSubtotal({ modifiers: item.modifiers, sideItems: item.side_items });
     }
-    
+
     // const getApplicableDiscounts = () => {
     //     const subtotal = getSubtotal();
     //     let applicableDiscounts = discounts.filter((discount) => discount.is_valid && discount.min_order_amount <= subtotal);
@@ -243,7 +243,7 @@ export const CartContextProvider = ({ children }) => {
         getSubtotal: getSubtotal,
         getExtrasSubtotal: getExtrasSubtotal,
         getShippingExpense: getShippingExpense,
-        getTotal: getTotal,
+        getItemSubtotal: getItemSubtotal,
         setShowChoicesPopup: setShowChoicesPopup,
         activateChoicesPopup: activateChoicesPopup,
     }

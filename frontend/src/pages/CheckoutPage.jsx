@@ -19,7 +19,7 @@ const CheckoutPage = () => {
         cvc: '',
         cardHolderName: ''
     });
-    let { cartItems, getSubtotal, getTotal } = useContext(CartContext);
+    let { cartItems, getSubtotal, getShippingExpense, getItemSubtotal } = useContext(CartContext);
     const restaurantName = cartItems[0]?.restaurant_name;
 
     const getDiscountLabel = (discount) => {
@@ -34,7 +34,7 @@ const CheckoutPage = () => {
     }
 
     const getEligibleDiscounts = () => {
-        let total = getTotal();
+        let total = getSubtotal() + getShippingExpense();
         let eligibleDiscounts = discounts.filter((discount) => discount.is_valid && discount.min_order_amount <= total);
         return eligibleDiscounts;
     }
@@ -48,6 +48,11 @@ const CheckoutPage = () => {
 
         return choices;
     };
+
+    const getSideItems = (item) => {
+        const sideItems = item.side_items.map((sideItem) => (sideItem.quantity > 1 ? `${sideItem.quantity} x ` : '') + sideItem.name);
+        return sideItems;   
+    }
 
     useEffect(() => {
         if (!cartItems.length) return;
@@ -232,9 +237,12 @@ const CheckoutPage = () => {
                                     {getModifierChoices(item)?.map((modifier, index) => (
                                         <span key={index} className='text-md font-poppins text-neutral-700 text-left cursor-default'>+ {modifier}</span>
                                     ))}
+                                    {getSideItems(item)?.map((sideItem, index) => (
+                                        <span key={index} className='text-md font-poppins text-neutral-700 text-left cursor-default'>{sideItem}</span>
+                                    ))}
                                 </div>
                             </div>
-                            <h1 className='text-md font-poppins text-neutral-700 text-left cursor-default'>Rs. {item.price * item.quantity}</h1>
+                            <h1 className='text-md font-poppins text-neutral-700 text-left cursor-default'>Rs. {getItemSubtotal(item)}</h1>
                         </div>
                     ))}
                 </div>
