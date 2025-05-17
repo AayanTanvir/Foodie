@@ -62,7 +62,6 @@ axiosClient.interceptors.response.use(
                 
             } catch (refreshError) {
                 console.error("Token refresh failed:", refreshError);
-                logout();
                 return Promise.reject(refreshError);
             }
                 

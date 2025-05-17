@@ -12,14 +12,13 @@ const CheckoutPage = () => {
     const [paymentMethod, setPaymentMethod] = useState('cash');
     const [discounts, setDiscounts] = useState([]);
     const [selectedDiscount, setSelectedDiscount] = useState(null);
-    const [modifierChoices, setModifierChoices] = useState([]);
     const [cardDetails, setCardDetails] = useState({
         cardNumber: '',
         expiryDate: '',
         cvc: '',
         cardHolderName: ''
     });
-    let { cartItems, getSubtotal, getShippingExpense, getItemSubtotal } = useContext(CartContext);
+    let { cartItems, getSubtotal, getShippingExpense, getItemSubtotal, getDiscountAmount } = useContext(CartContext);
     const restaurantName = cartItems[0]?.restaurant_name;
 
     const getDiscountLabel = (discount) => {
@@ -225,26 +224,51 @@ const CheckoutPage = () => {
             </div>
             <div className='rounded-md border-[1.5px] border-neutral-300 w-1/3 h-fit p-4 flex flex-col justify-start items-start bg-white'>
                 <h1 className='text-3xl font-notoserif text-neutral-700 text-left cursor-default'>Order Summary</h1>
-                <h1 className='text-lg font-poppins font-semibold text-neutral-600 text-left cursor-default mb-2'>{restaurantName}</h1>
-                <div className='w-full h-fit flex flex-col justify-start items-start'>
+                <h1 className='text-lg font-poppins font-bold text-neutral-800 text-left cursor-default mb-2'>{restaurantName}</h1>
+                <div className='w-full h-fit flex flex-col justify-start items-start border-b-[1px] border-neutral-300 pb-2 mb-2'>
                     {cartItems.map((item) => (
-                        <div key={item.id} className='w-full h-fit flex justify-between items-center py-2'>
+                        <div key={item.id} className='w-full h-fit flex justify-between items-start py-2'>
                             <div className='flex justify-start items-start w-fit h-fit'>
                                 <span className='text-md font-poppins text-neutral-700 text-left cursor-default'>{item.quantity}</span>
                                 <span className='text-md font-poppins text-neutral-700 text-left cursor-default mx-1'>x</span>
                                 <div className='h-fit flex flex-col justify-start items-start'>
                                     <span className='text-md font-poppins text-neutral-700 text-left cursor-default'>{item.name}</span>
                                     {getModifierChoices(item)?.map((modifier, index) => (
-                                        <span key={index} className='text-md font-poppins text-neutral-700 text-left cursor-default'>+ {modifier}</span>
+                                        <span key={index} className='text-sm font-poppins text-neutral-700 text-left cursor-default'>+ {modifier}</span>
                                     ))}
                                     {getSideItems(item)?.map((sideItem, index) => (
-                                        <span key={index} className='text-md font-poppins text-neutral-700 text-left cursor-default'>{sideItem}</span>
+                                        <span key={index} className='text-sm font-poppins text-neutral-700 text-left cursor-default'>{sideItem}</span>
                                     ))}
                                 </div>
                             </div>
-                            <h1 className='text-md font-poppins text-neutral-700 text-left cursor-default'>Rs. {getItemSubtotal(item)}</h1>
+                            <h1 className='text-md font-hedwig text-neutral-700 text-left cursor-default'>Rs. {getItemSubtotal(item)}</h1>
                         </div>
                     ))}
+                </div>
+                <div className='w-full h-fit flex flex-col justify-center items-center'>
+                    <div className='w-full h-fit flex justify-between items-center'>
+                        <h1 className='text-md font-hedwig text-neutral-600 text-left cursor-default'>Subtotal</h1>
+                        <h1 className='text-md font-hedwig text-neutral-600 text-left cursor-default'>Rs. {getSubtotal()}</h1>
+                    </div>
+                    <div className='w-full h-fit flex justify-between items-center'>
+                        <h1 className='text-md font-hedwig text-neutral-600 text-left cursor-default'>Shipping</h1>
+                        <h1 className='text-md font-hedwig text-neutral-600 text-left cursor-default'>{getShippingExpense(selectedDiscount) === "Free" ? "Free" : `Rs. ${getShippingExpense(selectedDiscount)}`}</h1>
+                    </div>
+                    {(selectedDiscount && selectedDiscount?.discount_type !== "free_delivery") && (
+                        <div className='w-full h-fit flex justify-between items-center'>
+                            <h1 className='text-md font-hedwig text-neutral-600 text-left cursor-default'>Discount Amount</h1>
+                            <h1 className='text-md font-hedwig text-neutral-600 text-left cursor-default'>- Rs. {getDiscountAmount(selectedDiscount)}</h1>
+                        </div>
+                    )}
+                    <div className='w-full h-fit flex justify-between items-center mt-4'>
+                        <h1 className='text-2xl font-poppins font-extrabold text-neutral-800 text-left cursor-default'>Total</h1>
+                        <h1 className='text-lg font-poppins font-extrabold text-neutral-800 text-left cursor-default'>Rs. {(getSubtotal() + getShippingExpense()) - getDiscountAmount(selectedDiscount)}</h1>
+                    </div>
+                    {selectedDiscount && (
+                        <div className='w-full h-fit flex justify-end items-center'>
+                            <h1 className='text-sm font-poppins text-neutral-800 line-through cursor-default'>Rs. {getSubtotal() + getShippingExpense()}</h1>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

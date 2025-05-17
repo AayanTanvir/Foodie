@@ -14,7 +14,6 @@ const ItemChoicesPopup = ({ item }) => {
     const specialInstructionsRef = useRef(null);
     const [itemQuantity, setItemQuantity] = useState(1);
 
-
     const getModifiers = (item, modifiers) => {
         return modifiers.filter((modifier) => modifier.menu_item === item.name);
     };

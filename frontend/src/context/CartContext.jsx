@@ -131,29 +131,29 @@ export const CartContextProvider = ({ children }) => {
         });
     };
 
-    const getShippingExpense = () => {
-        // const bestDiscount = getBestDiscount();
-        // return bestDiscount?.discount_type === "free_delivery" ? 0 : 150;
+    const getShippingExpense = (discount=null) => {
+        if (discount?.discount_type === "free_delivery") {
+            return "Free";
+        }
         return 150;
     }
 
-    // const getDiscountAmount = (discount) => {
-    //     //returns the amount saved by the discount
-    //     if (!discount) return;
+    const getDiscountAmount = (discount) => {
+        if (!discount) return 0;
 
-    //     if (discount.discount_type === "free_delivery") {
-    //         return 100;
-    //     }
-    //     else if (discount.discount_type === "percentage") {
-    //         return (discount.amount / 100) * getSubtotal();
-    //     }
-    //     else if (discount.discount_type === "fixed_amount") {
-    //         return discount.amount;
-    //     }
-    //     else {
-    //         return 0;
-    //     }
-    // }
+        if (discount.discount_type === "free_delivery") {
+            return 150;
+        }
+        else if (discount.discount_type === "percentage") {
+            return (discount.amount / 100) * getSubtotal();
+        }
+        else if (discount.discount_type === "fixed_amount") {
+            return discount.amount;
+        }
+        else {
+            return 0;
+        }
+    }
 
     // const getBestDiscount = () => {
     //     const applicable = getApplicableDiscounts();
@@ -244,6 +244,7 @@ export const CartContextProvider = ({ children }) => {
         getExtrasSubtotal: getExtrasSubtotal,
         getShippingExpense: getShippingExpense,
         getItemSubtotal: getItemSubtotal,
+        getDiscountAmount: getDiscountAmount,
         setShowChoicesPopup: setShowChoicesPopup,
         activateChoicesPopup: activateChoicesPopup,
     }
