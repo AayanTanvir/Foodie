@@ -175,7 +175,24 @@ const ItemChoicesPopup = ({ item }) => {
                                                 </div>
                                                 <div className='w-full h-fit flex justify-between items-center'>
                                                     <p className='text-left font-poppins text-md text-neutral-800'>Qty. </p>
-                                                    <input onChange={(self) => handleSideItemQuantity(item, self.target.value) } className='w-8 pl-1' type="number" max={20} min={1} defaultValue={1}/>
+                                                    <input 
+                                                        onChange={(e) => {
+                                                            const cleaned = e.target.value.replace(/\D/g, '');
+                                                            const num = parseInt(cleaned, 10);
+                                                            if (num >= 1 && num <= 20) {
+                                                                e.target.value = cleaned;
+                                                                handleSideItemQuantity(item, num);
+                                                            } else {
+                                                                e.target.value = 1;
+                                                            }
+                                                        }} 
+                                                        className='w-8 pl-1' 
+                                                        type="number"
+                                                        inputMode='numeric' 
+                                                        defaultValue={item.quantity || 1}
+                                                        max={20}
+                                                        min={1} 
+                                                    />
                                                 </div>
                                             </>
                                         ) : (
