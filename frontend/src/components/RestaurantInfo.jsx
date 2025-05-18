@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import star from '../assets/star.svg';
-import { formatTime } from '../utils/utils';
+import { formatTime } from '../utils/Utils';
 
 
 const RestaurantInfo = ({ restaurant }) => {
-    
+
     const formattedTimings = `${formatTime(restaurant.opening_time)} - ${formatTime(restaurant.closing_time)}`;
     const [moreInfo, setMoreInfo] = useState(false);
 

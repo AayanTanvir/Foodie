@@ -22,11 +22,7 @@ const RestaurantPage = () => {
     }, [restaurant, navigate]);
 
     if (!restaurant) {
-        return (
-            <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center ">
-                <h1 className='font-poppins text-5xl font-bold cursor-default'>Restaurant not found.</h1>
-            </div>
-        );
+        return null;
     }
 
     return (

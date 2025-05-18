@@ -1,31 +1,11 @@
-import React, { useState, useEffect } from 'react'
-import axiosClient from '../utils/axiosClient';
+import { useContext, useEffect } from 'react';
+import { RestaurantContext } from '../context/RestaurantContext';
 import discount_svg from '../assets/discount.svg';
 
 
 const RestaurantDiscounts = ({ restaurant }) => {
 
-    const [discounts, setDiscounts] = useState([]);
-
-    useEffect(() => {
-        const getDiscounts = async () => {
-            try {
-                const response = await axiosClient.get(`/restaurants/${restaurant.uuid}/discounts`);
-                if (response.status === 200) {
-                    setDiscounts(response.data);
-                } else {
-                    alert("Unexpected response", response.status)
-                }
-
-            } catch (error) {
-                alert("An error occurred while fetching discounts.", response.status);
-            }
-        };
-
-        if (restaurant?.uuid) {
-            getDiscounts();
-        }
-    }, [restaurant?.uuid]);
+    const { discounts } = useContext(RestaurantContext);
 
     if (!discounts || discounts.length === 0) {
         return null;
