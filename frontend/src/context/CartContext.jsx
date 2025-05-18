@@ -1,6 +1,4 @@
 import React, {createContext, useContext, useEffect, useState} from 'react'
-import axiosClient from '../utils/axiosClient';
-import AuthContext from '../context/AuthContext';
 
 
 export const CartContext = createContext();
@@ -12,39 +10,11 @@ export const CartContextProvider = ({ children }) => {
         return cartItems ? JSON.parse(cartItems) : [];
     }
 
-    // const [discounts, setDiscounts] = useState([]);
     const [cartItems, setCartItems] = useState(getInitialCartItems);
     const [isCartEmpty, setIsCartEmpty] = useState(cartItems.length === 0);
     const [showChoicesPopup, setShowChoicesPopup] = useState(false);
-    const [menuItemModifiers, setMenuItemModifiers] = useState(null);
-    const [restaurantUUID, setRestaurantUUID] = useState("");
     const [choicesItem, setChoicesItem] = useState(null);
-    let { setFailureMessage } = useContext(AuthContext);
 
-    // if (!discounts) {
-    //     return <>{children}</>;
-    // }
-
-    // useEffect(() => {
-    //     if (!cartItems.length) return;
-        
-    //     const restaurant_uuid = cartItems[0].restaurant_uuid;
-        
-    //     const getDiscounts = async () => {
-    //         try {
-    //             const response = await fetch(`http://localhost:8000/discounts/${restaurant_uuid}`);
-    //             const data = await response.json();
-    //             setDiscounts(data);
-    //         } catch (err) {
-    //             console.error("Failed to fetch discounts", err);
-    //         }
-    //     };
-        
-    //     if (restaurant_uuid) {
-    //         getDiscounts();
-    //     }
-    // }, []);
-    
     const getExtrasSubtotal = (extras) => {
         if (Object.keys(extras.modifiers).length === 0 && extras.sideItems.length === 0) return 0;
         const modifierPrices = Object.values(extras.modifiers).flatMap(choicesArray => choicesArray.map(choice => choice.price));
@@ -72,13 +42,6 @@ export const CartContextProvider = ({ children }) => {
     const getItemSubtotal = (item) => {
         return (item.price * item.quantity) + getExtrasSubtotal({ modifiers: item.modifiers, sideItems: item.side_items });
     }
-
-    // const getApplicableDiscounts = () => {
-    //     const subtotal = getSubtotal();
-    //     let applicableDiscounts = discounts.filter((discount) => discount.is_valid && discount.min_order_amount <= subtotal);
-
-    //     return applicableDiscounts;
-    // }
 
     const doCartItemAction = (item, action, specialInstructions="", modifiers={}, sideItems=[], quantity=1) => {
         if (cartItems.length !== 0) {
@@ -185,36 +148,12 @@ export const CartContextProvider = ({ children }) => {
         setIsCartEmpty(cartItems.length === 0);
         localStorage.setItem("cartItems", JSON.stringify(cartItems));
     }, [cartItems])
-
-    useEffect(() => {
-        const getMenuItemModifiers = async () => {
-            if (restaurantUUID === "") return;
-
-            try {
-                const res = await axiosClient.get(`/restaurants/${restaurantUUID}/menu_item_modifiers`);
-
-                if (res.status === 200) {
-                    setMenuItemModifiers(res.data || null);
-                } else {
-                    console.log("Unexpected response status", res.status);
-                    setMenuItemModifiers(null);
-                }
-            } catch (error) {
-                setFailureMessage("An error occurred while fetching item modifiers", error.response?.status);
-                setMenuItemModifiers(null);
-            }
-        }
-
-        getMenuItemModifiers()
-    }, [restaurantUUID])
     
     let context = {
         isCartEmpty: isCartEmpty,
         cartItems: cartItems,
         showChoicesPopup: showChoicesPopup,
-        menuItemModifiers: menuItemModifiers,
         choicesItem: choicesItem,
-        setRestaurantUUID: setRestaurantUUID,
         doCartItemAction: doCartItemAction,
         getSubtotal: getSubtotal,
         getExtrasSubtotal: getExtrasSubtotal,

@@ -1,42 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import AuthContext from '../context/AuthContext';
 import RestaurantInfo from '../components/RestaurantInfo';
 import RestaurantMenu from '../components/RestaurantMenu';
 import RestaurantDiscounts from '../components/RestaurantDiscounts';
-import axiosClient from '../utils/axiosClient';
+import { RestaurantContext } from '../context/RestaurantContext';
 
 
-//IM GONNA BE HONEST, I DONT HAVE THE COURAGE TO REFACTOR EVERYTHING BUT I HAVE TO DO IT BECAUSE I NEED TO ADD SIDE ITEMS AS A SEPARATE THING😭
 const RestaurantPage = () => {
     const { uuid } = useParams();
-    const { setFailureMessage } = useContext(AuthContext);
-    const [restaurant, setRestaurant] = useState(null);
-    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    let { fetchRestaurant, restaurant } = useContext(RestaurantContext);
 
     useEffect(() => {
-        const fetchRestaurant = async () => {
-            if (loading === false) setLoading(true);
-            try {
-                const response = await axiosClient.get(`/restaurants/${uuid}`);
-                
-                if (response.status === 200) {
-                    setRestaurant(response.data || null);
-                    setLoading(false);
-                } else {
-                    setFailureMessage("Unexpected response.", response.status);
-                }
-    
-            } catch (error) {
-                setFailureMessage("An error occurred.", error.response?.status);
-                setRestaurant(null);
-                setLoading(false);
-                navigate('/');
-            }
-        }
-
-        fetchRestaurant();
+        fetchRestaurant(uuid);
     }, [uuid]);
 
     useEffect(() => {
@@ -45,12 +21,12 @@ const RestaurantPage = () => {
         }
     }, [restaurant, navigate]);
 
-    if (loading) {
-        return <div className="pt-12 text-center">Loading...</div>;
-    }
-
     if (!restaurant) {
-        return <div className="pt-12 text-center">Restaurant not found.</div>;
+        return (
+            <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center ">
+                <h1 className='font-poppins text-5xl font-bold cursor-default'>Restaurant not found.</h1>
+            </div>
+        );
     }
 
     return (

@@ -5,6 +5,7 @@ import arrow_left from '../assets/arrow_left.svg';
 import add from '../assets/add.svg';
 import close from '../assets/close.svg';
 import { CartContext } from '../context/CartContext';
+import { RestaurantContext } from '../context/RestaurantContext';
 
 
 const RestaurantMenu = ({ restaurant }) => {
@@ -14,9 +15,10 @@ const RestaurantMenu = ({ restaurant }) => {
     const [isSearching, setIsSearching] = useState(false);
     const [searchedItems, setSearchedItems] = useState([]);
     const popularTagElement = <h1 className='text-[0.7rem] text-green-700 py-[5px] px-2 bg-green-300 font-semibold font-roboto rounded-lg absolute bottom-2 left-12'>POPULAR</h1>;
-    let { doCartItemAction, menuItemModifiers, activateChoicesPopup, setRestaurantUUID, cartItems } = useContext(CartContext);
+    let { doCartItemAction,  activateChoicesPopup, cartItems } = useContext(CartContext);
+    let { menuItemModifiers } = useContext(RestaurantContext);
     let popularItems = restaurant.menu_items.sort((a, b) => b.popularity - a.popularity).slice(0, 5);
-    
+
     useEffect(() => {
         const checkOverflow = () => {
             if (scrollRef.current) {
@@ -25,9 +27,6 @@ const RestaurantMenu = ({ restaurant }) => {
             }
         };
         checkOverflow()
-
-        setRestaurantUUID(restaurant.uuid);
-
     }, [restaurant])
 
     const handleScroll = (direction) => {

@@ -1,13 +1,16 @@
 import React, { useContext, useEffect, useRef, useState, useMemo } from 'react'
 import { CartContext } from '../context/CartContext'
+import { RestaurantContext } from '../context/RestaurantContext';
 import close from '../assets/close.svg';
 import remove from '../assets/remove.svg';
 import add from '../assets/add.svg';
 import { objArrayIncludes } from '../utils/Utils';
 
+
 const ItemChoicesPopup = ({ item }) => {
 
-    let { sideItems, menuItemModifiers, activateChoicesPopup, doCartItemAction } = useContext(CartContext);
+    let { activateChoicesPopup, doCartItemAction } = useContext(CartContext);
+    let { menuItemModifiers, sideItems } = useContext(RestaurantContext);
     const [selectedModifiers, setSelectedModifiers] = useState({});
     const [selectedSideItems, setSelectedSideItems] = useState([]);
     const [canAdd, setCanAdd] = useState(false);
@@ -172,7 +175,7 @@ const ItemChoicesPopup = ({ item }) => {
                                                     <h1 className='text-left font-poppins text-md text-neutral-800 whitespace-break-spaces text-wrap'>{item.name}</h1>
                                                     <h1 className='text-left font-hedwig text-sm text-neutral-800 whitespace-break-spaces text-wrap'>Rs. {item.price}</h1>
                                                 </div>
-                                                <div className='w-full h-fit flex justify-between items-center'>
+                                                <div className='w-full h-fit flex justify-start items-center'>
                                                     <p className='text-left font-poppins text-md text-neutral-800'>Qty. </p>
                                                     <input 
                                                         onChange={(e) => {
