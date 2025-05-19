@@ -38,7 +38,7 @@ const CheckoutPage = () => {
         return eligibleDiscounts;
     }
 
-    const getModifierChoices = (item) => {
+    const getModifierChoices = (item={}) => {
         const choices = Object.keys(item.modifiers).length > 0
             ? Object.values(item.modifiers).flatMap((choicesArray) =>
                 choicesArray.map((choice) => choice.label)
@@ -47,11 +47,6 @@ const CheckoutPage = () => {
 
         return choices;
     };
-
-    const getSideItems = (item) => {
-        const sideItems = item.side_items.map((sideItem) => (sideItem.quantity > 1 ? `${sideItem.quantity} x ` : '') + sideItem.name);
-        return sideItems;   
-    }
 
     useEffect(() => {
         if (!cartItems.length) return;
@@ -227,19 +222,22 @@ const CheckoutPage = () => {
                 <h1 className='text-lg font-poppins font-bold text-neutral-800 text-left cursor-default mb-2'>{restaurantName}</h1>
                 <div className='w-full h-fit flex flex-col justify-start items-start border-b-[1px] border-neutral-300 pb-2 mb-2'>
                     {cartItems.map((item) => (
-                        <div key={item.id} className='w-full h-fit flex justify-between items-start py-2'>
+                        <div key={item.id} className='w-full h-fit flex justify-between items-start mb-2'>
                             <div className='flex justify-start items-start w-fit h-fit'>
-                                <span className='text-md font-poppins text-neutral-700 text-left cursor-default'>{item.quantity}</span>
-                                <span className='text-md font-poppins text-neutral-700 text-left cursor-default mx-1'>x</span>
-                                <div className='h-fit flex flex-col justify-start items-start'>
-                                    <span className='text-md font-poppins text-neutral-700 text-left cursor-default'>{item.name}</span>
-                                    {getModifierChoices(item)?.map((modifier, index) => (
-                                        <span key={index} className='text-sm font-poppins text-neutral-700 text-left cursor-default'>+ {modifier}</span>
-                                    ))}
-                                    {getSideItems(item)?.map((sideItem, index) => (
-                                        <span key={index} className='text-sm font-poppins text-neutral-700 text-left cursor-default'>{sideItem}</span>
-                                    ))}
-                                </div>
+                                {item.is_side_item ? (
+                                    <h1 className='text-md font-poppins text-neutral-700 text-left cursor-default'>{item.quantity} x {item.name}</h1>
+                                ) : (
+                                    <>
+                                        <span className='text-md font-poppins text-neutral-700 text-left cursor-default'>{item.quantity}</span>
+                                        <span className='text-md font-poppins text-neutral-700 text-left cursor-default mx-1'>x</span>
+                                        <div className='h-fit flex flex-col justify-start items-start'>
+                                            <span className='text-md font-poppins text-neutral-700 text-left cursor-default'>{item.name}</span>
+                                            {getModifierChoices(item)?.map((modifier, index) => (
+                                                <span key={index} className='text-sm font-poppins text-neutral-700 text-left cursor-default'>+ {modifier}</span>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
                             </div>
                             <h1 className='text-md font-hedwig text-neutral-700 text-left cursor-default'>Rs. {getItemSubtotal(item)}</h1>
                         </div>
