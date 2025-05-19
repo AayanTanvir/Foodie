@@ -14,7 +14,7 @@ const CartPage = () => {
     const [showExtrasCard, setShowExtrasCard] = useState(false);
     let [extrasCard, setExtrasCard] = useState(null);
     let navigate = useNavigate();
-
+    console.log(cartItems);
 
     const showExtras = (extras) => {
         if (!extras) return;
@@ -26,27 +26,6 @@ const CartPage = () => {
                     <button onClick={() => {setShowExtrasCard(false); setExtrasCard(null);}} className='absolute top-4 right-4'>
                         <img src={close} alt="X" />
                     </button>
-                    {extras.sideItems?.length !== 0 && (
-                        <>
-                            <h1 className='font-notoserif text-neutral-800 text-3xl cursor-default text-left'>Sides</h1>
-                            <div className='w-full h-fit grid grid-cols-4 auto-rows-auto gap-2 mb-2'>
-                                {extras.sideItems?.map((sideItem) => (
-                                    <div key={sideItem.id} className='w-full h-[8.5rem] border-2 border-gray-300 rounded flex flex-col justify-start items-center'>
-                                        <div className='w-full h-[4.5rem] flex justify-center items-center'>
-                                            <img src={sideItem.image} alt="" className='object-cover w-full h-full'/>
-                                        </div>
-                                        <div className='w-full flex-1 p-2 flex flex-col justify-start items-start'>
-                                            <div className='w-full h-fit flex justify-between items-center'>
-                                                <p className='font-hedwig text-md text-neutral-800 cursor-default text-wrap whitespace-break-spaces'>{sideItem.name}</p>
-                                                <p className='font-hedwig text-md text-neutral-800 cursor-default text-wrap whitespace-break-spaces'>Qty. {sideItem.quantity}</p>
-                                            </div>
-                                            <p className='font-hedwig text-md text-neutral-800 cursor-default text-wrap whitespace-break-spaces'>Rs. {sideItem.price}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </>
-                    )}
                     <div className='w-full h-fit flex justify-start items-start gap-2'>
                         {(Object.keys(extras.modifiers).length === 0) ? null : (
                             <div className='w-1/2 h-fit'>
@@ -70,9 +49,9 @@ const CartPage = () => {
                             </div>
                         )}
                     </div>
-                    {(Object.keys(extras.modifiers).length === 0 && extras.sideItems.length === 0) ? null : (
+                    {(Object.keys(extras.modifiers).length === 0) ? null : (
                         <div className='w-full h-fit flex justify-start items-center'>
-                            <h1 className='font-hedwig text-lg text-neutral-800 cursor-default'>Subtotal - Rs. {getExtrasSubtotal(extras)}</h1>
+                            <h1 className='font-hedwig text-lg text-neutral-800 cursor-default'>Subtotal - Rs. {getExtrasSubtotal(extras.modifiers)}</h1>
                         </div>
                     )}
                 </div>
@@ -115,10 +94,12 @@ const CartPage = () => {
                                                 {cartItems.map((item, index) => (
                                                     <tr key={item.id} className={`text-neutral-700 relative ${index === cartItems.length - 1 ? '' : 'border-b-2 border-gray-200'}`}>
                                                         <td className='relative mr-4'>
-                                                            {(Object.keys(item.modifiers).length === 0 && item.special_instructions === "" && item.side_items.length === 0) ? null : (
-                                                                <div className='absolute top-1 left-0 w-fit h-fit'>
-                                                                    <h1 onClick={() => { showExtras({ modifiers: item.modifiers, specialInstructions: item.special_instructions, sideItems: item.side_items }) }} className={`text-right font-roboto text-md border-2 border-gray-300 cursor-pointer rounded-full px-2 bg-gray-200 text-gray-500`}>Extras</h1>
-                                                                </div>
+                                                            {!item.is_side_item && (
+                                                                (Object.keys(item.modifiers).length === 0 && item.special_instructions === "" && item.side_items.length === 0) ? null : (
+                                                                    <div className='absolute top-1 left-0 w-fit h-fit'>
+                                                                        <h1 onClick={() => { showExtras({ modifiers: item.modifiers, specialInstructions: item.special_instructions }) }} className={`text-right font-roboto text-md border-2 border-gray-300 cursor-pointer rounded-full px-2 bg-gray-200 text-gray-500`}>Extras</h1>
+                                                                    </div>
+                                                                )
                                                             )}
                                                             <button onClick={() => {doCartItemAction(item, "removeItem")}}>
                                                                 <img src={close} alt="X" />
@@ -141,7 +122,7 @@ const CartPage = () => {
                                                                 </button>
                                                             </div>
                                                         </td>
-                                                        <td className='font-hedwig font-normal text-neutral-700 cursor-default text-center'>Rs. {(item.price * item.quantity) + getExtrasSubtotal({ modifiers: item.modifiers, sideItems: item.side_items })}</td>
+                                                        <td className='font-hedwig font-normal text-neutral-700 cursor-default text-center'>Rs. {item.is_side_item ? (item.price * item.quantity) : (item.price * item.quantity) + getExtrasSubtotal(item.modifiers)}</td>
                                                     </tr>
                                                 ))}
                                             </tbody>

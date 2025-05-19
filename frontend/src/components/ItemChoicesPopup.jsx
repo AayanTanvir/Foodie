@@ -49,24 +49,16 @@ const ItemChoicesPopup = ({ item }) => {
                 return [...prev, {...sideItem, quantity: 1}];
             }
         })
-    }
-    
-    const handleSideItemQuantity = (sideItem, input) => {
-        setSelectedSideItems((prev) => {
-            return prev.map(prevSideItem => 
-                prevSideItem.id === sideItem.id
-                    ? { ...prevSideItem, quantity: input }
-                    : prevSideItem
-            );
-        })
-    }
+    };
 
     const itemModifiers = useMemo(() => {
         const modifiers = getModifiers(item, menuItemModifiers);
+        // sort the required modifiers to the top
         return [...modifiers].sort((a, b) => (b.is_required === true) - (a.is_required === true));
     }, [item, menuItemModifiers]);
 
     const requiredModifiers = itemModifiers.filter(modifier => modifier.is_required);
+    console.log(selectedSideItems);
 
     const handleSubmit = () => {
         const specialInstructions = specialInstructionsRef.current.value || "";
@@ -163,50 +155,18 @@ const ItemChoicesPopup = ({ item }) => {
                     {sideItems?.map((item) => {
                         const isSelected = objArrayIncludes(selectedSideItems, item);
                         return (
-                            <div key={item.id} className='w-full h-fit border-2 border-gray-300 rounded flex justify-start items-center cursor-pointer transition duration-200 hover:scale-[102%]'>
-                                <div onClick={() => { toggleSideItemChoices(item) }} className='w-1/3 h-[6rem] flex justify-center items-center cursor-pointer'>
+                            <div onClick={() => { toggleSideItemChoices(item) }} key={item.id} className='w-full h-fit border-2 border-gray-300 rounded flex justify-start items-center cursor-pointer transition duration-200 hover:scale-[102%]'>
+                                <div className='w-1/3 h-[6rem] flex justify-center items-center cursor-pointer'>
                                     <img src={item.image} alt="Image not found" className='object-cover w-full h-full'/>
                                 </div>
                                 <div className='h-[6rem] flex-1 cursor-pointer flex justify-between items-center px-2'>
                                     <div className='h-full flex flex-col justify-center items-start py-1'>
-                                        {isSelected ? (
-                                            <>
-                                                <div onClick={() => { toggleSideItemChoices(item) }} className='w-fit h-fit'>
-                                                    <h1 className='text-left font-poppins text-md text-neutral-800 whitespace-break-spaces text-wrap'>{item.name}</h1>
-                                                    <h1 className='text-left font-hedwig text-sm text-neutral-800 whitespace-break-spaces text-wrap'>Rs. {item.price}</h1>
-                                                </div>
-                                                <div className='w-full h-fit flex justify-start items-center'>
-                                                    <p className='text-left font-poppins text-md text-neutral-800'>Qty. </p>
-                                                    <input 
-                                                        onChange={(e) => {
-                                                            const cleaned = e.target.value.replace(/\D/g, '');
-                                                            const num = parseInt(cleaned, 10);
-                                                            if (num >= 1 && num <= 20) {
-                                                                e.target.value = cleaned;
-                                                                handleSideItemQuantity(item, num);
-                                                            } else {
-                                                                e.target.value = 1;
-                                                            }
-                                                        }} 
-                                                        className='w-8 pl-1' 
-                                                        type="number"
-                                                        inputMode='numeric' 
-                                                        defaultValue={item.quantity || 1}
-                                                        max={20}
-                                                        min={1} 
-                                                    />
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <div onClick={() => { toggleSideItemChoices(item) }} className='w-fit h-fit'>
-                                                    <h1 className='text-left font-poppins text-md text-neutral-800 whitespace-break-spaces text-wrap'>{item.name}</h1>
-                                                    <h1 className='text-left font-hedwig text-sm text-neutral-800 whitespace-break-spaces text-wrap'>Rs. {item.price}</h1>
-                                                </div>
-                                            </>
-                                        )}
+                                        <div className='w-fit h-fit'>
+                                            <h1 className='text-left font-poppins text-md text-neutral-800 whitespace-break-spaces text-wrap'>{item.name}</h1>
+                                            <h1 className='text-left font-hedwig text-sm text-neutral-800 whitespace-break-spaces text-wrap'>Rs. {item.price}</h1>
+                                        </div>
                                     </div>
-                                    <div onClick={() => { toggleSideItemChoices(item) }} className='w-fit h-full flex justify-center items-center'>
+                                    <div className='w-fit h-full flex justify-center items-center'>
                                         <div className={`w-4 h-4 rounded-sm border-2 border-gray-600 ${isSelected && 'bg-neutral-400'}`}>
                                         </div>
                                     </div>

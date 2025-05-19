@@ -15,17 +15,13 @@ export const CartContextProvider = ({ children }) => {
     const [showChoicesPopup, setShowChoicesPopup] = useState(false);
     const [choicesItem, setChoicesItem] = useState(null);
 
-    const getExtrasSubtotal = (extras) => {
-        if (Object.keys(extras.modifiers).length === 0 && extras.sideItems.length === 0) return 0;
-        const modifierPrices = Object.values(extras.modifiers).flatMap(choicesArray => choicesArray.map(choice => choice.price));
+    const getExtrasSubtotal = (modifiers={}) => {
+        if (Object.keys(modifiers).length === 0) return 0;
+        const modifierPrices = Object.values(modifiers).flatMap(choicesArray => choicesArray.map(choice => choice.price));
         let subtotal = 0;
 
         modifierPrices.forEach((price) => {
             subtotal += price;
-        })
-        extras.sideItems.forEach((item) => {
-            const itemTotal = item.price * item.quantity;
-            subtotal += itemTotal;
         })
 
         return subtotal;
@@ -34,13 +30,13 @@ export const CartContextProvider = ({ children }) => {
     const getSubtotal = () => {
         let subtotal = 0
         cartItems.forEach((cartItem) => {
-            subtotal += (cartItem.price * cartItem.quantity) + getExtrasSubtotal({ modifiers: cartItem.modifiers, sideItems: cartItem.side_items });
+            subtotal += (cartItem.price * cartItem.quantity) + getExtrasSubtotal(cartItem.modifiers);
         })
         return subtotal;
     }
 
     const getItemSubtotal = (item) => {
-        return (item.price * item.quantity) + getExtrasSubtotal({ modifiers: item.modifiers, sideItems: item.side_items });
+        return (item.price * item.quantity) + getExtrasSubtotal(item.modifiers);
     }
 
     const doCartItemAction = (item, action, specialInstructions="", modifiers={}, sideItems=[], quantity=1) => {
@@ -54,41 +50,56 @@ export const CartContextProvider = ({ children }) => {
             switch (action) {
                 case "addItem":
                     const itemInCart = prevItems.find(cartItem => cartItem.id === item.id);
+                    let updatedItems;
+
                     if (itemInCart) {
-                    // increase quantity
-                    return prevItems.map(cartItem =>
-                        cartItem.id === item.id
-                        ? { ...cartItem, quantity: cartItem.quantity + 1 }
-                        : cartItem
-                    );
-                } else {
-                    // add new item
-                    return [...prevItems, { ...item, quantity: quantity, special_instructions: specialInstructions, modifiers: modifiers, side_items: sideItems }];
-                }
-
-            case "removeItem":
-                return prevItems.filter(cartItem => cartItem.id !== item.id);
-
-            case "addQuantity":
-                return prevItems.map(cartItem => {
-                    if (cartItem.id === item.id) {
-                        if (Number(cartItem.quantity) >= 20) return cartItem;
-                        return { ...cartItem, quantity: Number(cartItem.quantity) + 1 };
+                        updatedItems = prevItems.map(cartItem =>
+                            cartItem.id === item.id
+                            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                            : cartItem
+                        );
+                    } else {
+                        updatedItems = [...prevItems, { ...item, quantity: quantity, special_instructions: specialInstructions, modifiers: modifiers }];
                     }
-                    return cartItem;
-                });
 
-            case "subtractQuantity":
-                return prevItems
-                .map(cartItem =>
-                cartItem.id === item.id
-                    ? { ...cartItem, quantity: cartItem.quantity - 1 }
-                    : cartItem
-                )
-                .filter(cartItem => cartItem.quantity > 0);
+                    sideItems.forEach(sideItem => {
+                        const sideItemInCart = updatedItems.find(cartItem => cartItem.id === sideItem.id);
+                        if (sideItemInCart) {
+                            updatedItems = updatedItems.map(cartItem =>
+                                cartItem.id === sideItem.id
+                                    ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                                    : cartItem
+                            );
+                        } else {
+                            updatedItems = [...updatedItems, { ...sideItem, quantity: 1 }];
+                        }
+                    });
 
-            default:
-                return prevItems;
+                    return updatedItems;
+
+                case "removeItem":
+                    return prevItems.filter(cartItem => cartItem.id !== item.id);
+
+                case "addQuantity":
+                    return prevItems.map(cartItem => {
+                        if (cartItem.id === item.id) {
+                            if (Number(cartItem.quantity) >= 20) return cartItem;
+                            return { ...cartItem, quantity: Number(cartItem.quantity) + 1 };
+                        }
+                        return cartItem;
+                    });
+
+                case "subtractQuantity":
+                    return prevItems
+                    .map(cartItem =>
+                    cartItem.id === item.id
+                        ? { ...cartItem, quantity: cartItem.quantity - 1 }
+                        : cartItem
+                    )
+                    .filter(cartItem => cartItem.quantity > 0);
+
+                default:
+                    return prevItems;
             }
         });
     };
