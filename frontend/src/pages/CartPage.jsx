@@ -95,7 +95,7 @@ const CartPage = () => {
                                                     <tr key={item.id} className={`text-neutral-700 relative ${index === cartItems.length - 1 ? '' : 'border-b-2 border-gray-200'}`}>
                                                         <td className='relative mr-4'>
                                                             {!item.is_side_item && (
-                                                                (Object.keys(item.modifiers).length === 0 && item.special_instructions === "" && item.side_items.length === 0) ? null : (
+                                                                (Object.keys(item.modifiers).length === 0 && item.special_instructions === "") ? null : (
                                                                     <div className='absolute top-1 left-0 w-fit h-fit'>
                                                                         <h1 onClick={() => { showExtras({ modifiers: item.modifiers, specialInstructions: item.special_instructions }) }} className={`text-right font-roboto text-md border-2 border-gray-300 cursor-pointer rounded-full px-2 bg-gray-200 text-gray-500`}>Extras</h1>
                                                                     </div>

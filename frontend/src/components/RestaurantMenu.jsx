@@ -14,9 +14,8 @@ const RestaurantMenu = ({ restaurant }) => {
     const [isOverflowing, setIsOverflowing] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
     const [searchedItems, setSearchedItems] = useState([]);
-    const popularTagElement = <h1 className='text-[0.7rem] text-green-700 py-[5px] px-2 bg-green-300 font-semibold font-roboto rounded-lg absolute bottom-2 left-12'>POPULAR</h1>;
     let { doCartItemAction,  activateChoicesPopup, cartItems } = useContext(CartContext);
-    let { menuItemModifiers } = useContext(RestaurantContext);
+    let { menuItemModifiers, sideItems } = useContext(RestaurantContext);
     let popularItems = restaurant.menu_items.sort((a, b) => b.popularity - a.popularity).slice(0, 5);
 
     useEffect(() => {
@@ -37,10 +36,6 @@ const RestaurantMenu = ({ restaurant }) => {
             });
         }
     };
-
-    const isItemPopular = (item) => {
-        return popularItems.some(popularItem => popularItem.id === item.id && popularItem.name === item.name);
-    }
 
     const handleSearching = (searchBar) => {
 
@@ -97,6 +92,11 @@ const RestaurantMenu = ({ restaurant }) => {
                             <h1 className='text-lg text-nowrap text-center font-roboto'>{category.name}</h1>
                         </a>
                     ))}
+                    {sideItems.length > 0 && (
+                        <a href='#side_items' className='w-fit h-full px-5 py-2 cursor-pointer text-gray-500 hover:text-black'>
+                            <h1 className='text-lg text-nowrap text-center font-roboto'>Side Items</h1>
+                        </a>
+                    )}
                 </div>
                 {isOverflowing && ( 
                     <button className='w-fit h-fit cursor-pointer ml-1' onClick={() => handleScroll('right')}>
@@ -129,7 +129,7 @@ const RestaurantMenu = ({ restaurant }) => {
                                             </>
                                         ) : (
                                             <>
-                                                <h1 className='text-md font-roboto font-semibold text-red-700 bg-red-400 w-fit px-2 rounded-lg'>Not Available</h1>
+                                                <h1 className='text-md font-roboto font-semibold text-red-700 bg-red-400 w-fit px-2 rounded-lg mt-4'>Not Available</h1>
                                             </>
                                         )}
                                     </div>
@@ -170,7 +170,7 @@ const RestaurantMenu = ({ restaurant }) => {
                                                 </>
                                             ) : (
                                                 <>
-                                                    <h1 className='text-md font-roboto font-semibold text-red-700 bg-red-400 w-fit px-2 rounded-lg'>Not Available</h1>
+                                                    <h1 className='text-md font-roboto font-semibold text-red-700 bg-red-400 w-fit px-2 rounded-lg mt-4'>Not Available</h1>
                                                 </>
                                             )}
                                         </div>
@@ -196,7 +196,6 @@ const RestaurantMenu = ({ restaurant }) => {
                                         key={item.id}
                                         className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-[101%] relative'
                                         >   
-                                            {item.is_available && isItemPopular(item) && !isInCart(item) ? popularTagElement : null}
                                             <div className='w-4/5 h-full text-left overflow-hidden'>
                                                 <h1 className='text-lg font-roboto font-semibold text-neutral-700 truncate'>{item.name}</h1>
                                                 <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>Rs. {item.price}</h1>
@@ -213,7 +212,7 @@ const RestaurantMenu = ({ restaurant }) => {
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <h1 className='text-md font-roboto font-semibold text-red-700 bg-red-400 w-fit px-2 rounded-lg'>Not Available</h1>
+                                                        <h1 className='text-md font-roboto font-semibold text-red-700 bg-red-400 w-fit px-2 rounded-lg mt-4'>Not Available</h1>
                                                     </>
                                                 )}
                                             </div>
@@ -225,6 +224,43 @@ const RestaurantMenu = ({ restaurant }) => {
                                 </div>
                             </div>
                         ))}
+                        {sideItems.length > 0 && (
+                            <div id='side_items' className='w-full flex flex-col justify-start items-start mb-12 scroll-mt-28'>
+                                <h1 className='text-3xl font-semibold font-hedwig text-neutral-800 uppercase mb-4'>SIDE ITEMS</h1>
+                                <div className='grid grid-cols-3 auto-rows-auto w-fit h-fit gap-x-6 gap-y-4'>
+                                    {sideItems.map((item) => (
+                                        <div
+                                            key={item.id}
+                                            className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-[101%] relative'
+                                        >
+                                            <div className='w-4/5 h-full text-left overflow-hidden'>
+                                                <h1 className='text-lg font-roboto font-semibold truncate text-neutral-700'>{item.name}</h1>
+                                                <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>Rs. {item.price}</h1>
+                                                {item.is_available ? (
+                                                    <>
+                                                        <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
+                                                        {isInCart(item) ? (
+                                                            <h1 className='text-lg font-roboto text-gray-600'>Added to cart</h1>
+                                                        ) : (
+                                                            <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                                <img src={add} alt="add" className='w-full h-full' />
+                                                            </button>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <h1 className='text-md font-roboto font-semibold text-red-700 bg-red-400 w-fit px-2 rounded-lg mt-4'>Not Available</h1>
+                                                    </>
+                                                )}
+                                            </div>
+                                            <div className='w-1/2 h-4/5 flex justify-center items-center'>
+                                                <img src={item.image} alt="Image not found" className='w-full h-full rounded-xl object-cover' />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </>
                 )}
             </div>
