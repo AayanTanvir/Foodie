@@ -179,4 +179,3 @@ class MenuItemModifierAPIView(generics.GenericAPIView):
 class OrderCreateAPIView(generics.CreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [AllowAny]

@@ -2,15 +2,16 @@ import { useState, useContext, useEffect } from 'react';
 import card from '../assets/card.svg';
 import cash from '../assets/cash.svg';
 import { CartContext } from '../context/CartContext';
+import AuthContext from '../context/AuthContext';
 import axiosClient from '../utils/axiosClient';
 import discount_svg from '../assets/discount.svg';
+import { RestaurantContext } from '../context/RestaurantContext';
 
 
 const CheckoutPage = () => {
 
     const [deliveryAddress, setDeliveryAddress] = useState("");
-    const [paymentMethod, setPaymentMethod] = useState('cash');
-    const [discounts, setDiscounts] = useState([]);
+    const [paymentMethod, setPaymentMethod] = useState('cash_on_delivery');
     const [selectedDiscount, setSelectedDiscount] = useState(null);
     const [cardDetails, setCardDetails] = useState({
         cardNumber: '',
@@ -19,7 +20,11 @@ const CheckoutPage = () => {
         cardHolderName: ''
     });
     let { cartItems, getSubtotal, getShippingExpense, getItemSubtotal, getDiscountAmount } = useContext(CartContext);
+    let { discounts } = useContext(RestaurantContext);
+    let { user, setNoticeMessage, setFailureMessage } = useContext(AuthContext);
     const restaurantName = cartItems[0]?.restaurant_name;
+    const restaurantUUID = cartItems[0]?.restaurant_uuid;
+    const userUUID = user?.uuid;
 
     const getDiscountLabel = (discount) => {
         if (discount.discount_type === 'percentage') {
@@ -48,25 +53,75 @@ const CheckoutPage = () => {
         return choices;
     };
 
-    useEffect(() => {
-        if (!cartItems.length) return;
-        
-        const restaurant_uuid = cartItems[0].restaurant_uuid;
-        
-        const getDiscounts = async () => {
-            try {
-                const response = await axiosClient.get(`/restaurants/${restaurant_uuid}/discounts`);
-                const data = response.data;
-                setDiscounts(data);
-            } catch (err) {
-                console.error("Failed to fetch discounts", err);
-            }
-        };
-        
-        if (restaurant_uuid) {
-            getDiscounts();
+    const getCategory = (item) => {
+        if ((item.is_side_item && !item.category) || (!item.is_side_item && !item.category)) {
+            return "";
         }
-    }, []);
+        return item.category;
+    }
+
+    const handlePlaceOrder = async () => {
+        if (deliveryAddress.trim() === "") {
+            setNoticeMessage("Please enter a delivery address.");
+            return;
+        }
+
+        let payload = {
+            restaurant_uuid: restaurantUUID,
+            user_uuid: userUUID,
+            order_items: cartItems.map((item) => ({
+                menu_item: {
+                    name: item.name,
+                    description: item.description,
+                    category: getCategory(item),
+                    price: item.price,
+                    is_available: item.is_available,
+                    is_side_item: item.is_side_item
+                },
+                quantity: item.quantity,
+                modifiers: item.modifiers
+                    ? Object.values(item.modifiers).flatMap((choicesArray) =>
+                        choicesArray.map((choice) => ({
+                            label: choice.label,
+                            price: choice.price
+                        }))
+                    )
+                    : [],
+                special_instruction: item.special_instructions,
+            })),
+            payment_method: paymentMethod,
+            delivery_address: deliveryAddress,
+        }
+
+        if (selectedDiscount) {
+            payload.discount = {
+                valid_from: selectedDiscount.valid_from,
+                valid_to: selectedDiscount.valid_to,
+                discount_type: selectedDiscount.discount_type,
+                amount: selectedDiscount.amount,
+                min_order_amount: selectedDiscount.min_order_amount,
+            }
+        }
+
+        console.log(payload);
+        try {
+            const res = await axiosClient.post('/orders/create', payload);
+            if (res.status === 201) {
+                console.log("Order placed successfully", res.data);
+                // Handle successful order placement (e.g., redirect to order confirmation page)
+            } else {
+                console.error("Unexpected response:", res);
+                setFailureMessage("Unexpected response. Please try again later.");
+                window.location.href = '/';
+                localStorage.removeItem('cartItems');
+            }
+        } catch (error) {
+            console.error("An error occurred while placing the order.", error);
+            setFailureMessage("An error occurred. Please try again later.");
+            // localStorage.removeItem('cartItems');
+            // window.location.href = '/';
+        }
+    }
 
     return (
         <div className='absolute top-0 left-0 w-full h-fit flex justify-center items-start gap-4 pt-16 mb-4'>
@@ -83,14 +138,13 @@ const CheckoutPage = () => {
                             e.target.value = e.target.value.replace(/[^a-zA-Z0-9\s,.-]/g, '');
                         }}
                         value={deliveryAddress}
-                        required
                     />
                 </div>
                 <div className='w-full flex flex-col justify-start items-start gap-2'>
                     <h1 className='text-3xl font-notoserif text-neutral-700 text-left cursor-default'>Payment</h1>
                     <div className='w-full flex flex-col justify-start items-start gap-2'>
-                        <div onClick={() => { paymentMethod !== "cash" && setPaymentMethod("cash") }} className={`w-fit h-fit flex justify-between items-center gap-2 cursor-pointer border-[1.5px] rounded-md px-3 py-2 hover:border-neutral-600 ${paymentMethod === "cash" ? 'border-neutral-600' : 'border-neutral-300'} `}>
-                            <div className={`w-4 h-4 rounded-full border-2 border-gray-600 ${paymentMethod === 'cash' && 'bg-neutral-400'}`}></div>
+                        <div onClick={() => { paymentMethod !== "cash_on_delivery" && setPaymentMethod("cash_on_delivery") }} className={`w-fit h-fit flex justify-between items-center gap-2 cursor-pointer border-[1.5px] rounded-md px-3 py-2 hover:border-neutral-600 ${paymentMethod === "cash_on_delivery" ? 'border-neutral-600' : 'border-neutral-300'} `}>
+                            <div className={`w-4 h-4 rounded-full border-2 border-gray-600 ${paymentMethod === 'cash_on_delivery' && 'bg-neutral-400'}`}></div>
                             <div className='w-fit h-fit flex justify-center items-center gap-2'>
                                 <img src={cash} alt='' className='w-6 h-6' />
                                 <h1 className='text-lg font-roboto text-neutral-700 text-left'>Cash On Delivery</h1>
@@ -267,7 +321,7 @@ const CheckoutPage = () => {
                             <h1 className='text-sm font-poppins text-neutral-800 line-through cursor-default'>Rs. {getSubtotal() + getShippingExpense()}</h1>
                         </div>
                     )}
-                    <button onClick={() => { navigate('/checkout') }} className='w-full h-10 bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center rounded font-hedwig text-md mt-4'>
+                    <button onClick={() => { handlePlaceOrder() }} className='w-full h-10 bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center rounded font-hedwig text-md mt-4'>
                         Place Order
                     </button>
                 </div>

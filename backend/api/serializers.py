@@ -10,6 +10,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
 
+        token['uuid'] = str(user.uuid)
         token['email'] = user.email
         token['username'] = user.username
         token['is_email_verified'] = user.is_email_verified
@@ -190,7 +191,7 @@ class MenuItemModifierSerializer(serializers.ModelSerializer):
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    subtotal = serializers.SerializerMethodField()
+    subtotal = serializers.SerializerMethodField(read_only=True)
     order_uuid = serializers.UUIDField(source='order.uuid', read_only=True)
     menu_item = MenuItemSerializer()
     modifiers = MenuItemModifierChoiceSerializer(many=True, required=False)
@@ -207,8 +208,9 @@ class OrderSerializer(serializers.ModelSerializer):
     order_items = OrderItemSerializer(many=True)
     total_price = serializers.SerializerMethodField()
     discounted_price = serializers.SerializerMethodField()
-    restaurant_uuid = serializers.UUIDField(source='restaurant.uuid')
-    user_uuid = serializers.UUIDField(source='user.uuid')
+    restaurant_uuid = serializers.UUIDField(source='restaurant.uuid', write_only=True)
+    user_uuid = serializers.UUIDField(source='user.uuid', write_only=True)
+    order_status = serializers.ChoiceField(choices=Order.OrderStatus.choices, default=Order.OrderStatus.IN_PROGRESS, read_only=True)
     discount = RestaurantDiscountSerializer(required=False, allow_null=True)
     
     def get_discounted_price(self, obj):
@@ -217,34 +219,50 @@ class OrderSerializer(serializers.ModelSerializer):
     def get_total_price(self, obj):
         return obj.total_price
     
+    def validate_user_uuid(self, value):
+        if not CustomUser.objects.filter(uuid=value).exists():
+            raise serializers.ValidationError("User with this UUID does not exist.")
+        return value
+    
+    def validate_restaurant_uuid(self, value):
+        if not Restaurant.objects.filter(uuid=value).exists():
+            raise serializers.ValidationError("Restaurant with this UUID does not exist.")
+        return value
+    
+    def validate_payment_method(self, value):
+        if value not in ['cash_on_delivery', 'card']:
+            raise serializers.ValidationError("Invalid payment method. Choose either 'cash_on_delivery' or 'card'.")
+        return value
+
     def validate(self, data):
         if not data.get('order_items'):
             raise serializers.ValidationError("Order must have at least one item.")
         if not data.get('delivery_address'):
             raise serializers.ValidationError("Delivery address is required.")
-        if not data.get('user_uuid'):
+        if not data.get('user'):
             raise serializers.ValidationError("User UUID is required.")
-        if not data.get('restaurant_uuid'):
+        if not data.get('restaurant'):
             raise serializers.ValidationError("Restaurant UUID is required.")
-        
-        try: 
-            user_uuid = data.get('user_uuid')
-            user = CustomUser.objects.get(uuid=user_uuid)
-        except CustomUser.DoesNotExist:
-            raise serializers.ValidationError("Invalid User UUID.")
-
-        try:
-            restaurant_uuid = data.get('restaurant_uuid')
-            restaurant = Restaurant.objects.get(uuid=restaurant_uuid)
-        except Restaurant.DoesNotExist:
-            raise serializers.ValidationError("Invalid Restaurant UUID.")
+        if not data.get('payment_method'):
+            raise serializers.ValidationError("Payment method is required.")
 
         return super().validate(data)
 
     def create(self, validated_data):
         order_items_data = validated_data.pop('order_items')
-        order = Order.objects.create(**validated_data)
+        user_data = validated_data.pop('user')
+        restaurant_data = validated_data.pop('restaurant')
+        discount_data = validated_data.pop('discount', None)
+        if discount_data:
+            # NEED TO ADD UUID TO DISCOUNT AND BUG FIX
+            discount = Discount.objects.get(uuid=discount_data['uuid'])
+            validated_data['discount'] = discount
         
+        user = CustomUser.objects.get(uuid=user_data['uuid'])
+        restaurant = Restaurant.objects.get(uuid=restaurant_data['uuid'])
+
+        order = Order.objects.create(user=user, restaurant=restaurant, **validated_data)
+
         for item_data in order_items_data:
             OrderItem.objects.create(order=order, **item_data)
         

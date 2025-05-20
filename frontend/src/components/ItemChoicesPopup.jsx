@@ -58,7 +58,6 @@ const ItemChoicesPopup = ({ item }) => {
     }, [item, menuItemModifiers]);
 
     const requiredModifiers = itemModifiers.filter(modifier => modifier.is_required);
-    console.log(selectedSideItems);
 
     const handleSubmit = () => {
         const specialInstructions = specialInstructionsRef.current.value || "";

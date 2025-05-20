@@ -84,9 +84,9 @@ class Restaurant(models.Model):
 class MenuItem(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="menu_items")
     name = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True, default="") 
+    description = models.TextField(blank=True, null=True, default="")
     price = models.IntegerField()
-    category = models.ForeignKey("MenuItemCategory", related_name="menu_items", on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.ForeignKey("MenuItemCategory", related_name="menu_items", on_delete=models.SET_NULL, null=True)
     image = models.ImageField(upload_to="menu_items/", blank=True, null=True, default="menu_items/default.png")
     is_available = models.BooleanField(default=True)
     is_side_item = models.BooleanField(default=False)

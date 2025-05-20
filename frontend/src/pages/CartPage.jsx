@@ -14,7 +14,6 @@ const CartPage = () => {
     const [showExtrasCard, setShowExtrasCard] = useState(false);
     let [extrasCard, setExtrasCard] = useState(null);
     let navigate = useNavigate();
-    console.log(cartItems);
 
     const showExtras = (extras) => {
         if (!extras) return;

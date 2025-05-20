@@ -8,13 +8,13 @@ export const RestaurantContext = createContext();
 
 export const RestaurantContextProvider = ({ children }) => {
 
-    const [restaurantUUID, setRestaurantUUID] = useState("");
+    const [restaurantUUID, setRestaurantUUID] = useState(localStorage.getItem("restaurantUUID") || "");
     const [restaurant, setRestaurant] = useState(null);
     const [restaurants, setRestaurants] = useState([]);
     const [menuItemModifiers, setMenuItemModifiers] = useState(null);
     const [sideItems, setSideItems] = useState([]);
     const [discounts, setDiscounts] = useState([]);
-    let { setFailureMessage } = useContext(AuthContext);
+    let { setFailureMessage, user } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const fetchRestaurant = async (uuid) => {
@@ -24,14 +24,17 @@ export const RestaurantContextProvider = ({ children }) => {
             if (response.status === 200) {
                 setRestaurant(response.data || null);
                 setRestaurantUUID(uuid);
+                localStorage.setItem("restaurantUUID", uuid);
             } else {
-                setFailureMessage("Unexpected response.", response.status);
+                setFailureMessage("Unexpected response please try again.", response.status);
+                console.error("Unexpected response:", response);
                 setRestaurant(null);
                 setRestaurantUUID("");
             }
 
         } catch (error) {
-            setFailureMessage("An error occurred.", error.response?.status);
+            setFailureMessage("An error occurred.");
+            console.error("Error fetching restaurant:", error);
             setRestaurant(null);
             setRestaurantUUID("");
             navigate('/');
@@ -46,11 +49,13 @@ export const RestaurantContextProvider = ({ children }) => {
                 setRestaurants(response.data || null);
             } else {
                 setFailureMessage("Unexpected response.", response.status);
+                console.error("Unexpected response:", response);
                 setRestaurants(null);
             }
 
         } catch (error) {
-            setFailureMessage("An error occurred.", error.response?.status);
+            setFailureMessage("An error occurred.");
+            console.error("Error fetching restaurants:", error);
             setRestaurants(null);
         }
     };
@@ -68,48 +73,55 @@ export const RestaurantContextProvider = ({ children }) => {
             if (res.status === 200) {
                 setMenuItemModifiers(res.data || null);
             } else {
-                console.log("Unexpected response status", res.status);
+                console.error("Unexpected response status", res.status);
+                setFailureMessage("Unexpected response", res.status);
                 setMenuItemModifiers(null);
             }
         } catch (error) {
-            setFailureMessage("An error occurred while fetching item modifiers", error.response?.status);
+            setFailureMessage("An error occurred.");
+            console.error("Error fetching menu item modifiers:", error);
             setMenuItemModifiers(null);
         }
     }
 
     const getSideItems = () => {
-        if (!restaurant) return;
         const items = restaurant.menu_items.filter(item => item.is_side_item);
         setSideItems(items);
     }
 
     const getDiscounts = async () => {
         try {
-            const response = await axiosClient.get(`/restaurants/${restaurant.uuid}/discounts`);
+            const response = await axiosClient.get(`/restaurants/${restaurantUUID}/discounts`);
             if (response.status === 200) {
                 setDiscounts(response.data);
             } else {
                 setFailureMessage("Unexpected response", response.status);
+                console.error("Unexpected response:", response);
                 setDiscounts([]);
             }
 
         } catch (error) {
-            setFailureMessage("An error occurred while fetching discounts.", error.response?.status);
+            setFailureMessage("An error occurred.");
+            console.error("Error fetching discounts:", error);
             setDiscounts([]);
         }
     };
 
     useEffect(() => {
-        fetchRestaurants();
-    }, []);
+        if (user) {
+            fetchRestaurants();
+        }
+    }, [user]);
 
     useEffect(() => {
         if (restaurantUUID !== "") {
             getMenuItemModifiers();
-            getSideItems();
             getDiscounts();
         }
-    }, [restaurantUUID])
+        if (restaurant) {
+            getSideItems();
+        }
+    }, [restaurantUUID, restaurant])
     
     let context = {
         restaurant: restaurant,
