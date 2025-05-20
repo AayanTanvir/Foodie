@@ -126,7 +126,7 @@ class RestaurantDiscountSerializer(serializers.ModelSerializer):
     
     
 class RestaurantSerializer(serializers.ModelSerializer):
-    menu_items = MenuItemSerializer(many=True, read_only=True)
+    menu_items = MenuItemSerializer(many=True)
     is_open = serializers.SerializerMethodField(method_name='is_open')
     restaurant_category = serializers.SerializerMethodField()
     item_categories = serializers.SerializerMethodField()
@@ -187,3 +187,69 @@ class MenuItemModifierSerializer(serializers.ModelSerializer):
     class Meta:
         model = MenuItemModifier
         fields = ['id', 'menu_item', 'name', 'is_required', 'is_multiselect', 'created_at', 'choices']
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    subtotal = serializers.SerializerMethodField()
+    order_uuid = serializers.UUIDField(source='order.uuid', read_only=True)
+    menu_item = MenuItemSerializer()
+    modifiers = MenuItemModifierChoiceSerializer(many=True, required=False)
+    
+    def get_subtotal(self, obj):
+        return obj.subtotal
+    
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'order_uuid', 'menu_item', 'quantity', 'modifiers', 'subtotal', 'special_instruction']
+        
+
+class OrderSerializer(serializers.ModelSerializer):
+    order_items = OrderItemSerializer(many=True)
+    total_price = serializers.SerializerMethodField()
+    discounted_price = serializers.SerializerMethodField()
+    restaurant_uuid = serializers.UUIDField(source='restaurant.uuid')
+    user_uuid = serializers.UUIDField(source='user.uuid')
+    discount = RestaurantDiscountSerializer(required=False, allow_null=True)
+    
+    def get_discounted_price(self, obj):
+        return obj.discounted_price
+    
+    def get_total_price(self, obj):
+        return obj.total_price
+    
+    def validate(self, data):
+        if not data.get('order_items'):
+            raise serializers.ValidationError("Order must have at least one item.")
+        if not data.get('delivery_address'):
+            raise serializers.ValidationError("Delivery address is required.")
+        if not data.get('user_uuid'):
+            raise serializers.ValidationError("User UUID is required.")
+        if not data.get('restaurant_uuid'):
+            raise serializers.ValidationError("Restaurant UUID is required.")
+        
+        try: 
+            user_uuid = data.get('user_uuid')
+            user = CustomUser.objects.get(uuid=user_uuid)
+        except CustomUser.DoesNotExist:
+            raise serializers.ValidationError("Invalid User UUID.")
+
+        try:
+            restaurant_uuid = data.get('restaurant_uuid')
+            restaurant = Restaurant.objects.get(uuid=restaurant_uuid)
+        except Restaurant.DoesNotExist:
+            raise serializers.ValidationError("Invalid Restaurant UUID.")
+
+        return super().validate(data)
+
+    def create(self, validated_data):
+        order_items_data = validated_data.pop('order_items')
+        order = Order.objects.create(**validated_data)
+        
+        for item_data in order_items_data:
+            OrderItem.objects.create(order=order, **item_data)
+        
+        return order
+
+    class Meta:
+        model = Order
+        fields = ['uuid', 'restaurant_uuid', 'user_uuid', 'order_items', 'order_status', 'payment_method', 'total_price', 'discounted_price', 'delivery_address', 'discount', 'created_at']

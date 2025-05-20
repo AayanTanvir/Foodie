@@ -134,36 +134,41 @@ class Order(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="orders")
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="orders")
-    order_items = models.ManyToManyField(MenuItem, through="OrderItem")
     order_status = models.CharField(max_length=25, choices=OrderStatus.choices, default=OrderStatus.IN_PROGRESS)
     payment_method = models.CharField(max_length=25, choices=OrderPaymentMethod.choices, default=OrderPaymentMethod.CASH_ON_DELIVERY)
-    delivery_address = models.TextField();
+    delivery_address = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     discount = models.ForeignKey("Discount", blank=True, null=True, on_delete=models.SET_NULL, related_name="orders")
-    
+
     @property
     def total_price(self):
-        return sum(item.sub_total for item in self.orderitem_set.all())
+        return sum(item.subtotal for item in self.order_items.all())
     
     @property
     def discounted_price(self):
         total_price = self.total_price
-        if self.discount:
-            if self.discount.is_valid:
-                if total_price < self.discount.min_order_amount:
-                    return total_price
-                
-                if self.discount.discount_type == Discount.DiscountType.PERCENTAGE:
-                    total_price -= (total_price * self.discount.amount) / 100
-                elif self.discount.discount_type == Discount.DiscountType.FIXED_AMOUNT:
-                    total_price -= self.discount.amount
-                elif self.discount.discount_type == Discount.DiscountType.FREE_DELIVERY:
-                    return total_price
-                    
-                return total_price if total_price > 0 else 0
+        if not self.discount or not self.discount.is_valid or total_price < self.discount.min_order_amount:
+            return total_price
+        
+        if self.discount.discount_type == Discount.DiscountType.PERCENTAGE:
+            total_price -= (total_price * self.discount.amount) / 100
+        elif self.discount.discount_type == Discount.DiscountType.FIXED_AMOUNT:
+            total_price -= self.discount.amount
+        elif self.discount.discount_type == Discount.DiscountType.FREE_DELIVERY:
+            return total_price
             
-        return total_price
+        return total_price if total_price > 0 else 0
                 
+    def clean(self):
+        if self.user == self.restaurant.owner:
+            raise ValidationError("Restaurant owner cannot place an order at their own restaurant.")
+        
+        if self.discount and self.discount.restaurant != self.restaurant:
+            raise ValidationError("Discount does not belong to the restaurant.")
+        
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return f"{self.uuid} | {self.user.email} - {self.restaurant.name} - {self.total_price}"
@@ -171,11 +176,10 @@ class Order(models.Model):
     
 class OrderItem(models.Model):
     menu_item = models.ForeignKey(MenuItem, on_delete=models.CASCADE, related_name="order_items")
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_items")
     modifiers = models.ManyToManyField("MenuItemModifierChoice", blank=True, related_name="order_items")
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    special_instruction = models.CharField(max_length=255, blank=True, null=True, default="")
+    special_instruction = models.CharField(max_length=255, blank=True, default="")
     quantity = models.IntegerField(default=1)
-    
     
     @property
     def subtotal(self):

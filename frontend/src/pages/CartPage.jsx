@@ -150,7 +150,7 @@ const CartPage = () => {
                                 </div>
                                 <p className='font-hedwig text-neutral-600 text-sm'>Discounts to be applied at checkout</p>
                                 <div className='w-full h-fit mt-10'>
-                                    <button onClick={() => { navigate('/checkout') }} className='w-full h-10 bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-hedwig text-md'>
+                                    <button onClick={() => { navigate('/checkout') }} className='w-full h-10 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-hedwig text-md'>
                                         Proceed to Checkout
                                     </button>
                                 </div>

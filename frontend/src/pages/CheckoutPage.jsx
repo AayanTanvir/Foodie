@@ -267,6 +267,9 @@ const CheckoutPage = () => {
                             <h1 className='text-sm font-poppins text-neutral-800 line-through cursor-default'>Rs. {getSubtotal() + getShippingExpense()}</h1>
                         </div>
                     )}
+                    <button onClick={() => { navigate('/checkout') }} className='w-full h-10 bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center rounded font-hedwig text-md mt-4'>
+                        Place Order
+                    </button>
                 </div>
             </div>
         </div>
