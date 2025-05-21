@@ -9,8 +9,8 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = CustomUser
-    list_display = ("uuid", "email", "is_staff", "is_active",)
-    list_filter = ("email", "uuid", "is_email_verified", "is_staff", "is_active",)
+    list_display = ("uuid", "email", "is_email_verified", "is_staff", "is_active",)
+    list_filter = ("is_email_verified", "is_staff", "is_active",)
     fieldsets = (
         (None, {"fields": ("email", "username", "password", "is_email_verified",)}),
         ("Permissions", {"fields": ("is_staff", "is_active", "groups", "user_permissions")}),
@@ -30,11 +30,22 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Restaurant)
-admin.site.register(MenuItem)
+
+@admin.register(MenuItem)
+class MenuItemAdmin(admin.ModelAdmin):
+    list_display = ('uuid', 'name', 'price', 'restaurant')
+    list_filter = ('is_side_item', 'is_available', 'restaurant')
+
 admin.site.register(MenuItemCategory)
 admin.site.register(Order)
 admin.site.register(OrderItem)
 admin.site.register(MenuItemModifier)
 admin.site.register(MenuItemModifierChoice)
-admin.site.register(Discount)
 
+@admin.register(Discount)
+class DiscountAdmin(admin.ModelAdmin):
+    list_display = ('uuid', 'restaurant', 'is_valid', 'discount_type', 'amount', 'min_order_amount')
+    list_filter = ('restaurant', 'discount_type')
+    
+    def is_valid(self, obj):
+        return obj.is_valid

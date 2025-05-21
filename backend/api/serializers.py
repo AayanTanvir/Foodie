@@ -103,7 +103,7 @@ class MenuItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MenuItem
-        fields = ['id', 'restaurant_uuid', 'restaurant_name', 'name', 'description', 'category', 'price',
+        fields = ['uuid', 'restaurant_uuid', 'restaurant_name', 'name', 'description', 'category', 'price',
                   'image', 'is_available', 'is_side_item', 'created_at', 'popularity']
         
 
@@ -115,6 +115,7 @@ class MenuItemCategorySerializer(serializers.ModelSerializer):
     
 class RestaurantDiscountSerializer(serializers.ModelSerializer):
     is_valid = serializers.SerializerMethodField()
+    uuid = serializers.UUIDField()
     
     def get_is_valid(self, obj):
         return obj.is_valid
@@ -122,7 +123,7 @@ class RestaurantDiscountSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Discount
-        fields = ['id', 'valid_from', 'valid_to', 'discount_type', 'amount',
+        fields = ['uuid', 'valid_from', 'valid_to', 'discount_type', 'amount',
                   'min_order_amount', 'is_valid']
     
     
@@ -190,11 +191,45 @@ class MenuItemModifierSerializer(serializers.ModelSerializer):
         fields = ['id', 'menu_item', 'name', 'is_required', 'is_multiselect', 'created_at', 'choices']
 
 
-class OrderItemSerializer(serializers.ModelSerializer):
+class OrderItemWriteSerializer(serializers.ModelSerializer):
+    menu_item_uuid = serializers.UUIDField(write_only=True)
+    modifiers = serializers.PrimaryKeyRelatedField(
+        queryset=MenuItemModifierChoice.objects.all(),
+        many=True,
+        required=False,
+        write_only=True
+    )
+    
+    def get_subtotal(self, obj):
+        return obj.subtotal
+    
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'menu_item_uuid', 'quantity', 'modifiers', 'subtotal', 'special_instruction']
+
+
+    def validate_modifiers(self, value):
+        print("modifiers in validate_modifiers: ", value)
+        return value
+
+    def create(self, validated_data):
+        order = self.context.get('order')
+        menu_item_uuid = validated_data.pop('menu_item_uuid')
+        menu_item = MenuItem.objects.get(uuid=menu_item_uuid)
+
+        modifiers = validated_data.pop('modifiers', [])
+        
+        order_item = OrderItem.objects.create(order=order, menu_item=menu_item, **validated_data)
+        order_item.modifiers.set(modifiers)
+
+        return order_item
+
+
+class OrderItemReadSerializer(serializers.ModelSerializer):
+    modifiers = MenuItemModifierChoiceSerializer(many=True)
+    menu_item = MenuItemSerializer()
     subtotal = serializers.SerializerMethodField(read_only=True)
     order_uuid = serializers.UUIDField(source='order.uuid', read_only=True)
-    menu_item = MenuItemSerializer()
-    modifiers = MenuItemModifierChoiceSerializer(many=True, required=False)
     
     def get_subtotal(self, obj):
         return obj.subtotal
@@ -204,14 +239,15 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'order_uuid', 'menu_item', 'quantity', 'modifiers', 'subtotal', 'special_instruction']
         
 
-class OrderSerializer(serializers.ModelSerializer):
-    order_items = OrderItemSerializer(many=True)
+class OrderWriteSerializer(serializers.ModelSerializer):
+    order_items = OrderItemWriteSerializer(many=True, write_only=True)
+    order_items_response = OrderItemReadSerializer(source='order_items', many=True, read_only=True)
     total_price = serializers.SerializerMethodField()
     discounted_price = serializers.SerializerMethodField()
     restaurant_uuid = serializers.UUIDField(source='restaurant.uuid', write_only=True)
     user_uuid = serializers.UUIDField(source='user.uuid', write_only=True)
     order_status = serializers.ChoiceField(choices=Order.OrderStatus.choices, default=Order.OrderStatus.IN_PROGRESS, read_only=True)
-    discount = RestaurantDiscountSerializer(required=False, allow_null=True)
+    discount_uuid = serializers.UUIDField(write_only=True, required=False, allow_null=True)
     
     def get_discounted_price(self, obj):
         return obj.discounted_price
@@ -245,29 +281,35 @@ class OrderSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Restaurant UUID is required.")
         if not data.get('payment_method'):
             raise serializers.ValidationError("Payment method is required.")
-
         return super().validate(data)
 
     def create(self, validated_data):
         order_items_data = validated_data.pop('order_items')
         user_data = validated_data.pop('user')
         restaurant_data = validated_data.pop('restaurant')
-        discount_data = validated_data.pop('discount', None)
-        if discount_data:
-            # NEED TO ADD UUID TO DISCOUNT AND BUG FIX
-            discount = Discount.objects.get(uuid=discount_data['uuid'])
-            validated_data['discount'] = discount
-        
+        discount_uuid = validated_data.pop('discount_uuid', None)
+
         user = CustomUser.objects.get(uuid=user_data['uuid'])
         restaurant = Restaurant.objects.get(uuid=restaurant_data['uuid'])
 
-        order = Order.objects.create(user=user, restaurant=restaurant, **validated_data)
-
-        for item_data in order_items_data:
-            OrderItem.objects.create(order=order, **item_data)
+        order_payload = {**validated_data}
         
+        if discount_uuid:
+            try:
+                discount = Discount.objects.get(uuid=discount_uuid)
+                order_payload['discount'] = discount
+            except Discount.DoesNotExist:
+                raise serializers.ValidationError("Incorrect discount UUID")
+
+        order = Order.objects.create(user=user, restaurant=restaurant, **order_payload)
+        
+        order_item_serializer_for_create = OrderItemWriteSerializer(context={'order':order})
+
+        for item_validated_sub_data  in order_items_data:
+            order_item_serializer_for_create.create(validated_data=item_validated_sub_data)
+
         return order
 
     class Meta:
         model = Order
-        fields = ['uuid', 'restaurant_uuid', 'user_uuid', 'order_items', 'order_status', 'payment_method', 'total_price', 'discounted_price', 'delivery_address', 'discount', 'created_at']
+        fields = ['uuid', 'restaurant_uuid', 'user_uuid', 'order_items', 'order_items_response', 'order_status', 'payment_method', 'total_price', 'discounted_price', 'delivery_address', 'discount_uuid', 'created_at']

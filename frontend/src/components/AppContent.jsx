@@ -20,8 +20,8 @@ import { useContext } from 'react';
 import AuthContext from '../context/AuthContext';
 
 const AppContent = () => {
-    const { showChoicesPopup, choicesItem } = useContext(CartContext);
     const { successMessage, noticeMessage, failureMessage, showOTPForm } = useContext(AuthContext);
+    const { showChoicesPopup, choicesItem } = useContext(CartContext);
 
     return (
         <>

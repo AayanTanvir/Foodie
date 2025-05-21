@@ -27,7 +27,7 @@ const ItemChoicesPopup = ({ item }) => {
             if (isMultiSelect) {
                 return {
                     ...prev,
-                    [modifierId]: objArrayIncludes(currentChoices, choice)
+                    [modifierId]: currentChoices.some(currentChoice => currentChoice.id === choice.id)
                         ? currentChoices.filter(currentChoice => currentChoice.id !== choice.id)
                         : [...currentChoices, choice],
                 };
@@ -42,9 +42,9 @@ const ItemChoicesPopup = ({ item }) => {
 
     const toggleSideItemChoices = (sideItem) => {
         setSelectedSideItems((prev) => {
-            const isSelected = objArrayIncludes(selectedSideItems, sideItem);
+            const isSelected = selectedSideItems.some(selectedItem => selectedItem?.uuid === sideItem?.uuid);
             if (isSelected) {
-                return selectedSideItems.filter((selectedSideItem) => selectedSideItem.id !== sideItem.id);
+                return selectedSideItems.filter((selectedSideItem) => selectedSideItem.uuid !== sideItem.uuid);
             } else {
                 return [...prev, {...sideItem, quantity: 1}];
             }
@@ -152,9 +152,9 @@ const ItemChoicesPopup = ({ item }) => {
                 </div>
                 <div className='w-full h-fit grid grid-cols-3 auto-rows-auto gap-4 p-4 mb-4'>
                     {sideItems?.map((item) => {
-                        const isSelected = objArrayIncludes(selectedSideItems, item);
+                        const isSelected = selectedSideItems.some(selectedItem => selectedItem.uuid === item.uuid);
                         return (
-                            <div onClick={() => { toggleSideItemChoices(item) }} key={item.id} className='w-full h-fit border-2 border-gray-300 rounded flex justify-start items-center cursor-pointer transition duration-200 hover:scale-[102%]'>
+                            <div onClick={() => { toggleSideItemChoices(item) }} key={item.uuid} className='w-full h-fit border-2 border-gray-300 rounded flex justify-start items-center cursor-pointer transition duration-200 hover:scale-[102%]'>
                                 <div className='w-1/3 h-[6rem] flex justify-center items-center cursor-pointer'>
                                     <img src={item.image} alt="Image not found" className='object-cover w-full h-full'/>
                                 </div>

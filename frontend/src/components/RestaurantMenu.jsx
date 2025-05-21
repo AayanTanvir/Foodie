@@ -54,7 +54,7 @@ const RestaurantMenu = ({ restaurant }) => {
     }
 
     const isInCart = (item) => {
-        return cartItems.some(cartItem => cartItem.id === item.id);
+        return cartItems.some(cartItem => cartItem.uuid === item.uuid);
     }
 
     const handleAdd = (item) => {
@@ -110,7 +110,7 @@ const RestaurantMenu = ({ restaurant }) => {
                         <div className='grid grid-cols-3 auto-rows-auto w-fit h-fit gap-x-6 gap-y-4'>
                             {searchedItems.map((item) => (
                                 <div
-                                key={item.id}
+                                key={item.uuid}
                                 className='w-[20rem] h-32 px-4 py-2 mb-5 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-[101%] relative'
                                 >
                                     <div className='w-4/5 h-full text-left overflow-hidden'>
@@ -151,7 +151,7 @@ const RestaurantMenu = ({ restaurant }) => {
                             <div className='grid grid-cols-3 auto-rows-auto w-fit h-fit gap-x-6 gap-y-4'>
                                 {popularItems.map((item) => (
                                     <div
-                                    key={item.id}
+                                    key={item.uuid}
                                     className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-[101%] relative'
                                     >
                                         <div className='w-4/5 h-full text-left overflow-hidden'>
@@ -193,7 +193,7 @@ const RestaurantMenu = ({ restaurant }) => {
                                     .filter((item) => item.category === category.name)
                                     .map((item) => (
                                         <div
-                                        key={item.id}
+                                        key={item.uuid}
                                         className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-[101%] relative'
                                         >   
                                             <div className='w-4/5 h-full text-left overflow-hidden'>
@@ -230,7 +230,7 @@ const RestaurantMenu = ({ restaurant }) => {
                                 <div className='grid grid-cols-3 auto-rows-auto w-fit h-fit gap-x-6 gap-y-4'>
                                     {sideItems.map((item) => (
                                         <div
-                                            key={item.id}
+                                            key={item.uuid}
                                             className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-[101%] relative'
                                         >
                                             <div className='w-4/5 h-full text-left overflow-hidden'>

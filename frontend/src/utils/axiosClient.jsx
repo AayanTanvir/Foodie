@@ -24,31 +24,58 @@ axiosClient.interceptors.request.use(
     }
 )
 
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+const subscribeTokenRefresh = (cb) => {
+    refreshSubscribers.push(cb);
+}
+
+const onRefreshed = (token) => {
+    refreshSubscribers.forEach(cb => cb(token))
+    refreshSubscribers = [];
+}
+
 axiosClient.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
 
-        if (error.response.status === 401 && !originalRequest._retry && error.response.data?.code === 'token_not_valid') {
+        if (
+            error.response?.status === 401 && 
+            !originalRequest._retry && 
+            error.response.data?.code === 'token_not_valid' && 
+            error.response.data?.detail !== "Token is blacklisted"
+        ) {
             originalRequest._retry = true;
 
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    subscribeTokenRefresh((token) => {
+                        try {
+                            originalRequest.headers.Authorization = `Bearer ${token}`;
+                            resolve(axiosClient(originalRequest));
+                        } catch (err) {
+                            reject(err)
+                        }
+                    })
+                })
+            }
+
+            isRefreshing = true;
+            
             const tokensStr = localStorage.getItem("authTokens");
             if (!tokensStr) {
-                console.error("Session expired. No tokens found");
                 logout();
                 return Promise.reject(error);
             }
 
             const tokens = JSON.parse(tokensStr);
+
             try {
-                const response = await axios.post(`${baseURL}/token/refresh/`,
-                    { refresh: tokens.refresh },
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    }
-                );
+                const response = await axios.post(`${baseURL}/token/refresh/`,{ 
+                    refresh: tokens.refresh
+                });
                 
                 const refresh = jwtDecode(response.data.refresh);
                 const access = jwtDecode(response.data.access);
@@ -56,22 +83,22 @@ axiosClient.interceptors.response.use(
                 localStorage.setItem("authTokens", JSON.stringify(response.data));
                 localStorage.setItem("refreshTokenExp", refresh.exp);
                 localStorage.setItem("accessTokenExp", access.exp);
+
                 axiosClient.defaults.headers.Authorization = `Bearer ${response.data.access}`;
+
+                onRefreshed(access)
+                isRefreshing = false;
+
                 originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
                 return axiosClient(originalRequest);
                 
             } catch (refreshError) {
-                console.error("Token refresh failed:", refreshError);
+                isRefreshing = false;
+                logout();
                 return Promise.reject(refreshError);
             }
-                
         }
 
-        const non_field_errors = error.response?.data?.non_field_errors;
-        const detail = error.response?.data?.detail;
-        const code = error.response?.data?.code;
-        const data = error.response?.data;
-        console.error(detail, code, non_field_errors || data || error.message);
         return Promise.reject(error);
     }
     

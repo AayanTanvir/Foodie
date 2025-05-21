@@ -52,7 +52,7 @@ const RestaurantDiscounts = ({ restaurant }) => {
             </div>
             <div className='w-[80%] h-fit grid grid-cols-3 auto-rows-auto gap-x-4 gap-y-2 '>
                 {discounts.map((discount) => (
-                    <div key={discount.id} className='w-full h-fit border-2 border-neutral-300 rounded-l-md flex justify-between items-center cursor-pointer transition duration-150 ease-out hover:border-neutral-500 hover:scale-[101%]'>
+                    <div key={discount.uuid} className='w-full h-fit border-2 border-neutral-300 rounded-l-md flex justify-between items-center cursor-pointer transition duration-150 ease-out hover:border-neutral-500 hover:scale-[101%]'>
                         <div className='h-full w-fit ml-2 flex justify-center items-center'>
                             <img src={discount_svg} alt='' className='w-5 h-5' />
                         </div>

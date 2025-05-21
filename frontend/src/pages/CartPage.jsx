@@ -91,7 +91,7 @@ const CartPage = () => {
                                             </thead>
                                             <tbody>
                                                 {cartItems.map((item, index) => (
-                                                    <tr key={item.id} className={`text-neutral-700 relative ${index === cartItems.length - 1 ? '' : 'border-b-2 border-gray-200'}`}>
+                                                    <tr key={item.uuid} className={`text-neutral-700 relative ${index === cartItems.length - 1 ? '' : 'border-b-2 border-gray-200'}`}>
                                                         <td className='relative mr-4'>
                                                             {!item.is_side_item && (
                                                                 (Object.keys(item.modifiers).length === 0 && item.special_instructions === "") ? null : (

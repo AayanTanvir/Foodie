@@ -82,6 +82,7 @@ class Restaurant(models.Model):
     
     
 class MenuItem(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="menu_items")
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True, default="")
@@ -102,7 +103,7 @@ class MenuItem(models.Model):
         return self.order_items.values("order").distinct().count()
 
     def __str__(self):
-        return f"{self.restaurant.name} - {self.name}"
+        return f"{self.name}"
     
     
 class MenuItemCategory(models.Model):
@@ -236,6 +237,7 @@ class Discount(models.Model):
         FREE_DELIVERY = 'free_delivery', 'Free Delivery'
        
     
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="discounts")
     valid_from = models.DateTimeField()
     valid_to = models.DateTimeField()

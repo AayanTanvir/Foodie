@@ -70,21 +70,11 @@ const CheckoutPage = () => {
             restaurant_uuid: restaurantUUID,
             user_uuid: userUUID,
             order_items: cartItems.map((item) => ({
-                menu_item: {
-                    name: item.name,
-                    description: item.description,
-                    category: getCategory(item),
-                    price: item.price,
-                    is_available: item.is_available,
-                    is_side_item: item.is_side_item
-                },
+                menu_item_uuid: item.uuid,
                 quantity: item.quantity,
                 modifiers: item.modifiers
                     ? Object.values(item.modifiers).flatMap((choicesArray) =>
-                        choicesArray.map((choice) => ({
-                            label: choice.label,
-                            price: choice.price
-                        }))
+                        choicesArray.map(choice => choice.id)
                     )
                     : [],
                 special_instruction: item.special_instructions,
@@ -94,13 +84,7 @@ const CheckoutPage = () => {
         }
 
         if (selectedDiscount) {
-            payload.discount = {
-                valid_from: selectedDiscount.valid_from,
-                valid_to: selectedDiscount.valid_to,
-                discount_type: selectedDiscount.discount_type,
-                amount: selectedDiscount.amount,
-                min_order_amount: selectedDiscount.min_order_amount,
-            }
+            payload.discount_uuid = selectedDiscount.uuid
         }
 
         console.log(payload);
@@ -231,8 +215,8 @@ const CheckoutPage = () => {
                         {getEligibleDiscounts().map((discount) => {
                             let validTill = new Date(discount.valid_to).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
                             return (
-                                selectedDiscount?.id === discount.id ? (
-                                    <div key={discount.id} className='w-full h-fit border-[1.5px] border-neutral-500 rounded-l-md flex justify-between items-center cursor-pointer scale-[101%]'>
+                                selectedDiscount?.uuid === discount.uuid ? (
+                                    <div key={discount.uuid} className='w-full h-fit border-[1.5px] border-neutral-500 rounded-l-md flex justify-between items-center cursor-pointer scale-[101%]'>
                                         <div className='h-full w-fit ml-2 flex justify-center items-center'>
                                             <img src={discount_svg} alt='' className='w-5 h-5' />
                                         </div>
@@ -249,7 +233,7 @@ const CheckoutPage = () => {
                                         </div>
                                     </div>
                                 ) : (
-                                    <div key={discount.id} onClick={() => {setSelectedDiscount(discount)}} className='w-full h-fit border-[1.5px] border-neutral-300 rounded-l-md flex justify-between items-center cursor-pointer transition duration-150 ease-out hover:border-neutral-500 hover:scale-[101%]'>
+                                    <div key={discount.uuid} onClick={() => {setSelectedDiscount(discount)}} className='w-full h-fit border-[1.5px] border-neutral-300 rounded-l-md flex justify-between items-center cursor-pointer transition duration-150 ease-out hover:border-neutral-500 hover:scale-[101%]'>
                                         <div className='h-full w-fit ml-2 flex justify-center items-center'>
                                                 <img src={discount_svg} alt='' className='w-5 h-5' />
                                         </div>
@@ -276,7 +260,7 @@ const CheckoutPage = () => {
                 <h1 className='text-lg font-poppins font-bold text-neutral-800 text-left cursor-default mb-2'>{restaurantName}</h1>
                 <div className='w-full h-fit flex flex-col justify-start items-start border-b-[1px] border-neutral-300 pb-2 mb-2'>
                     {cartItems.map((item) => (
-                        <div key={item.id} className='w-full h-fit flex justify-between items-start mb-2'>
+                        <div key={item.uuid} className='w-full h-fit flex justify-between items-start mb-2'>
                             <div className='flex justify-start items-start w-fit h-fit'>
                                 {item.is_side_item ? (
                                     <h1 className='text-md font-poppins text-neutral-700 text-left cursor-default'>{item.quantity} x {item.name}</h1>

@@ -49,12 +49,12 @@ export const CartContextProvider = ({ children }) => {
         setCartItems(prevItems => {
             switch (action) {
                 case "addItem":
-                    const itemInCart = prevItems.find(cartItem => cartItem.id === item.id);
+                    const itemInCart = prevItems.find(cartItem => cartItem.uuid === item.uuid);
                     let updatedItems;
 
                     if (itemInCart) {
                         updatedItems = prevItems.map(cartItem =>
-                            cartItem.id === item.id
+                            cartItem.uuid === item.uuid
                             ? { ...cartItem, quantity: cartItem.quantity + 1 }
                             : cartItem
                         );
@@ -63,10 +63,10 @@ export const CartContextProvider = ({ children }) => {
                     }
 
                     sideItems.forEach(sideItem => {
-                        const sideItemInCart = updatedItems.find(cartItem => cartItem.id === sideItem.id);
+                        const sideItemInCart = updatedItems.find(cartItem => cartItem.uuid === sideItem.uuid);
                         if (sideItemInCart) {
                             updatedItems = updatedItems.map(cartItem =>
-                                cartItem.id === sideItem.id
+                                cartItem.uuid === sideItem.uuid
                                     ? { ...cartItem, quantity: cartItem.quantity + 1 }
                                     : cartItem
                             );
@@ -78,11 +78,11 @@ export const CartContextProvider = ({ children }) => {
                     return updatedItems;
 
                 case "removeItem":
-                    return prevItems.filter(cartItem => cartItem.id !== item.id);
+                    return prevItems.filter(cartItem => cartItem.uuid !== item.uuid);
 
                 case "addQuantity":
                     return prevItems.map(cartItem => {
-                        if (cartItem.id === item.id) {
+                        if (cartItem.uuid === item.uuid) {
                             if (Number(cartItem.quantity) >= 20) return cartItem;
                             return { ...cartItem, quantity: Number(cartItem.quantity) + 1 };
                         }
@@ -92,7 +92,7 @@ export const CartContextProvider = ({ children }) => {
                 case "subtractQuantity":
                     return prevItems
                     .map(cartItem =>
-                    cartItem.id === item.id
+                    cartItem.uuid === item.uuid
                         ? { ...cartItem, quantity: cartItem.quantity - 1 }
                         : cartItem
                     )
