@@ -6,6 +6,7 @@ import AuthContext from '../context/AuthContext';
 import axiosClient from '../utils/axiosClient';
 import discount_svg from '../assets/discount.svg';
 import { RestaurantContext } from '../context/RestaurantContext';
+import { useNavigate } from 'react-router-dom';
 
 
 const CheckoutPage = () => {
@@ -19,12 +20,20 @@ const CheckoutPage = () => {
         cvc: '',
         cardHolderName: ''
     });
-    let { cartItems, getSubtotal, getShippingExpense, getItemSubtotal, getDiscountAmount } = useContext(CartContext);
+    let { cartItems, isCartEmpty, clearCart, getSubtotal, getShippingExpense, getItemSubtotal, getDiscountAmount } = useContext(CartContext);
     let { discounts } = useContext(RestaurantContext);
     let { user, setNoticeMessage, setFailureMessage } = useContext(AuthContext);
     const restaurantName = cartItems[0]?.restaurant_name;
     const restaurantUUID = cartItems[0]?.restaurant_uuid;
     const userUUID = user?.uuid;
+    let navigate = useNavigate()
+
+
+    useEffect(() => {
+        if (isCartEmpty) {
+            window.location.href = '/';
+        }
+    }, [])
 
     const getDiscountLabel = (discount) => {
         if (discount.discount_type === 'percentage') {
@@ -69,7 +78,7 @@ const CheckoutPage = () => {
         let payload = {
             restaurant_uuid: restaurantUUID,
             user_uuid: userUUID,
-            order_items: cartItems.map((item) => ({
+            order_items_write: cartItems.map((item) => ({
                 menu_item_uuid: item.uuid,
                 quantity: item.quantity,
                 modifiers: item.modifiers
@@ -87,23 +96,23 @@ const CheckoutPage = () => {
             payload.discount_uuid = selectedDiscount.uuid
         }
 
-        console.log(payload);
         try {
             const res = await axiosClient.post('/orders/create', payload);
             if (res.status === 201) {
-                console.log("Order placed successfully", res.data);
-                // Handle successful order placement (e.g., redirect to order confirmation page)
+                console.log(res.data);
+                clearCart();
+                navigate('/');
             } else {
                 console.error("Unexpected response:", res);
                 setFailureMessage("Unexpected response. Please try again later.");
-                window.location.href = '/';
-                localStorage.removeItem('cartItems');
+                navigate('/');
+                clearCart();
             }
         } catch (error) {
             console.error("An error occurred while placing the order.", error);
             setFailureMessage("An error occurred. Please try again later.");
-            // localStorage.removeItem('cartItems');
-            // window.location.href = '/';
+            clearCart();
+            navigate('/');
         }
     }
 

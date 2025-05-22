@@ -127,23 +127,6 @@ export const CartContextProvider = ({ children }) => {
             return 0;
         }
     }
-
-    // const getBestDiscount = () => {
-    //     const applicable = getApplicableDiscounts();
-        
-    //     let bestDiscount = null;
-    //     let bestValue = 0;
-
-    //     applicable.forEach((discount) => {
-    //         const discountAmount = getDiscountAmount(discount);
-    //         if (discountAmount > bestValue) {
-    //             bestDiscount = discount;
-    //             bestValue = discountAmount;
-    //         }
-    //     })
-    //     return bestDiscount;
-    // }
-    
     
     const activateChoicesPopup = (item=null, isActivating) => {
         if (isActivating) {
@@ -153,6 +136,11 @@ export const CartContextProvider = ({ children }) => {
             setChoicesItem(null);
             setShowChoicesPopup(false);
         }
+    }
+
+    const clearCart = () => {
+        localStorage.removeItem("cartItems");
+        setCartItems([]);
     }
     
     useEffect(() => {
@@ -173,6 +161,7 @@ export const CartContextProvider = ({ children }) => {
         getDiscountAmount: getDiscountAmount,
         setShowChoicesPopup: setShowChoicesPopup,
         activateChoicesPopup: activateChoicesPopup,
+        clearCart: clearCart,
     }
 
     return (

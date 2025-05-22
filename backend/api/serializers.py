@@ -240,8 +240,8 @@ class OrderItemReadSerializer(serializers.ModelSerializer):
         
 
 class OrderWriteSerializer(serializers.ModelSerializer):
-    order_items = OrderItemWriteSerializer(many=True, write_only=True)
-    order_items_response = OrderItemReadSerializer(source='order_items', many=True, read_only=True)
+    order_items_write = OrderItemWriteSerializer(many=True, write_only=True)
+    order_items_read = OrderItemReadSerializer(source='order_items', many=True, read_only=True)
     total_price = serializers.SerializerMethodField()
     discounted_price = serializers.SerializerMethodField()
     restaurant_uuid = serializers.UUIDField(source='restaurant.uuid', write_only=True)
@@ -271,7 +271,7 @@ class OrderWriteSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
-        if not data.get('order_items'):
+        if not data.get('order_items_write'):
             raise serializers.ValidationError("Order must have at least one item.")
         if not data.get('delivery_address'):
             raise serializers.ValidationError("Delivery address is required.")
@@ -312,4 +312,4 @@ class OrderWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['uuid', 'restaurant_uuid', 'user_uuid', 'order_items', 'order_items_response', 'order_status', 'payment_method', 'total_price', 'discounted_price', 'delivery_address', 'discount_uuid', 'created_at']
+        fields = ['uuid', 'restaurant_uuid', 'user_uuid', 'order_items_write', 'order_items_read', 'order_status', 'payment_method', 'total_price', 'discounted_price', 'delivery_address', 'discount_uuid', 'created_at']

@@ -143,7 +143,7 @@ class Order(models.Model):
 
     @property
     def total_price(self):
-        return sum(item.subtotal for item in self.order_items.all())
+        return (sum(item.subtotal for item in self.order_items.all()) + 150)
     
     @property
     def discounted_price(self):
@@ -156,7 +156,7 @@ class Order(models.Model):
         elif self.discount.discount_type == Discount.DiscountType.FIXED_AMOUNT:
             total_price -= self.discount.amount
         elif self.discount.discount_type == Discount.DiscountType.FREE_DELIVERY:
-            return total_price
+            total_price -= 150
             
         return total_price if total_price > 0 else 0
                 
