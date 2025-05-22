@@ -41,7 +41,7 @@ export const CartContextProvider = ({ children }) => {
 
     const doCartItemAction = (item, action, specialInstructions="", modifiers={}, sideItems=[], quantity=1) => {
         if (cartItems.length !== 0) {
-            if (cartItems.some(cartItem => cartItem.restaurant !== item.restaurant)) {
+            if (cartItems.some(cartItem => cartItem.restaurant_uuid !== item.restaurant_uuid)) {
                 setCartItems([]);
             }
         }

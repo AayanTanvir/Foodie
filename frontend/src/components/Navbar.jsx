@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
 import { CartContext } from '../context/CartContext';
 import shopping_bag from '../assets/shopping_bag.svg';
+import disabled_shopping_bag from '../assets/disabled_shopping_bag.svg';
 
 const Navbar = () => {
 
@@ -28,21 +29,29 @@ const Navbar = () => {
             </div>
             <div className='font-poppins font-normal flex flex-row justify-center items-center h-full'>
                 {user && (
-                    <NavLink to="/cart" className={({ isActive }) =>
-                         `relative w-fit h-full px-1 bg-neutral-800
-                          flex justify-center items-center transition hover:bg-neutral-900
-                          ${isActive ? 'bg-neutral-900' : ''}`}>
+                    <>
+                        {isCartEmpty ? (
+                            <a className='relative w-fit h-full px-1 bg-neutral-700 flex justify-center items-center transition cursor-not-allowed'>
+                                <img src={disabled_shopping_bag} alt="Cart" className='w-6'/>
+                            </a>
+                        ) : (
+                            <NavLink to="/cart" className={({ isActive }) =>
+                                    `relative w-fit h-full px-1 bg-neutral-800
+                                    flex justify-center items-center transition hover:bg-neutral-900
+                                    ${isActive ? 'bg-neutral-900' : ''}`}>
 
-                        <img src={shopping_bag} alt="Cart" className='w-6'/>
-                        {!isCartEmpty && (
-                            <div className="w-[0.9rem] h-[0.9rem] rounded-full bg-gray-200 absolute
-                                top-[15%] right-0 flex justify-center items-center">
-                                <div className='text-center rounded-full flex justify-center items-center'>
-                                    <p className='font-poppins text-neutral-800 text-[0.8rem]'>{cartCount}</p>
-                                </div>
-                            </div>
+                                <img src={shopping_bag} alt="Cart" className='w-6'/>
+                                {!isCartEmpty && (
+                                    <div className="w-[0.9rem] h-[0.9rem] rounded-full bg-gray-200 absolute
+                                        top-[15%] right-0 flex justify-center items-center">
+                                        <div className='text-center rounded-full flex justify-center items-center'>
+                                            <p className='font-poppins text-neutral-800 text-[0.8rem]'>{cartCount}</p>
+                                        </div>
+                                    </div>
+                                )}
+                            </NavLink>
                         )}
-                    </NavLink>
+                    </>
                 )}
                 {user ? <NavLink className='cursor-pointer mx-5 transition hover:text-gray-300 after:bg-gray-300;w-2' onClick={logoutUser}>Logout</NavLink> : <NavLink className='hover:cursor-pointer mx-5 transition hover:text-gray-300' to='/login'>Login</NavLink>}
                 {!user ? <NavLink className='cursor-pointer mx-5 transition hover:text-gray-300' to='/signup'>Signup</NavLink> : <></>}

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { CartContext } from '../context/CartContext'
 import add from '../assets/add.svg';
 import remove from '../assets/remove.svg';
@@ -14,6 +14,12 @@ const CartPage = () => {
     const [showExtrasCard, setShowExtrasCard] = useState(false);
     let [extrasCard, setExtrasCard] = useState(null);
     let navigate = useNavigate();
+
+    useEffect(() => {
+        if (isCartEmpty) {
+            navigate('/');
+        }
+    }, [isCartEmpty])
 
     const showExtras = (extras) => {
         if (!extras) return;
