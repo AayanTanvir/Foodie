@@ -284,7 +284,7 @@ class OrderWriteSerializer(serializers.ModelSerializer):
         return super().validate(data)
 
     def create(self, validated_data):
-        order_items_data = validated_data.pop('order_items')
+        order_items_data = validated_data.pop('order_items_write')
         user_data = validated_data.pop('user')
         restaurant_data = validated_data.pop('restaurant')
         discount_uuid = validated_data.pop('discount_uuid', None)

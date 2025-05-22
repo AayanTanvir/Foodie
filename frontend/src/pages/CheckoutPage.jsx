@@ -62,16 +62,14 @@ const CheckoutPage = () => {
         return choices;
     };
 
-    const getCategory = (item) => {
-        if ((item.is_side_item && !item.category) || (!item.is_side_item && !item.category)) {
-            return "";
-        }
-        return item.category;
-    }
-
     const handlePlaceOrder = async () => {
         if (deliveryAddress.trim() === "") {
             setNoticeMessage("Please enter a delivery address.");
+            return;
+        }
+
+        if (paymentMethod === "card" && (cardDetails.cardNumber === '' || cardDetails.cvc === '' || cardDetails.cardHolderName === '' || cardDetails.expiryDate === '')) {
+            setNoticeMessage("Please enter card details");
             return;
         }
 

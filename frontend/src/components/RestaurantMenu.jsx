@@ -16,7 +16,8 @@ const RestaurantMenu = ({ restaurant }) => {
     const [searchedItems, setSearchedItems] = useState([]);
     let { doCartItemAction,  activateChoicesPopup, cartItems } = useContext(CartContext);
     let { menuItemModifiers, sideItems } = useContext(RestaurantContext);
-    let popularItems = restaurant.menu_items.sort((a, b) => b.popularity - a.popularity).slice(0, 5);
+    let menu_items = restaurant.menu_items.filter(menu_item => !menu_item.is_side_item);
+    let popularItems = menu_items.sort((a, b) => b.popularity - a.popularity).slice(0, 5);
 
     useEffect(() => {
         const checkOverflow = () => {
