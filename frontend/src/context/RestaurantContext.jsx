@@ -2,6 +2,7 @@ import React, {createContext, useContext, useEffect, useState} from 'react'
 import axiosClient from '../utils/axiosClient';
 import AuthContext from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { GlobalContext } from './GlobalContext';
 
 
 export const RestaurantContext = createContext();
@@ -14,7 +15,8 @@ export const RestaurantContextProvider = ({ children }) => {
     const [menuItemModifiers, setMenuItemModifiers] = useState(null);
     const [sideItems, setSideItems] = useState([]);
     const [discounts, setDiscounts] = useState([]);
-    let { setFailureMessage, user } = useContext(AuthContext);
+    let { user } = useContext(AuthContext);
+    let { setFailureMessage } = useContext(GlobalContext);
     const navigate = useNavigate();
 
     const fetchRestaurant = async (uuid) => {
@@ -124,12 +126,12 @@ export const RestaurantContextProvider = ({ children }) => {
     }, [restaurantUUID, restaurant])
     
     let context = {
-        restaurant: restaurant,
-        restaurants: restaurants,
-        menuItemModifiers: menuItemModifiers,
-        sideItems: sideItems,
-        discounts: discounts,
-        fetchRestaurant: fetchRestaurant,
+        restaurant,
+        restaurants,
+        menuItemModifiers,
+        sideItems,
+        discounts,
+        fetchRestaurant,
     }
 
     return (

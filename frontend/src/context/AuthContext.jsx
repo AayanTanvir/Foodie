@@ -1,8 +1,9 @@
-import { createContext, useState, useEffect } from 'react'
+import { createContext, useState, useEffect, useContext } from 'react'
 import { jwtDecode } from "jwt-decode"
 import { useNavigate } from "react-router-dom"
 import axiosClient from '../utils/axiosClient';
 import { logout, isExpiredSeconds } from '../utils/Utils';
+import { GlobalContext } from './GlobalContext';
 
 let AuthContext = createContext()
 
@@ -13,12 +14,9 @@ export const AuthProvider = ({children}) => {
     let [authTokens, setAuthTokens] = useState(localStorage.getItem("authTokens") ? JSON.parse(localStorage.getItem("authTokens")) : null);
     let [user, setUser] = useState(localStorage.getItem("authTokens") ? jwtDecode(localStorage.getItem("authTokens")) : null);
     let [authError, setAuthError] = useState("");
-    let [successMessage, setSuccessMessage] = useState("");
-    let [failureMessage, setFailureMessage] = useState("");
-    let [noticeMessage, setNoticeMessage] = useState("");
     let [showOTPForm, setShowOTPForm] = useState(false);
     let [canResendOTP, setCanResendOTP] = useState(false);
-
+    let { setSuccessMessage, setNoticeMessage, setFailureMessage } = useContext(GlobalContext);
 
     let loginUser = async (event) => {
         event.preventDefault();
@@ -105,7 +103,7 @@ export const AuthProvider = ({children}) => {
                         const detail = error.response?.data?.detail || "Something went wrong. Check internet connection";
                     
                         if (status === 401) {
-                            setFailureError("Invalid Credentials. Please try again");
+                            setFailureMessage("Invalid Credentials. Please try again");
                         } else if (status === 500) {
                             setFailureMessage("Internal Server Error (500)");  
                         } else {
@@ -131,30 +129,6 @@ export const AuthProvider = ({children}) => {
 
         }
     }
-    
-    // let updateToken = async () => {
-    //     try {
-    //         const response = await axiosClient.post("/token/refresh/", {
-    //             refresh: authTokens.refresh
-    //         });
-        
-    //         const data = response.data;
-    //         setAuthTokens(data);
-    //         setUser(jwtDecode(data.access));
-    //         localStorage.setItem("authTokens", JSON.stringify(data))
-            
-    //     } catch (error) {
-    //         const detail = error.response?.data.detail;
-
-    //         if (detail?.includes("expired")) {
-    //             setFailureMessage(detail || "Session Expired. Please login again.");
-    //             logoutUser();
-    //         } else {
-    //             setFailureMessage(detail || "Something went wrong. Please login again.");
-    //             logoutUser();
-    //         }
-    //     }
-    // }
 
     let validateCredentials = (password1, password2, username) => {
         let regex_lowercase = /[a-z]/;
@@ -262,26 +236,20 @@ export const AuthProvider = ({children}) => {
     }
 
     let context = {
-        user: user,
-        authTokens: authTokens,
-        successMessage: successMessage,
-        failureMessage: failureMessage,
-        noticeMessage: noticeMessage,
-        authError: authError,
-        showOTPForm: showOTPForm,
-        canResendOTP: canResendOTP,
-        loginUser: loginUser,
-        logoutUser: logoutUser,
-        signupUser: signupUser,
-        setAuthError: setAuthError,
-        setSuccessMessage: setSuccessMessage,
-        setShowOTPForm: setShowOTPForm,
-        verifyEmail: verifyEmail,
-        submitVerifyEmailOTP: submitVerifyEmailOTP,
-        setCanResendOTP: setCanResendOTP,
-        validateCredentials: validateCredentials,
-        setFailureMessage: setFailureMessage,
-        setNoticeMessage: setNoticeMessage,
+        user,
+        authTokens,
+        authError,
+        showOTPForm,
+        canResendOTP,
+        loginUser,
+        logoutUser,
+        signupUser,
+        setAuthError,
+        setShowOTPForm,
+        verifyEmail,
+        submitVerifyEmailOTP,
+        setCanResendOTP,
+        validateCredentials,
     };
 
     // useEffect(() => {
@@ -300,11 +268,6 @@ export const AuthProvider = ({children}) => {
         const timeout = setTimeout(() => setAuthError(""), 3000);
         return () => clearTimeout(timeout);
     }, [authError]);
-    
-    useEffect(() => {
-        const timeout = setTimeout(() => {setSuccessMessage(""), setNoticeMessage(""), setFailureMessage("")}, 3000);
-        return () => clearTimeout(timeout);
-    }, [successMessage, noticeMessage, failureMessage]);
 
     useEffect(() => {
         const exp = parseInt(localStorage.getItem("refreshTokenExp"), 10);

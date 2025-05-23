@@ -18,10 +18,13 @@ import OTPForm from './OTPForm';
 import ItemChoicesPopup from './ItemChoicesPopup';
 import { useContext } from 'react';
 import AuthContext from '../context/AuthContext';
+import CurrentOrderPage from '../pages/CurrentOrderPage'
+import { GlobalContext } from '../context/GlobalContext';
 
 const AppContent = () => {
-    const { successMessage, noticeMessage, failureMessage, showOTPForm } = useContext(AuthContext);
-    const { showChoicesPopup, choicesItem } = useContext(CartContext);
+    let { showOTPForm } = useContext(AuthContext);
+    let { successMessage, noticeMessage, failureMessage } = useContext(GlobalContext);
+    let { showChoicesPopup, choicesItem } = useContext(CartContext);
 
     return (
         <>
@@ -40,6 +43,7 @@ const AppContent = () => {
                     <Route element={<RestaurantPage/>} path='/r/:slug/:uuid'/>
                     <Route element={<CartPage/>} path='/cart'/>
                     <Route element={<CheckoutPage/>} path='/checkout'/>
+                    <Route element={<CurrentOrderPage/>} path='/u/:user_uuid/order/:order_uuid'/>
                 </Route>
 
                 {/* auth */}

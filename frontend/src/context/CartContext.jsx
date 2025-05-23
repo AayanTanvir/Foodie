@@ -149,19 +149,19 @@ export const CartContextProvider = ({ children }) => {
     }, [cartItems])
     
     let context = {
-        isCartEmpty: isCartEmpty,
-        cartItems: cartItems,
-        showChoicesPopup: showChoicesPopup,
-        choicesItem: choicesItem,
-        doCartItemAction: doCartItemAction,
-        getSubtotal: getSubtotal,
-        getExtrasSubtotal: getExtrasSubtotal,
-        getShippingExpense: getShippingExpense,
-        getItemSubtotal: getItemSubtotal,
-        getDiscountAmount: getDiscountAmount,
-        setShowChoicesPopup: setShowChoicesPopup,
-        activateChoicesPopup: activateChoicesPopup,
-        clearCart: clearCart,
+        isCartEmpty,
+        cartItems,
+        showChoicesPopup,
+        choicesItem,
+        doCartItemAction,
+        getSubtotal,
+        getExtrasSubtotal,
+        getShippingExpense,
+        getItemSubtotal,
+        getDiscountAmount,
+        setShowChoicesPopup,
+        activateChoicesPopup,
+        clearCart,
     }
 
     return (

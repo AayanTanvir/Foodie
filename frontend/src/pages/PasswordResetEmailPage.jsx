@@ -2,10 +2,12 @@ import React, { useContext, useEffect } from 'react';
 import AuthContext from '../context/AuthContext';
 import { data, useNavigate } from 'react-router-dom';
 import axiosClient from '../utils/axiosClient';
+import { GlobalContext } from '../context/GlobalContext';
 
 const PasswordResetEmailPage = () => {
 
-    let {authError, setFailureMessage, setNoticeMessage, user, setAuthError} = useContext(AuthContext);
+    let { authError, user, setAuthError } = useContext(AuthContext);
+    let { setFailureMessage, setNoticeMessage } = useContext(GlobalContext);
     let navigate = useNavigate();
 
     useEffect(() => {

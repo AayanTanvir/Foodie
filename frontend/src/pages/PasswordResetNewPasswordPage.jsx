@@ -2,12 +2,14 @@ import React, { useContext } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
 import axiosClient from '../utils/axiosClient';
+import { GlobalContext } from '../context/GlobalContext';
 
 
 const PasswordResetNewPasswordPage = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
-    const {setSuccessMessage, authError, setAuthError, validateCredentials} = useContext(AuthContext);
+    const { authError, setAuthError, validateCredentials } = useContext(AuthContext);
+    let { setSuccessMessage } = useContext(GlobalContext);
     let token = searchParams.get('token');
     let navigate = useNavigate();
 

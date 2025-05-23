@@ -4,18 +4,21 @@ import { AuthProvider } from './context/AuthContext';
 import { CartContextProvider } from './context/CartContext';
 import { RestaurantContextProvider } from './context/RestaurantContext';
 import AppContent from './components/AppContent';
+import { GlobalContextProvider } from './context/GlobalContext';
 
 
 function App() {
     return (
         <Router>
-            <AuthProvider>
-                <RestaurantContextProvider>
-                    <CartContextProvider>
-                        <AppContent />
-                    </CartContextProvider>
-                </RestaurantContextProvider>
-            </AuthProvider>
+            <GlobalContextProvider>
+                <AuthProvider>
+                    <RestaurantContextProvider>
+                        <CartContextProvider>
+                            <AppContent />
+                        </CartContextProvider>
+                    </RestaurantContextProvider>
+                </AuthProvider>
+            </GlobalContextProvider>
         </Router>
     )
 }
