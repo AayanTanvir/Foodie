@@ -24,7 +24,7 @@ const CheckoutPage = () => {
     let { cartItems, isCartEmpty, clearCart, getSubtotal, getShippingExpense, getItemSubtotal, getDiscountAmount } = useContext(CartContext);
     let { discounts } = useContext(RestaurantContext);
     let { user } = useContext(AuthContext);
-    let { setNoticeMessage, setFailureMessage, setCurrentOrder } = useContext(GlobalContext);
+    let { setNoticeMessage, setFailureMessage, setCurrentOrderAndPersist } = useContext(GlobalContext);
     const restaurantName = cartItems[0]?.restaurant_name;
     const restaurantUUID = cartItems[0]?.restaurant_uuid;
     const userUUID = user?.uuid;
@@ -100,20 +100,20 @@ const CheckoutPage = () => {
         try {
             const res = await axiosClient.post("/orders/create", payload);
             if (res.status === 201) {
-                setCurrentOrder(res.data);
+                setCurrentOrderAndPersist({...res.data, restaurant_name: restaurantName});
                 clearCart();
                 navigate(`/u/${user.uuid}/order/${res.data?.uuid}`);
             } else {
                 console.error("Unexpected response:", res);
                 setFailureMessage("Unexpected response. Please try again later.");
-                setCurrentOrder({});
+                setCurrentOrderAndPersist({});
                 navigate("/");
                 clearCart();
             }
         } catch (error) {
             console.error("An error occurred while placing the order.", error);
             setFailureMessage("An error occurred. Please try again later.");
-            setCurrentOrder({});
+            setCurrentOrderAndPersist({});
             clearCart();
             navigate("/");
         }
@@ -221,55 +221,58 @@ const CheckoutPage = () => {
                         )}
                     </div>
                 </div>
-                <div className="w-full flex flex-col justify-start items-start gap-2">
-                    <h1 className="text-3xl font-notoserif text-neutral-700 text-left cursor-default">Eligible Discounts</h1>
-                    <div className="w-full h-fit grid auto-rows-auto grid-cols-3 gap-2">
-                        {getEligibleDiscounts().map((discount) => {
-                            let validTill = new Date(discount.valid_to).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" });
-                            return (
-                                selectedDiscount?.uuid === discount.uuid ? (
-                                    <div key={discount.uuid} className="w-full h-fit border-[1.5px] border-neutral-500 rounded-l-md flex justify-between items-center cursor-pointer scale-[101%]">
-                                        <div className="h-full w-fit ml-2 flex justify-center items-center">
-                                            <img src={discount_svg} alt="" className="w-5 h-5" />
-                                        </div>
-                                        <div className="h-full flex-1 p-2 flex flex-col justify-start items-start">
-                                            <h1 className="font-poppins font-semibold text-lg text-neutral-600">{getDiscountLabel(discount)}</h1>
-                                            <p className="text-sm font-roboto text-neutral-600">Valid till <span className="tracking-wider font-hedwig">{validTill}</span></p>
-                                            <p className="text-sm font-roboto text-neutral-600">{discount.min_order_amount === 0 ? "No minimum order amount" : `On orders above Rs. ${discount.min_order_amount}`}</p>
-                                        </div>
-                                        <div className="h-[100px] w-fit flex flex-col justify-evenly items-center mx-2 border-l-2 border-dashed pl-2 border-neutral-300">
-                                            <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
-                                            <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
-                                            <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
-                                            <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div key={discount.uuid} onClick={() => {setSelectedDiscount(discount)}} className="w-full h-fit border-[1.5px] border-neutral-300 rounded-l-md flex justify-between items-center cursor-pointer transition duration-150 ease-out hover:border-neutral-500 hover:scale-[101%]">
-                                        <div className="h-full w-fit ml-2 flex justify-center items-center">
+                {discounts.length !== 0 && (
+                    <div className="w-full flex flex-col justify-start items-start gap-2">
+                        <h1 className="text-3xl font-notoserif text-neutral-700 text-left cursor-default">Eligible Discounts</h1>
+                        <div className="w-full h-fit grid auto-rows-auto grid-cols-3 gap-2">
+                            {getEligibleDiscounts().map((discount) => {
+                                let validTill = new Date(discount.valid_to).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" });
+                                return (
+                                    selectedDiscount?.uuid === discount.uuid ? (
+                                        <div key={discount.uuid} className="w-full h-fit border-[1.5px] border-neutral-500 rounded-l-md flex justify-between items-center cursor-pointer scale-[101%]">
+                                            <div className="h-full w-fit ml-2 flex justify-center items-center">
                                                 <img src={discount_svg} alt="" className="w-5 h-5" />
+                                            </div>
+                                            <div className="h-full flex-1 p-2 flex flex-col justify-start items-start">
+                                                <h1 className="font-poppins font-semibold text-lg text-neutral-600">{getDiscountLabel(discount)}</h1>
+                                                <p className="text-sm font-roboto text-neutral-600">Valid till <span className="tracking-wider font-hedwig">{validTill}</span></p>
+                                                <p className="text-sm font-roboto text-neutral-600">{discount.min_order_amount === 0 ? "No minimum order amount" : `On orders above Rs. ${discount.min_order_amount}`}</p>
+                                            </div>
+                                            <div className="h-[100px] w-fit flex flex-col justify-evenly items-center mx-2 border-l-2 border-dashed pl-2 border-neutral-300">
+                                                <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
+                                                <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
+                                                <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
+                                                <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
+                                            </div>
                                         </div>
-                                        <div className="h-full flex-1 p-2 flex flex-col justify-start items-start">
-                                            <h1 className="font-poppins font-semibold text-lg text-neutral-600">{getDiscountLabel(discount)}</h1>
-                                            <p className="text-sm font-roboto text-neutral-600">Valid till <span className="tracking-wider font-hedwig">{validTill}</span></p>
-                                            <p className="text-sm font-roboto text-neutral-600">{discount.min_order_amount === 0 ? "No minimum order amount" : `On orders above Rs. ${discount.min_order_amount}`}</p>
+                                    ) : (
+                                        <div key={discount.uuid} onClick={() => {setSelectedDiscount(discount)}} className="w-full h-fit border-[1.5px] border-neutral-300 rounded-l-md flex justify-between items-center cursor-pointer transition duration-150 ease-out hover:border-neutral-500 hover:scale-[101%]">
+                                            <div className="h-full w-fit ml-2 flex justify-center items-center">
+                                                    <img src={discount_svg} alt="" className="w-5 h-5" />
+                                            </div>
+                                            <div className="h-full flex-1 p-2 flex flex-col justify-start items-start">
+                                                <h1 className="font-poppins font-semibold text-lg text-neutral-600">{getDiscountLabel(discount)}</h1>
+                                                <p className="text-sm font-roboto text-neutral-600">Valid till <span className="tracking-wider font-hedwig">{validTill}</span></p>
+                                                <p className="text-sm font-roboto text-neutral-600">{discount.min_order_amount === 0 ? "No minimum order amount" : `On orders above Rs. ${discount.min_order_amount}`}</p>
+                                            </div>
+                                            <div className="h-[100px] w-fit flex flex-col justify-evenly items-center mx-2 border-l-2 border-dashed pl-2 border-neutral-300">
+                                                <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
+                                                <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
+                                                <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
+                                                <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
+                                            </div>
                                         </div>
-                                        <div className="h-[100px] w-fit flex flex-col justify-evenly items-center mx-2 border-l-2 border-dashed pl-2 border-neutral-300">
-                                            <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
-                                            <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
-                                            <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
-                                            <div className="w-3 h-3 border-2 border-neutral-300 rounded-full"></div>
-                                        </div>
-                                    </div>
-                                )
-                            );
-                        })}
+                                    )
+                                );
+                            })}
+                        </div>
                     </div>
-                </div>
+
+                )}
             </div>
             <div className="rounded-md border-[1.5px] border-neutral-300 w-1/3 h-fit p-4 flex flex-col justify-start items-start bg-white">
                 <h1 className="text-3xl font-notoserif text-neutral-700 text-left cursor-default">Order Summary</h1>
-                <h1 className="text-lg font-poppins font-bold text-neutral-800 text-left cursor-default mb-2">{restaurantName}</h1>
+                <h1 className="text-lg font-poppins text-neutral-700 text-left cursor-default mb-2">From {restaurantName}</h1>
                 <div className="w-full h-fit flex flex-col justify-start items-start border-b-[1px] border-neutral-300 pb-2 mb-2">
                     {cartItems.map((item) => (
                         <div key={item.uuid} className="w-full h-fit flex justify-between items-start mb-2">

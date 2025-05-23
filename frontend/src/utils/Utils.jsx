@@ -1,4 +1,5 @@
 export const formatTime = (timeStr) => {
+    if (!timeStr) return "Unknown";
     const [hours, minutes] = timeStr.split(':');
     const date = new Date();
     date.setHours(hours, minutes, 0);
@@ -6,6 +7,19 @@ export const formatTime = (timeStr) => {
     return date.toLocaleTimeString('en-US', {
         hour: 'numeric', minute: 'numeric', hour12: true
     }).replace(" ", "");
+}
+
+export const formatDateTime = (dateTimeStr) => {
+    if (!dateTimeStr) return "Unknown";
+    const date = new Date(dateTimeStr);
+    return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+    });
 }
 
 export const logout = () => {
