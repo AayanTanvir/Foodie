@@ -9,16 +9,13 @@ export const formatTime = (timeStr) => {
     }).replace(" ", "");
 }
 
-export const formatDateTime = (dateTimeStr) => {
+export const formatDate = (dateTimeStr) => {
     if (!dateTimeStr) return "Unknown";
     const date = new Date(dateTimeStr);
     return date.toLocaleString('en-US', {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
     });
 }
 
