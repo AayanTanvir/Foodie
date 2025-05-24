@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { GlobalContext } from '../context/GlobalContext'
 import { useParams } from 'react-router-dom';
 import { formatDate } from '../utils/Utils';
@@ -6,6 +6,8 @@ import { formatDate } from '../utils/Utils';
 const CurrentOrderPage = () => {
     const { currentOrder } = useContext(GlobalContext);
     let { order_uuid } = useParams();
+    const [cancelConfirmPopup, setCancelConfirmPopup] = useState(null);
+    const [showingCancelConfirm, setShowingCancelConfirm] = useState(false);
 
     const getOrderStatus = (status) => {
         if (!status) return "Unknown";
@@ -39,6 +41,25 @@ const CurrentOrderPage = () => {
         }
     }
 
+    const showCancelConfirmPopup = () => {
+        setShowingCancelConfirm(true);
+        setCancelConfirmPopup(
+            <div className='fixed z-50 top-0 left-0 w-full h-screen flex items-center justify-center flex-col bg-black/50'>
+                <div className='w-[30%] h-1/2 bg-neutral-100 border-2 border-gray-200 flex flex-col justify-center items-center p-4'>
+                    <h1 className='cursor-default font-notoserif text-3xl text-neutral-800 '>Are you sure?</h1>
+                    <div className='w-1/2 h-fit flex justify-between items-center mt-4'>
+                        <button onClick={() => {  }} className='w-16 h-fit rounded bg-neutral-800 text-white p-2 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                            Yes
+                        </button>
+                        <button onClick={() => { setShowingCancelConfirm(false) }} className='w-16 h-fit rounded bg-neutral-800 text-white p-2 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                            No
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     useEffect(() => {
         if (currentOrder.uuid !== order_uuid) {
             window.location.href = '/';
@@ -47,6 +68,9 @@ const CurrentOrderPage = () => {
 
     return (
         <div className='absolute top-0 left-0 w-full h-full flex justify-center items-center pt-12 mb-4'>
+            {showingCancelConfirm && (
+                cancelConfirmPopup
+            )}
             <div className='w-4/5 h-[90%] border-[1.75px] rounded border-neutral-300 flex flex-col justify-start items-start'>
                 <div className='w-full h-fit flex justify-center items-center px-6 py-2 gap-4'>
                     <div className='flex-1 h-0 border-b-[1px] border-neutral-400'></div>
@@ -93,7 +117,7 @@ const CurrentOrderPage = () => {
                                     <p className='font-poppins text-neutral-600 text-md'>{getPaymentMethod(currentOrder.payment_method)}</p>
                                 </div>
                             </div>
-                            <div className='w-1/2 h-full pt-5 p-4 flex flex-col justify-start items-center border-r-[1px] border-neutral-300'>
+                            <div className='w-1/2 h-full pt-5 p-4 flex flex-col justify-start items-center'>
                                 <div className='w-full flex justify-between items-center gap-2'>
                                     <p className='font-poppins text-neutral-700 text-sm'>ID</p>
                                     <p className='font-poppins text-neutral-600 text-sm text-nowrap'>{currentOrder.uuid}</p>
@@ -101,21 +125,24 @@ const CurrentOrderPage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className='border-[1.5px] rounded border-neutral-300 p-4 flex justify-between items-center row-start-6 row-end-9 col-start-1 col-end-7'>
-                        <div className='w-full h-full flex flex-col justify-start items-start gap-2'>
-                            <div className='w-full flex justify-between items-center border-b-[1px] border-neutral-400'>
-                                <p className='font-notoserif text-xl cursor-default text-neutral-700'>Discount</p>
-                                <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {currentOrder.total_price - currentOrder.discounted_price}</p>
+                    <div className='border-[1.5px] rounded border-neutral-300 p-4 flex flex-col justify-start items-start gap-1 row-start-6 row-end-9 col-start-1 col-end-7'>
+                        <div className='w-full flex justify-between items-center border-b-[1px] border-neutral-400'>
+                            <p className='font-notoserif text-xl cursor-default text-neutral-700'>Discount</p>
+                            <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {currentOrder.total_price - currentOrder.discounted_price}</p>
+                        </div>
+                        <div className='w-full flex justify-between items-center border-b-[1px] border-neutral-400'>
+                            <p className='font-notoserif text-xl cursor-default text-neutral-700'>Total</p>
+                            <div className='flex flex-col justify-start items-end'>
+                                <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {currentOrder.discounted_price}</p>
+                                {currentOrder.total_price - currentOrder.discounted_price !== currentOrder.total_price && (
+                                    <p className='font-poppins cursor-default text-xs text-neutral-500 line-through'> Rs. {currentOrder.total_price}</p>
+                                )}
                             </div>
-                            <div className='w-full flex justify-between items-center border-b-[1px] border-neutral-400'>
-                                <p className='font-notoserif text-xl cursor-default text-neutral-700'>Total</p>
-                                <div className='flex flex-col justify-start items-end'>
-                                    <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {currentOrder.discounted_price}</p>
-                                    {currentOrder.total_price - currentOrder.discounted_price !== currentOrder.total_price && (
-                                        <p className='font-poppins cursor-default text-xs text-neutral-500 line-through'> Rs. {currentOrder.total_price}</p>
-                                    )}
-                                </div>
-                            </div>
+                        </div>
+                        <div className='w-full flex-1 flex justify-center items-center'>
+                            <button onClick={() => { showCancelConfirmPopup(true) }} className='w-full h-5 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                                Cancel Order
+                            </button>
                         </div>
                     </div>
                     <div className='border-[1.5px] rounded border-neutral-300 p-4 flex flex-col justify-start items-start gap-2 row-start-1 row-end-9 col-start-8 col-end-11'>
