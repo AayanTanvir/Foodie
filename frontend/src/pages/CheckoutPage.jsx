@@ -100,20 +100,17 @@ const CheckoutPage = () => {
         try {
             const res = await axiosClient.post("/orders/create", payload);
             if (res.status === 201) {
-                setCurrentOrderAndPersist({...res.data, restaurant_name: restaurantName});
                 clearCart();
                 navigate(`/u/${user.uuid}/order/${res.data?.uuid}`);
             } else {
                 console.error("Unexpected response:", res);
                 setFailureMessage("Unexpected response. Please try again later.");
-                setCurrentOrderAndPersist({});
                 navigate("/");
                 clearCart();
             }
         } catch (error) {
             console.error("An error occurred while placing the order.", error);
             setFailureMessage("An error occurred. Please try again later.");
-            setCurrentOrderAndPersist({});
             clearCart();
             navigate("/");
         }

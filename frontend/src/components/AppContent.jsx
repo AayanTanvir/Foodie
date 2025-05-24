@@ -18,7 +18,7 @@ import OTPForm from './OTPForm';
 import ItemChoicesPopup from './ItemChoicesPopup';
 import { useContext } from 'react';
 import AuthContext from '../context/AuthContext';
-import CurrentOrderPage from '../pages/CurrentOrderPage'
+import OrderPage from '../pages/OrderPage';
 import { GlobalContext } from '../context/GlobalContext';
 
 const AppContent = () => {
@@ -43,7 +43,7 @@ const AppContent = () => {
                     <Route element={<RestaurantPage/>} path='/r/:slug/:uuid'/>
                     <Route element={<CartPage/>} path='/cart'/>
                     <Route element={<CheckoutPage/>} path='/checkout'/>
-                    <Route element={<CurrentOrderPage/>} path='/u/:user_uuid/order/:order_uuid'/>
+                    <Route element={<OrderPage/>} path='/u/:user_uuid/order/:order_uuid'/>
                 </Route>
 
                 {/* auth */}

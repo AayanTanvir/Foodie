@@ -226,34 +226,23 @@ class OrderItemWriteSerializer(serializers.ModelSerializer):
 
 
 class OrderItemReadSerializer(serializers.ModelSerializer):
-    modifiers = MenuItemModifierChoiceSerializer(many=True)
-    menu_item = MenuItemSerializer()
+    modifiers = MenuItemModifierChoiceSerializer(many=True, read_only=True)
+    menu_item = MenuItemSerializer(read_only=True)
     subtotal = serializers.SerializerMethodField(read_only=True)
-    order_uuid = serializers.UUIDField(source='order.uuid', read_only=True)
     
     def get_subtotal(self, obj):
         return obj.subtotal
     
     class Meta:
         model = OrderItem
-        fields = ['id', 'order_uuid', 'menu_item', 'quantity', 'modifiers', 'subtotal', 'special_instruction']
+        fields = ['id', 'menu_item', 'quantity', 'modifiers', 'subtotal', 'special_instruction']
         
 
 class OrderWriteSerializer(serializers.ModelSerializer):
     order_items_write = OrderItemWriteSerializer(many=True, write_only=True)
-    order_items_read = OrderItemReadSerializer(source='order_items', many=True, read_only=True)
-    total_price = serializers.SerializerMethodField()
-    discounted_price = serializers.SerializerMethodField()
     restaurant_uuid = serializers.UUIDField(source='restaurant.uuid', write_only=True)
     user_uuid = serializers.UUIDField(source='user.uuid', write_only=True)
-    order_status = serializers.ChoiceField(choices=Order.OrderStatus.choices, default=Order.OrderStatus.IN_PROGRESS, read_only=True)
     discount_uuid = serializers.UUIDField(write_only=True, required=False, allow_null=True)
-    
-    def get_discounted_price(self, obj):
-        return obj.discounted_price
-    
-    def get_total_price(self, obj):
-        return obj.total_price
     
     def validate_user_uuid(self, value):
         if not CustomUser.objects.filter(uuid=value).exists():
@@ -312,4 +301,38 @@ class OrderWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['uuid', 'restaurant_uuid', 'user_uuid', 'order_items_write', 'order_items_read', 'order_status', 'payment_method', 'total_price', 'discounted_price', 'delivery_address', 'discount_uuid', 'created_at']
+        fields = [
+            'uuid', 'restaurant_uuid', 'user_uuid', 'order_items_write', 
+            'payment_method', 'delivery_address', 'discount_uuid'
+        ]
+
+
+class OrderReadSerializer(serializers.ModelSerializer):
+    order_items = OrderItemReadSerializer(many=True, read_only=True)
+    total_price = serializers.SerializerMethodField()
+    discounted_price = serializers.SerializerMethodField()
+    user_uuid = serializers.UUIDField(source="user.uuid", read_only=True)
+    restaurant_uuid = serializers.UUIDField(source="restaurant.uuid", read_only=True)
+    restaurant_name = serializers.CharField(source="restaurant.name", read_only=True)
+    discount_uuid = serializers.UUIDField(source="discount.uuid", read_only=True)
+    
+    def get_discounted_price(self, obj):
+        return obj.discounted_price
+    
+    def get_total_price(self, obj):
+        return obj.total_price
+    
+    def validate_order_uuid(self, value):
+        if not Order.objects.filter(uuid=value).exists():
+            raise serializers.ValidationError("Invalid UUID")
+        return value
+    
+    
+    class Meta:
+        model = Order
+        fields = [
+            'uuid', 'user_uuid', 'restaurant_uuid', 'restaurant_name', 
+            'total_price', 'discounted_price', 'discount_uuid', 'order_items',
+            'payment_method', 'delivery_address', 'order_status', 'created_at'
+        ]
+    

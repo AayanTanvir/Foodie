@@ -2,24 +2,14 @@ import React, { useContext, useEffect, useState } from 'react'
 import { GlobalContext } from '../context/GlobalContext'
 import { useParams } from 'react-router-dom';
 import { formatDate } from '../utils/Utils';
+import axiosClient from '../utils/axiosClient';
+import axios from 'axios';
 
-const CurrentOrderPage = () => {
-    const { currentOrder } = useContext(GlobalContext);
+const OrderPage = () => {
+    const [order, setOrder] = useState({});
     let { order_uuid } = useParams();
     const [cancelConfirmPopup, setCancelConfirmPopup] = useState(null);
     const [showingCancelConfirm, setShowingCancelConfirm] = useState(false);
-
-    const getOrderStatus = (status) => {
-        if (!status) return "Unknown";
-        
-        if (status === "in_progress") {
-            return "In Progress";
-        } else if (status === "completed") {
-            return "Completed";
-        } else if (status === "cancelled") {
-            return "Cancelled";
-        }
-    }
 
     const getPaymentMethod = (method) => {
         if (!method) return "Unknown";
@@ -32,11 +22,11 @@ const CurrentOrderPage = () => {
     }
 
     const getStatusValue = () => {
-        if (currentOrder.order_status === "cancelled") return 'w-0';
+        if (order.order_status === "cancelled") return 'w-0';
 
-        if (currentOrder.order_status === "in_progress") {
+        if (order.order_status === "in_progress") {
             return 'w-1/2'
-        } else if (currentOrder.order_status === "completed") {
+        } else if (order.order_status === "completed") {
             return 'w-full';
         }
     }
@@ -60,9 +50,27 @@ const CurrentOrderPage = () => {
         )
     }
 
+    const fetchOrder = async () => {
+        try {
+            const res = await axiosClient.get(`/orders/${order_uuid}`);
+            if (res.status === 200) {
+                setOrder(res.data);
+            } else {
+                console.error("Unexpected response:", res);
+                setFailureMessage("Unexpected response. Please try again later.");
+                navigate("/");
+            }
+
+        } catch (err) {
+            console.error("An error occurred while placing the order.", error);
+            setFailureMessage("An error occurred. Please try again later.");
+            navigate("/");
+        }
+    }
+
     useEffect(() => {
-        if (currentOrder.uuid !== order_uuid) {
-            window.location.href = '/';
+        if (Object.keys(order).length === 0) {
+            fetchOrder();
         }
     }, [order_uuid])
 
@@ -80,7 +88,7 @@ const CurrentOrderPage = () => {
                 <div className='w-full h-full flex-1 grid grid-rows-8 grid-cols-10 px-5 pb-5'>
                     <div className='border-[1.5px] rounded border-neutral-300 flex flex-col justify-start items-start row-start-1 row-end-5 col-start-1 col-end-7'>
                         <div className='w-full h-fit p-4 flex flex-col justify-start items-start border-b-[1px] border-neutral-300'>
-                            {currentOrder.order_status !== "cancelled" ? (
+                            {order?.order_status !== "cancelled" ? (
                                 <>
                                     <h1 className='font-notoserif text-2xl cursor-default text-neutral-700'>Status</h1>
                                     <div className='w-full flex flex-col justify-center items-center'>
@@ -102,25 +110,25 @@ const CurrentOrderPage = () => {
                             <div className='w-1/2 h-full p-4 flex flex-col justify-center items-center border-r-[1px] border-neutral-300'>
                                 <div className='w-full flex justify-between items-center gap-2'>
                                     <p className='font-poppins text-neutral-700 text-md'>Date</p>
-                                    <p className='font-poppins text-neutral-600 text-md'>{formatDate(currentOrder.created_at)}</p>
+                                    <p className='font-poppins text-neutral-600 text-md'>{formatDate(order?.created_at)}</p>
                                 </div>
                                 <div className='w-full flex justify-between items-center gap-2'>
                                     <p className='font-poppins text-neutral-700 text-md'>From</p>
-                                    <p className='font-poppins text-neutral-600 text-md'>{currentOrder.restaurantName || currentOrder.restaurant_name || "Unknown"}</p>
+                                    <p className='font-poppins text-neutral-600 text-md'>{order?.restaurantName || order?.restaurant_name || "Unknown"}</p>
                                 </div>
                                 <div className='w-full flex justify-between items-center gap-2'>
                                     <p className='font-poppins text-neutral-700 text-md'>To</p>
-                                    <p className='font-poppins text-neutral-600 text-md text-right'>{currentOrder.delivery_address || "Unknown"}</p>
+                                    <p className='font-poppins text-neutral-600 text-md text-right'>{order?.delivery_address || "Unknown"}</p>
                                 </div>
                                 <div className='w-full flex justify-between items-center gap-2'>
                                     <p className='font-poppins text-neutral-700 text-md'>Payment Method</p>
-                                    <p className='font-poppins text-neutral-600 text-md'>{getPaymentMethod(currentOrder.payment_method)}</p>
+                                    <p className='font-poppins text-neutral-600 text-md'>{getPaymentMethod(order?.payment_method)}</p>
                                 </div>
                             </div>
                             <div className='w-1/2 h-full pt-5 p-4 flex flex-col justify-start items-center'>
                                 <div className='w-full flex justify-between items-center gap-2'>
                                     <p className='font-poppins text-neutral-700 text-sm'>ID</p>
-                                    <p className='font-poppins text-neutral-600 text-sm text-nowrap'>{currentOrder.uuid}</p>
+                                    <p className='font-poppins text-neutral-600 text-sm text-nowrap'>{order?.uuid}</p>
                                 </div>
                             </div>
                         </div>
@@ -128,14 +136,14 @@ const CurrentOrderPage = () => {
                     <div className='border-[1.5px] rounded border-neutral-300 p-4 flex flex-col justify-start items-start gap-1 row-start-6 row-end-9 col-start-1 col-end-7'>
                         <div className='w-full flex justify-between items-center border-b-[1px] border-neutral-400'>
                             <p className='font-notoserif text-xl cursor-default text-neutral-700'>Discount</p>
-                            <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {currentOrder.total_price - currentOrder.discounted_price}</p>
+                            <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {order?.total_price - order?.discounted_price}</p>
                         </div>
                         <div className='w-full flex justify-between items-center border-b-[1px] border-neutral-400'>
                             <p className='font-notoserif text-xl cursor-default text-neutral-700'>Total</p>
                             <div className='flex flex-col justify-start items-end'>
-                                <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {currentOrder.discounted_price}</p>
-                                {currentOrder.total_price - currentOrder.discounted_price !== currentOrder.total_price && (
-                                    <p className='font-poppins cursor-default text-xs text-neutral-500 line-through'> Rs. {currentOrder.total_price}</p>
+                                <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {order?.discounted_price}</p>
+                                {order?.total_price - order?.discounted_price !== order?.total_price && (
+                                    <p className='font-poppins cursor-default text-xs text-neutral-500 line-through'> Rs. {order?.total_price}</p>
                                 )}
                             </div>
                         </div>
@@ -150,7 +158,7 @@ const CurrentOrderPage = () => {
                             <h1 className='cursor-default font-notoserif text-2xl text-neutral-700'>Order Items</h1>
                         </div>
                         <div className="w-full h-fit flex flex-col justify-start items-start mb-2">
-                            {currentOrder.order_items_read.map((orderItem) => (
+                            {(order?.order_items || []).map((orderItem) => (
                                 <div key={orderItem.menu_item.uuid} className="w-full h-fit flex justify-between items-start mb-3">
                                     <div className="flex justify-start items-start w-fit h-fit">
                                         {orderItem.menu_item.is_side_item ? (
@@ -179,4 +187,4 @@ const CurrentOrderPage = () => {
     )
 }
 
-export default CurrentOrderPage
+export default OrderPage

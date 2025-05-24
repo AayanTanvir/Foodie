@@ -179,3 +179,10 @@ class MenuItemModifierAPIView(generics.GenericAPIView):
 class OrderCreateAPIView(generics.CreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderWriteSerializer
+    
+
+class OrderRetrieveDeleteAPIView(generics.RetrieveDestroyAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderReadSerializer
+    lookup_field = 'uuid'
+    permission_classes = [AllowAny]

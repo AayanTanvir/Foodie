@@ -6,15 +6,6 @@ export const GlobalContextProvider = ({ children }) => {
     const [successMessage, setSuccessMessage] = useState("");
     const [failureMessage, setFailureMessage] = useState("");
     const [noticeMessage, setNoticeMessage] = useState("");
-        const [currentOrder, setCurrentOrder] = useState(() => {
-        const saved = localStorage.getItem('currentOrder');
-        return saved ? JSON.parse(saved) : {};
-    });
-
-    const setCurrentOrderAndPersist = (order) => {
-        setCurrentOrder(order);
-        localStorage.setItem('currentOrder', JSON.stringify(order));
-    }
 
     useEffect(() => {
         const timeout = setTimeout(() => {setSuccessMessage(""), setNoticeMessage(""), setFailureMessage("")}, 3000);
@@ -25,12 +16,9 @@ export const GlobalContextProvider = ({ children }) => {
         noticeMessage,
         failureMessage,
         successMessage,
-        currentOrder,
-        setCurrentOrder,
         setNoticeMessage,
         setFailureMessage,
         setSuccessMessage,
-        setCurrentOrderAndPersist,
     }
 
     return (
