@@ -181,8 +181,13 @@ class OrderCreateAPIView(generics.CreateAPIView):
     serializer_class = OrderWriteSerializer
     
 
-class OrderRetrieveDeleteAPIView(generics.RetrieveDestroyAPIView):
+class OrderRetrieveAPIView(generics.RetrieveAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderReadSerializer
     lookup_field = 'uuid'
-    permission_classes = [AllowAny]
+    
+    
+class OrderUpdateAPIView(generics.UpdateAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderStatusUpdateSerializer
+    lookup_field = 'uuid'

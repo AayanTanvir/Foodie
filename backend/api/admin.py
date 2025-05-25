@@ -31,13 +31,22 @@ class CustomUserAdmin(UserAdmin):
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Restaurant)
 
+
 @admin.register(MenuItem)
 class MenuItemAdmin(admin.ModelAdmin):
     list_display = ('uuid', 'name', 'price', 'restaurant')
     list_filter = ('is_side_item', 'is_available', 'restaurant')
 
+
 admin.site.register(MenuItemCategory)
-admin.site.register(Order)
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('uuid', 'order_status', 'payment_method', 'user', 'restaurant')
+    list_filter = ('order_status', 'payment_method')
+
+
 admin.site.register(OrderItem)
 admin.site.register(MenuItemModifier)
 admin.site.register(MenuItemModifierChoice)

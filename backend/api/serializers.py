@@ -335,4 +335,9 @@ class OrderReadSerializer(serializers.ModelSerializer):
             'total_price', 'discounted_price', 'discount_uuid', 'order_items',
             'payment_method', 'delivery_address', 'order_status', 'created_at'
         ]
-    
+        
+
+class OrderStatusUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['order_status']    

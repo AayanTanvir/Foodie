@@ -1,15 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { GlobalContext } from '../context/GlobalContext'
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { formatDate } from '../utils/Utils';
 import axiosClient from '../utils/axiosClient';
-import axios from 'axios';
 
 const OrderPage = () => {
     const [order, setOrder] = useState({});
     let { order_uuid } = useParams();
     const [cancelConfirmPopup, setCancelConfirmPopup] = useState(null);
     const [showingCancelConfirm, setShowingCancelConfirm] = useState(false);
+    const [isCancellingOrder, setIsCancellingOrder] = useState(false);
+    let { setSuccessMessage } = useContext(GlobalContext)
+    const navigate = useNavigate();
 
     const getPaymentMethod = (method) => {
         if (!method) return "Unknown";
@@ -31,6 +33,35 @@ const OrderPage = () => {
         }
     }
 
+    const handleCancelOrder = async () => {
+        try {
+            setIsCancellingOrder(true);
+            const res = await axiosClient.patch(`/orders/${order_uuid}/update`, {
+                order_status: "cancelled"
+            });
+            if (res.status === 200) {
+                setSuccessMessage("Order cancelled successfully.");
+                let newOrder = {...order, order_status: "cancelled"};
+                setOrder(newOrder);
+                setShowingCancelConfirm(false);
+                setCancelConfirmPopup(null);
+                setIsCancellingOrder(false);
+            } else {
+                console.error("Unexpected response:", res);
+                setFailureMessage("Unexpected response. Please try again later.");
+                setShowingCancelConfirm(false);
+                setCancelConfirmPopup(null);
+                setIsCancellingOrder(false);
+            }
+        } catch (err) {
+            console.error("An error occurred while placing the order.", err);
+            setFailureMessage("An error occurred. Please try again later.");
+            setShowingCancelConfirm(false);
+            setCancelConfirmPopup(null);
+            setIsCancellingOrder(false);
+        }
+    }
+
     const showCancelConfirmPopup = () => {
         setShowingCancelConfirm(true);
         setCancelConfirmPopup(
@@ -38,10 +69,10 @@ const OrderPage = () => {
                 <div className='w-[30%] h-1/2 bg-neutral-100 border-2 border-gray-200 flex flex-col justify-center items-center p-4'>
                     <h1 className='cursor-default font-notoserif text-3xl text-neutral-800 '>Are you sure?</h1>
                     <div className='w-1/2 h-fit flex justify-between items-center mt-4'>
-                        <button onClick={() => {  }} className='w-16 h-fit rounded bg-neutral-800 text-white p-2 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                        <button onClick={() => { handleCancelOrder() }} disabled={isCancellingOrder} className={`w-16 h-fit rounded ${isCancellingOrder ? 'bg-neutral-600 cursor-not-allowed' : 'bg-neutral-800'} text-white p-2 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2`}>
                             Yes
                         </button>
-                        <button onClick={() => { setShowingCancelConfirm(false) }} className='w-16 h-fit rounded bg-neutral-800 text-white p-2 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                        <button onClick={() => { setShowingCancelConfirm(false) }} disabled={isCancellingOrder} className={`w-16 h-fit rounded ${isCancellingOrder ? 'bg-neutral-600 cursor-not-allowed' : 'bg-neutral-800'} text-white p-2 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2`}>
                             No
                         </button>
                     </div>
@@ -62,7 +93,7 @@ const OrderPage = () => {
             }
 
         } catch (err) {
-            console.error("An error occurred while placing the order.", error);
+            console.error("An error occurred while placing the order.", err);
             setFailureMessage("An error occurred. Please try again later.");
             navigate("/");
         }
@@ -79,10 +110,10 @@ const OrderPage = () => {
             {showingCancelConfirm && (
                 cancelConfirmPopup
             )}
-            <div className='w-4/5 h-[90%] border-[1.75px] rounded border-neutral-300 flex flex-col justify-start items-start'>
+            <div className='w-4/5 h-fit border-[1.75px] rounded border-neutral-300 flex flex-col justify-start items-start'>
                 <div className='w-full h-fit flex justify-center items-center px-6 py-2 gap-4'>
                     <div className='flex-1 h-0 border-b-[1px] border-neutral-400'></div>
-                    <h1 className='cursor-default font-notoserif text-3xl text-neutral-800 '>Order</h1>
+                    <h1 className='cursor-default font-notoserif text-3xl text-neutral-800 '>Order Receipt</h1>
                     <div className='flex-1 h-0 border-b-[1px] border-neutral-400'></div>
                 </div>
                 <div className='w-full h-full flex-1 grid grid-rows-8 grid-cols-10 px-5 pb-5'>
@@ -103,7 +134,7 @@ const OrderPage = () => {
                                     </div>
                                 </>
                             ) : (
-                                <h1 className='font-notoserif text-2xl cursor-default text-neutral-700'>Status: Cancelled</h1>
+                                    <h1 className='font-notoserif text-2xl cursor-default text-neutral-700'>Status: <span className='font-notoserif text-2xl cursor-default text-red-600'>Cancelled</span></h1>
                             )}
                         </div>
                         <div className='w-full flex-1 flex justify-center items-center'>
@@ -147,11 +178,30 @@ const OrderPage = () => {
                                 )}
                             </div>
                         </div>
-                        <div className='w-full flex-1 flex justify-center items-center'>
-                            <button onClick={() => { showCancelConfirmPopup(true) }} className='w-full h-5 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
-                                Cancel Order
-                            </button>
-                        </div>
+                        {order?.order_status === "cancelled" ? (
+                            <div className='w-full flex-1 flex justify-center items-center'>
+                                <button className='w-full h-5 rounded cursor-not-allowed bg-neutral-300 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                                    Cancel Order
+                                </button>
+                            </div>
+                        ) : (
+                            <>
+                                {order?.order_status === "completed" ? (
+                                    <button onClick={() => {setSuccessMessage("Clicked")}} className='w-full h-5 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                                        Submit a Review
+                                    </button>
+                                ) : (
+                                    <button className='w-full h-5 rounded cursor-not-allowed bg-neutral-300 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                                        Submit a Review
+                                    </button>
+                                )}
+                                <div className='w-full flex-1 flex justify-center items-center'>
+                                    <button onClick={() => { showCancelConfirmPopup(true) }} className='w-full h-5 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                                        Cancel Order
+                                    </button>
+                                </div>
+                            </>
+                        )}
                     </div>
                     <div className='border-[1.5px] rounded border-neutral-300 p-4 flex flex-col justify-start items-start gap-2 row-start-1 row-end-9 col-start-8 col-end-11'>
                         <div className='w-full border-b-[1px] border-neutral-400 mb-2'>
