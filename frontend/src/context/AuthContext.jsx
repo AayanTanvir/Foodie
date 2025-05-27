@@ -93,12 +93,13 @@ export const AuthProvider = ({children}) => {
                         });
                     
                         setAuthTokens(login_response.data);
-                        localStorage.setItem("authTokens", JSON.stringify(login_response.data));
                         setUser(jwtDecode(login_response.data.access));
+                        localStorage.setItem("authTokens", JSON.stringify(login_response.data));
+                        localStorage.setItem("refreshTokenExp", jwtDecode(login_response.data.refresh).exp);
+                        localStorage.setItem("accessTokenExp", jwtDecode(login_response.data.access).exp);
                         navigate("/");
                         setSuccessMessage("Account Created Successfully!");
-                    }
-                    catch (error) {
+                    } catch (error) {
                         const status = error.response?.status;
                         const detail = error.response?.data?.detail || "Something went wrong. Check internet connection";
                     
@@ -112,8 +113,7 @@ export const AuthProvider = ({children}) => {
                         navigate('/login');
                     }
                 }
-            }
-            catch (error) {
+            } catch (error) {
                 const status = error.response?.status;
                 const detail = error.response?.data;
 
@@ -251,16 +251,6 @@ export const AuthProvider = ({children}) => {
         setCanResendOTP,
         validateCredentials,
     };
-
-    // useEffect(() => {
-    //     if (!authTokens) return;
-
-    //     let interval = setInterval(() => {
-    //         updateToken();
-    //     }, 1000 * 60 * 4);
-    //     return () => clearInterval(interval);
-
-    // }, [authTokens]);
 
     useEffect(() => {
         if (authError === "") return;

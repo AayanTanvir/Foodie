@@ -173,7 +173,7 @@ const OrderPage = () => {
                             <p className='font-notoserif text-xl cursor-default text-neutral-700'>Total</p>
                             <div className='flex flex-col justify-start items-end'>
                                 <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {order?.discounted_price}</p>
-                                {order?.total_price - order?.discounted_price !== order?.total_price && (
+                                {order?.total_price !== order?.discounted_price && (
                                     <p className='font-poppins cursor-default text-xs text-neutral-500 line-through'> Rs. {order?.total_price}</p>
                                 )}
                             </div>

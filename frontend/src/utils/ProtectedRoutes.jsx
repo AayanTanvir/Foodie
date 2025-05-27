@@ -6,14 +6,15 @@ import { GlobalContext } from '../context/GlobalContext';
 const ProtectedRoutes = () => {
     let { setNoticeMessage } = useContext(GlobalContext);
     let { user } = useContext(AuthContext);
+    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
     let navigate = useNavigate();
 
     useEffect(() => {
-        if (!user){
+        if (!user || !authTokens) {
             navigate('/login');
             setNoticeMessage("Please Login for access");
         }
-    }, [user]);
+    }, [user, authTokens]);
 
     return user ? <Outlet/> : null
 }

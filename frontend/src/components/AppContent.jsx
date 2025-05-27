@@ -44,7 +44,7 @@ const AppContent = () => {
                     <Route element={<RestaurantPage/>} path='/r/:slug/:uuid'/>
                     <Route element={<CartPage/>} path='/cart'/>
                     <Route element={<CheckoutPage/>} path='/checkout'/>
-                    <Route element={<OrderPage/>} path='/u/:user_uuid/orders/:order_uuid'/>
+                    <Route element={<OrderPage/>} path='/orders/:order_uuid'/>
                     <Route element={<OrdersPage/>} path='/u/:user_uuid/orders'/>
                 </Route>
 
