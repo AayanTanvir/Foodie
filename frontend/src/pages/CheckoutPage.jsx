@@ -101,7 +101,7 @@ const CheckoutPage = () => {
             const res = await axiosClient.post("/orders/create", payload);
             if (res.status === 201) {
                 clearCart();
-                navigate(`/u/${user.uuid}/order/${res.data?.uuid}`);
+                navigate(`/u/${user.uuid}/orders/${res.data?.uuid}`);
             } else {
                 console.error("Unexpected response:", res);
                 setFailureMessage("Unexpected response. Please try again later.");
