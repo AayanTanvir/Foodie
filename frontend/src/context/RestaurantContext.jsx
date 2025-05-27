@@ -21,7 +21,7 @@ export const RestaurantContextProvider = ({ children }) => {
 
     const fetchRestaurant = async (uuid) => {
         try {
-            const response = await axiosClient.get(`/restaurants/${uuid}`);
+            const response = await axiosClient.get(`/restaurants/${uuid}/`);
             
             if (response.status === 200) {
                 setRestaurant(response.data || null);
@@ -70,7 +70,7 @@ export const RestaurantContextProvider = ({ children }) => {
         }
 
         try {
-            const res = await axiosClient.get(`/restaurants/${restaurantUUID}/menu_item_modifiers`);
+            const res = await axiosClient.get(`/restaurants/${restaurantUUID}/menu_item_modifiers/`);
 
             if (res.status === 200) {
                 setMenuItemModifiers(res.data || null);
@@ -93,7 +93,7 @@ export const RestaurantContextProvider = ({ children }) => {
 
     const getDiscounts = async () => {
         try {
-            const response = await axiosClient.get(`/restaurants/${restaurantUUID}/discounts`);
+            const response = await axiosClient.get(`/restaurants/${restaurantUUID}/discounts/`);
             if (response.status === 200) {
                 setDiscounts(response.data);
             } else {

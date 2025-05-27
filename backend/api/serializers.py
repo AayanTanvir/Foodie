@@ -340,4 +340,25 @@ class OrderReadSerializer(serializers.ModelSerializer):
 class OrderStatusUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['order_status']    
+        fields = ['order_status']
+        
+        
+class OrderListSerializer(serializers.ModelSerializer):
+    user_uuid = serializers.UUIDField(source="user.uuid", read_only=True)
+    restaurant_uuid = serializers.UUIDField(source="restaurant.uuid", read_only=True)
+    restaurant_name = serializers.CharField(source="restaurant.name", read_only=True)
+    total_price = serializers.SerializerMethodField()
+    discounted_price = serializers.SerializerMethodField()
+
+    def get_total_price(self, obj):
+        return obj.total_price
+    
+    def get_discounted_price(self, obj):
+        return obj.discounted_price
+    
+    class Meta:
+        model = Order
+        fields = [
+            'uuid', 'user_uuid', 'restaurant_uuid', 'restaurant_name',
+            'total_price', 'discounted_price', 'order_status', 'created_at'
+        ]

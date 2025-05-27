@@ -191,3 +191,18 @@ class OrderUpdateAPIView(generics.UpdateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderStatusUpdateSerializer
     lookup_field = 'uuid'
+    
+    
+class UserOrdersAPIView(generics.ListAPIView):
+    serializer_class = OrderListSerializer
+    permission_classes = [AllowAny]
+    
+    def get_queryset(self):
+        user_uuid = self.kwargs['uuid']
+        user = get_object_or_404(CustomUser, uuid=user_uuid)
+        return Order.objects.filter(user=user)
+    
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

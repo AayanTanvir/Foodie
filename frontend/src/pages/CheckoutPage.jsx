@@ -98,7 +98,7 @@ const CheckoutPage = () => {
         }
 
         try {
-            const res = await axiosClient.post("/orders/create", payload);
+            const res = await axiosClient.post("/orders/create/", payload);
             if (res.status === 201) {
                 clearCart();
                 navigate(`/u/${user.uuid}/orders/${res.data?.uuid}`);

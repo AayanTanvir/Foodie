@@ -78,7 +78,7 @@ export const AuthProvider = ({children}) => {
 
         if (validateCredentials(event.target.password1.value, event.target.password2.value, event.target.username.value)) {
             try{
-                const response = await axiosClient.post("/user/create/", {
+                const response = await axiosClient.post("/users/create/", {
                     username: event.target.username.value,
                     email: event.target.email.value,
                     password1: event.target.password1.value,
