@@ -66,7 +66,7 @@ const Navbar = () => {
                 <div onMouseLeave={() => { setShowProfileDropdown(false) }} className='absolute right-8 z-50 top-12 w-32 h-fit bg-neutral-800 flex flex-col justify-start items-center'>
                     <div className='w-full h-fit flex justify-center items-center gap-2 p-2 cursor-pointer transition hover:bg-neutral-900'>
                         <img src={profile} className='w-5 h-5' />
-                        <NavLink className="font-poppins text-neutral-100 transition hover:bg-neutral-900">Profile</NavLink>
+                        <NavLink to={`/u/${user.uuid}`} className="font-poppins text-neutral-100 transition hover:bg-neutral-900">Profile</NavLink>
                     </div>
                     <div className='w-full h-fit flex justify-center items-center gap-2 p-2 cursor-pointer transition hover:bg-neutral-900'>
                         <img src={orders} className='w-5 h-5' />

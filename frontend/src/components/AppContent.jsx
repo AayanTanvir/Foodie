@@ -21,6 +21,7 @@ import AuthContext from '../context/AuthContext';
 import OrderPage from '../pages/OrderPage';
 import OrdersPage from '../pages/OrdersPage';
 import { GlobalContext } from '../context/GlobalContext';
+import ProfilePage from '../pages/ProfilePage';
 
 const AppContent = () => {
     let { showOTPForm } = useContext(AuthContext);
@@ -46,6 +47,7 @@ const AppContent = () => {
                     <Route element={<CheckoutPage/>} path='/checkout'/>
                     <Route element={<OrderPage/>} path='/orders/:order_uuid'/>
                     <Route element={<OrdersPage/>} path='/u/:user_uuid/orders'/>
+                    <Route element={<ProfilePage/>} path='/u/:user_uuid'/>
                 </Route>
 
                 {/* auth */}

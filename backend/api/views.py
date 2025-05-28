@@ -19,7 +19,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 class UserCreateApiView(generics.CreateAPIView):
     queryset = CustomUser
-    serializer_class = CustomUserSerializer
+    serializer_class = CustomUserWriteSerializer
     permission_classes = [AllowAny]
     raise_exception = True
 
@@ -195,7 +195,6 @@ class OrderUpdateAPIView(generics.UpdateAPIView):
     
 class UserOrdersAPIView(generics.ListAPIView):
     serializer_class = OrderListSerializer
-    permission_classes = [AllowAny]
     
     def get_queryset(self):
         user_uuid = self.kwargs['uuid']
@@ -206,3 +205,11 @@ class UserOrdersAPIView(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
+class UserInfoReadAPIView(generics.RetrieveAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserReadSerializer
+    lookup_field = 'uuid'
+    permission_classes = [AllowAny]
+    

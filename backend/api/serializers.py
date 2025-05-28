@@ -18,7 +18,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
     
     
-class CustomUserSerializer(serializers.ModelSerializer):
+class CustomUserWriteSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
     password2 = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
     
@@ -361,4 +361,14 @@ class OrderListSerializer(serializers.ModelSerializer):
         fields = [
             'uuid', 'user_uuid', 'restaurant_uuid', 'restaurant_name',
             'total_price', 'discounted_price', 'order_status', 'created_at'
+        ]
+        
+
+class CustomUserReadSerializer(serializers.ModelSerializer):
+    
+    
+    class Meta:
+        model = CustomUser
+        fields = [
+            'date_joined', 'uuid', 'username', 'email', 'is_email_verified',
         ]
