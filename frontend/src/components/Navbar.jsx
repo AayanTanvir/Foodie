@@ -16,7 +16,6 @@ const Navbar = () => {
     const cartCount = cartItems.length
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
-    //verify email: <a className='hover:cursor-pointer transition hover:text-gray-300' onClick={() => verifyEmail("send")}>Verify Email</a>
 
     return (
         <>

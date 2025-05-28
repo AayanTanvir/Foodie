@@ -12,12 +12,12 @@ const OTPForm = () => {
       setShowOTPForm,
     } = useContext(AuthContext);
 
-    let resendOTP = canResendOTP ? <a onClick={() => {verifyEmail("resend"); setCanResendOTP(null);} } className=' text-neutral-100 p-2 bg-neutral-800 hover:cursor-pointer'>Resend OTP</a> : (<p className='mt-6 text-blue-400'>Resend OTP in a minute</p>);
+    let resendOTP = canResendOTP ? <a onClick={() => {verifyEmail("resend"); setCanResendOTP(null);} } className=' text-neutral-100 p-2 bg-neutral-800 hover:cursor-pointer'>Resend OTP</a> : <p className='mt-6 text-neutral-100'>Resend OTP in a minute</p>;
 
 
     if (canResendOTP == null) {
       resendOTP = (
-        <a onClick={() => setShowOTPForm(false)} className='mt-6 text-blue-400 hover:cursor-pointer'>Exit</a>
+          <a onClick={() => setShowOTPForm(false)} className='text-neutral-100 px-4 py-2 bg-neutral-800 hover:cursor-pointer'>Exit</a>
       );
     }
 

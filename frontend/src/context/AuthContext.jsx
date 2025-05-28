@@ -190,7 +190,7 @@ export const AuthProvider = ({children}) => {
                 setNoticeMessage("Verification email sent! (check spam)");
         
                 if (mode !== "resend") {
-                    const timer_for_resend = 10000;
+                    const timer_for_resend = 60000;
                     let timeout = setTimeout(() => {
                         clearTimeout(timeout);
                         setCanResendOTP(true);
@@ -201,12 +201,15 @@ export const AuthProvider = ({children}) => {
                 setNoticeMessage("Unexpected response from server.");
                 setShowOTPForm(false);
             }
-        }
-        catch (error) {
-            const non_field_errors = error.response?.data?.non_field_errors;
-            setNoticeMessage(non_field_errors || "Something went wrong, please try again.");
-            setShowOTPForm(false);
-            navigate('/');
+        } catch (error) {
+            if (error.response?.data?.error === "An OTP has already been sent to your email") {
+                setFailureMessage("An OTP has already been sent to your email");
+                setShowOTPForm(false);
+            } else {
+                setFailureMessage("Please try again later.");
+                console.log(error);
+                setShowOTPForm(false);
+            }
         }
     }
 
