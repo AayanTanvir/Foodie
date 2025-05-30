@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { GlobalContext } from '../context/GlobalContext'
 import { useNavigate, useParams } from 'react-router-dom';
 import { formatDate } from '../utils/Utils';
@@ -10,7 +10,8 @@ const OrderPage = () => {
     const [cancelConfirmPopup, setCancelConfirmPopup] = useState(null);
     const [showingCancelConfirm, setShowingCancelConfirm] = useState(false);
     const [isCancellingOrder, setIsCancellingOrder] = useState(false);
-    let { setSuccessMessage } = useContext(GlobalContext)
+    let { setSuccessMessage } = useContext(GlobalContext);
+    const websocket = useRef(null);
     const navigate = useNavigate();
 
     const getPaymentMethod = (method) => {
@@ -104,6 +105,33 @@ const OrderPage = () => {
             fetchOrder();
         }
     }, [order_uuid])
+
+    useEffect(() => {
+        const wsUrl = `ws://127.0.0.1:8000/ws/orders/${order_uuid}/status`;
+        websocket.current = new WebSocket(wsUrl);
+
+        websocket.current.onopen = () => {
+            console.log("Websocket connection opened!");
+        }
+
+        websocket.current.onmessage = (event) => {
+            console.log("message: ", event.data);
+        }
+
+        websocket.current.onclose = () => {
+            console.log("Websocket connection closed");
+        }
+        
+        websocket.current.onerror = (error) => {
+            console.error("Websocket connection error: ", error);
+        }
+
+        return () => {
+            if (websocket.current && websocket.current.readyState === WebSocket.OPEN) {
+                websocket.current.close();
+            }
+        };
+    }, [])
 
     return (
         <div className='absolute top-0 left-0 w-full h-full flex justify-center items-center pt-12 mb-4'>

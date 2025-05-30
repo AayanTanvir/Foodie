@@ -37,6 +37,8 @@ CSRF_TRUSTED_ORIGINS = ["http://localhost:5173"]
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,10 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    #apps
     'api',
     
-    #packages
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -134,7 +134,8 @@ REST_FRAMEWORK = {
     ),
 }
 
-WSGI_APPLICATION = 'foodie.wsgi.application'
+# WSGI_APPLICATION = 'foodie.wsgi.application' 
+ASGI_APPLICATION = 'foodie.asgi.application'
 
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {

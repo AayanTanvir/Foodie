@@ -13,15 +13,15 @@ urlpatterns = [
     path('email-verification/verify-otp/', OTPVerificationAPIView.as_view()),
     
     path('restaurants/', RestaurantListAPIView.as_view()),
-    path('restaurants/<restaurant_uuid>/', RestaurantAPIView.as_view()),
-    path('restaurants/<restaurant_uuid>/discounts/', RestaurantDiscountsAPIView.as_view()),
-    path('restaurants/<restaurant_uuid>/menu_item_modifiers/', MenuItemModifierAPIView.as_view()),
+    path('restaurants/<uuid:restaurant_uuid>/', RestaurantAPIView.as_view()),
+    path('restaurants/<uuid:restaurant_uuid>/discounts/', RestaurantDiscountsAPIView.as_view()),
+    path('restaurants/<uuid:restaurant_uuid>/menu_item_modifiers/', MenuItemModifierAPIView.as_view()),
     
     path('orders/create/', OrderCreateAPIView.as_view()),
-    path('orders/<uuid>/update/', OrderUpdateAPIView.as_view()),
-    path('orders/<uuid>/', OrderRetrieveAPIView.as_view()),
+    path('orders/<uuid:uuid>/update/', OrderUpdateAPIView.as_view()),
+    path('orders/<uuid:uuid>/', OrderRetrieveAPIView.as_view()),
     
     path('users/create/', UserCreateApiView.as_view()),
-    path('users/<uuid>/orders/', UserOrdersAPIView.as_view()),
-    path('users/<uuid>/', UserInfoReadAPIView.as_view()),
+    path('users/<uuid:uuid>/orders/', UserOrdersAPIView.as_view()),
+    path('users/<uuid:uuid>/', UserInfoReadAPIView.as_view()),
 ]

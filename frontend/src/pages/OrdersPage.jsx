@@ -6,8 +6,17 @@ import { formatDate } from '../utils/Utils';
 const OrdersPage = () => {
 
     let { user_uuid } = useParams();
-    const [orders, setOrders] = useState(null);
+    const [orders, setOrders] = useState([]);
     let navigate = useNavigate();
+    let sortedOrders = [...orders].sort((a, b) => {
+        if (a.created_at < b.created_at) {
+            return 1;
+        }
+        if (a.created_at > b.created_at) {
+            return -1;
+        }
+        return 0;
+    });
 
     const getOrderStatus = (status) => {
         if (!status) return "Unknown";
@@ -56,7 +65,7 @@ const OrdersPage = () => {
                         <h1 className='font-notoserif text-4xl text-neutral-800'>Your Orders</h1>
                     </div>
                     <div className='h-fit w-full grid grid-cols-2 auto-rows-auto gap-4'>
-                        {orders?.map((order) => (
+                        {sortedOrders?.map((order) => (
                             <div key={order.uuid} onClick={() => navigate(`/orders/${order.uuid}`)} className='w-full h-fit flex flex-col justify-start items-start border-[1.5px] border-neutral-300 rounded-lg p-2 cursor-pointer transition hover:border-neutral-500'>
                                 <div className='w-full h-fit flex justify-between items-center'>
                                     <h1 className='font-poppins text-2xl text-neutral-700'>Rs. {order?.discounted_price} {order?.discounted_price !== order?.total_price && <span className='font-poppins line-through text-sm text-neutral-500'>{order?.total_price}</span>}</h1>
