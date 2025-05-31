@@ -115,7 +115,11 @@ const OrderPage = () => {
         }
 
         websocket.current.onmessage = (event) => {
-            console.log("message: ", event.data);
+            const data = JSON.parse(event.data);
+            if (data.status) {
+                setOrder({ ...order, order_status: data.status });
+                console.log(order.order_status);
+            }
         }
 
         websocket.current.onclose = () => {
@@ -186,8 +190,8 @@ const OrderPage = () => {
                             </div>
                             <div className='w-1/2 h-full pt-5 p-4 flex flex-col justify-start items-center'>
                                 <div className='w-full flex justify-between items-center gap-2'>
-                                    <p className='font-poppins text-neutral-700 text-sm'>ID</p>
-                                    <p className='font-poppins text-neutral-600 text-sm text-nowrap'>{order?.uuid}</p>
+                                    <p className='font-poppins text-neutral-700 text-sm'>Estimated Delivery</p>
+                                    <p className='font-poppins text-neutral-600 text-sm text-nowrap'>10-20 Minutes</p>
                                 </div>
                             </div>
                         </div>

@@ -3,10 +3,11 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-
 from .managers import CustomUserManager
 import uuid
 import pytz
+import random
+
 
 class CustomUser(AbstractUser):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -159,6 +160,11 @@ class Order(models.Model):
             total_price -= 150
             
         return total_price if total_price > 0 else 0
+    
+    def update_order_status(self):
+        from .tasks import complete_order
+        #time_till_delivered = random.randint(2, 15)
+        complete_order.apply_async(args=[self.uuid], countdown=20)
                 
     def clean(self):
         if self.user == self.restaurant.owner:
@@ -170,6 +176,7 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
+        
     
     def __str__(self):
         return f"{self.uuid} | {self.user.email} - {self.restaurant.name} - {self.total_price}"

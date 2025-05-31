@@ -207,11 +207,6 @@ class OrderItemWriteSerializer(serializers.ModelSerializer):
         model = OrderItem
         fields = ['id', 'menu_item_uuid', 'quantity', 'modifiers', 'subtotal', 'special_instruction']
 
-
-    def validate_modifiers(self, value):
-        print("modifiers in validate_modifiers: ", value)
-        return value
-
     def create(self, validated_data):
         order = self.context.get('order')
         menu_item_uuid = validated_data.pop('menu_item_uuid')

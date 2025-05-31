@@ -43,7 +43,7 @@ admin.site.register(MenuItemCategory)
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('uuid', 'order_status', 'payment_method', 'user', 'restaurant')
+    list_display = ('uuid', 'order_status', 'total_price', 'payment_method', 'user', 'restaurant')
     list_filter = ('order_status', 'payment_method')
 
 

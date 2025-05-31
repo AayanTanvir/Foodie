@@ -39,7 +39,12 @@ const ProfilePage = () => {
         <div className='absolute top-0 left-0 w-full h-full flex justify-center items-center pt-12'>
             <div className='w-3/5 h-4/5 border-[1.5px] border-neutral-300 rounded flex flex-col justify-start items-start'>
                 <div className='w-full h-fit p-4 border-b-[1px] border-neutral-300 flex justify-between items-center'>
-                    <h1 className='font-notoserif text-neutral-800 text-4xl cursor-default'>{userInfo?.username?.charAt(0).toUpperCase() + userInfo?.username?.slice(1)}</h1>
+                    <h1 className='font-notoserif text-neutral-800 text-4xl cursor-default'>
+                        {userInfo?.username
+                            ? userInfo.username.charAt(0).toUpperCase() + userInfo.username.slice(1)
+                            : "Unknown"
+                        }
+                    </h1>
                     <div className='w-fit h-full flex justify-center items-center gap-2'>
                         {userInfo?.is_email_verified ? (
                             <>
