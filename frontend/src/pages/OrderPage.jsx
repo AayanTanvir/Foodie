@@ -37,11 +37,10 @@ const OrderPage = () => {
     const handleCancelOrder = async () => {
         try {
             setIsCancellingOrder(true);
-            const res = await axiosClient.patch(`/orders/${order_uuid}/update`, {
+            const res = await axiosClient.patch(`/orders/${order_uuid}/update/`, {
                 order_status: "cancelled"
             });
             if (res.status === 200) {
-                setSuccessMessage("Order cancelled successfully.");
                 let newOrder = {...order, order_status: "cancelled"};
                 setOrder(newOrder);
                 setShowingCancelConfirm(false);
@@ -84,7 +83,7 @@ const OrderPage = () => {
 
     const fetchOrder = async () => {
         try {
-            const res = await axiosClient.get(`/orders/${order_uuid}`);
+            const res = await axiosClient.get(`/orders/${order_uuid}/`);
             if (res.status === 200) {
                 setOrder(res.data);
             } else {
@@ -107,7 +106,7 @@ const OrderPage = () => {
     }, [order_uuid])
 
     useEffect(() => {
-        const wsUrl = `ws://127.0.0.1:8000/ws/orders/${order_uuid}/status`;
+        const wsUrl = `ws://127.0.0.1:8000/ws/orders/${order_uuid}/status/`;
         websocket.current = new WebSocket(wsUrl);
 
         websocket.current.onopen = () => {
@@ -116,9 +115,8 @@ const OrderPage = () => {
 
         websocket.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            if (data.status) {
-                setOrder({ ...order, order_status: data.status });
-                console.log(order.order_status);
+            if (data.order_status) {
+                setOrder(prevOrder => ({ ...prevOrder, order_status: data.order_status }));
             }
         }
 
@@ -181,7 +179,7 @@ const OrderPage = () => {
                                 </div>
                                 <div className='w-full flex justify-between items-center gap-2'>
                                     <p className='font-poppins text-neutral-700 text-md'>To</p>
-                                    <p className='font-poppins text-neutral-600 text-md text-right'>{order?.delivery_address || "Unknown"}</p>
+                                    <p className='font-poppins text-neutral-600 text-md text-right text-wrap whitespace-break-spaces overflow-auto'>{order?.delivery_address || "Unknown"}</p>
                                 </div>
                                 <div className='w-full flex justify-between items-center gap-2'>
                                     <p className='font-poppins text-neutral-700 text-md'>Payment Method</p>
@@ -199,12 +197,12 @@ const OrderPage = () => {
                     <div className='border-[1.5px] rounded border-neutral-300 p-4 flex flex-col justify-start items-start gap-1 row-start-6 row-end-9 col-start-1 col-end-7'>
                         <div className='w-full flex justify-between items-center border-b-[1px] border-neutral-400'>
                             <p className='font-notoserif text-xl cursor-default text-neutral-700'>Discount</p>
-                            <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {order?.total_price - order?.discounted_price}</p>
+                            <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {Math.round(order?.total_price) - Math.round(order?.discounted_price)}</p>
                         </div>
                         <div className='w-full flex justify-between items-center border-b-[1px] border-neutral-400'>
                             <p className='font-notoserif text-xl cursor-default text-neutral-700'>Total</p>
                             <div className='flex flex-col justify-start items-end'>
-                                <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {order?.discounted_price}</p>
+                                <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {Math.round(order?.discounted_price)}</p>
                                 {order?.total_price !== order?.discounted_price && (
                                     <p className='font-poppins cursor-default text-xs text-neutral-500 line-through'> Rs. {order?.total_price}</p>
                                 )}
