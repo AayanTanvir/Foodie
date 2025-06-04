@@ -13,10 +13,16 @@ const OrdersPage = () => {
     const getOrderStatus = (status) => {
         if (!status) return "Unknown";
         switch (status) {
-            case 'in_progress':
-                return "In Progress";
-            case 'completed':
-                return "Completed";
+            case 'pending':
+                return "Pending Approval";
+            case 'preparing':
+                return "Preparing";
+            case 'ready_for_pickup':
+                return "Ready for Pickup";
+            case 'out_for_delivery':
+                return "Out for Delivery";
+            case 'delivered':
+                return "Delivered";
             case 'cancelled':
                 return "Cancelled";
             default:

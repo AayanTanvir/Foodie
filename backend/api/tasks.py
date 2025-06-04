@@ -14,7 +14,7 @@ def complete_order(*args, **kwargs):
     
     try:
         order = Order.objects.get(uuid=order_uuid)
-        order.order_status = Order.OrderStatus.COMPLETED
+        order.order_status = Order.OrderStatus.DELIVERED
         order.save()
         
         channel_layer = get_channel_layer()

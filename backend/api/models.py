@@ -126,8 +126,11 @@ class MenuItemCategory(models.Model):
 class Order(models.Model):
     
     class OrderStatus(models.TextChoices):
-        IN_PROGRESS = 'in_progress', 'In Progress'
-        COMPLETED = 'completed', 'Completed'
+        PENDING = 'pending', 'Pending'
+        PREPARING = 'preparing', 'Preparing'
+        READY_FOR_PICKUP = 'ready_for_pickup', 'Ready for Pickup'
+        OUT_FOR_DELIVERY = 'out_for_delivery', 'Out for Delivery'
+        DELIVERED = 'delivered', 'Delivered'
         CANCELLED = 'cancelled', 'Cancelled'
         
     
@@ -138,7 +141,7 @@ class Order(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="orders")
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="orders")
-    order_status = models.CharField(max_length=25, choices=OrderStatus.choices, default=OrderStatus.IN_PROGRESS)
+    order_status = models.CharField(max_length=25, choices=OrderStatus.choices, default=OrderStatus.PENDING)
     payment_method = models.CharField(max_length=25, choices=OrderPaymentMethod.choices, default=OrderPaymentMethod.CASH_ON_DELIVERY)
     delivery_address = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

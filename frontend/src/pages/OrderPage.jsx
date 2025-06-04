@@ -27,10 +27,15 @@ const OrderPage = () => {
     const getStatusValue = () => {
         if (order.order_status === "cancelled") return 'w-0';
 
-        if (order.order_status === "in_progress") {
-            return 'w-1/2'
-        } else if (order.order_status === "completed") {
-            return 'w-full';
+        switch (order.order_status) {
+            case 'preparing':
+                return "w-[14%]";
+            case 'ready_for_pickup':
+                return "w-[47%]";
+            case 'out_for_delivery':
+                return "w-[82%]";
+            default:
+                return "w-0";
         }
     }
 
@@ -149,48 +154,48 @@ const OrderPage = () => {
                 <div className='w-full h-full flex-1 grid grid-rows-8 grid-cols-10 px-5 pb-5'>
                     <div className='border-[1.5px] rounded border-neutral-300 flex flex-col justify-start items-start row-start-1 row-end-5 col-start-1 col-end-7'>
                         <div className='w-full h-fit p-4 flex flex-col justify-start items-start border-b-[1px] border-neutral-300'>
-                            {order?.order_status !== "cancelled" ? (
+                            {order.order_status !== "cancelled" && order.order_status !== "delivered" && order.order_status !== "pending" ? (
                                 <>
                                     <h1 className='font-notoserif text-2xl cursor-default text-neutral-700'>Status</h1>
                                     <div className='w-full flex flex-col justify-center items-center'>
                                         <div className='w-full h-5 border-[1.5px] border-neutral-400'>
                                             <div className={`${getStatusValue()} h-5 bg-neutral-700`}></div>
                                         </div>
-                                        <div className='w-full h-fit flex justify-between items-center'>
-                                            <h1 className='font-poppins text-sm cursor-default text-neutral-600'>Order Placed</h1>
-                                            <h1 className='font-poppins text-sm cursor-default text-neutral-600'>In Progress</h1>
-                                            <h1 className='font-poppins text-sm cursor-default text-neutral-600'>Completed</h1>
+                                        <div className='w-full h-fit flex justify-around items-center'>
+                                            <h1 className='font-poppins text-sm cursor-default text-neutral-600'>Preparing</h1>
+                                            <h1 className='font-poppins text-sm cursor-default text-neutral-600'>Ready for Pickup</h1>
+                                            <h1 className='font-poppins text-sm cursor-default text-neutral-600'>Out for Delivery</h1>
                                         </div>
                                     </div>
                                 </>
-                            ) : (
-                                    <h1 className='font-notoserif text-2xl cursor-default text-neutral-700'>Status: <span className='font-notoserif text-2xl cursor-default text-red-600'>Cancelled</span></h1>
+                            ) : order.order_status === "cancelled" ? (
+                                <h1 className='font-notoserif text-2xl cursor-default text-neutral-700'>Status: <span className='font-notoserif text-2xl cursor-default text-red-600'>Cancelled</span></h1>
+                            ) : order.order_status === "delivered" ? (
+                                <h1 className='font-notoserif text-2xl cursor-default text-neutral-700'>Status: <span className='font-notoserif text-2xl cursor-default text-neutral-800'>Delivered</span></h1>
+                            ) : order.order_status === "pending" && (
+                                <h1 className='font-notoserif text-2xl cursor-default text-neutral-700'>Status: <span className='font-notoserif text-2xl cursor-default text-neutral-600'>Pending Approval</span></h1>
                             )}
                         </div>
-                        <div className='w-full flex-1 flex justify-center items-center'>
-                            <div className='w-1/2 h-full p-4 flex flex-col justify-center items-center border-r-[1px] border-neutral-300'>
-                                <div className='w-full flex justify-between items-center gap-2'>
-                                    <p className='font-poppins text-neutral-700 text-md'>Date</p>
-                                    <p className='font-poppins text-neutral-600 text-md'>{formatDate(order?.created_at)}</p>
-                                </div>
-                                <div className='w-full flex justify-between items-center gap-2'>
-                                    <p className='font-poppins text-neutral-700 text-md'>From</p>
-                                    <p className='font-poppins text-neutral-600 text-md'>{order?.restaurantName || order?.restaurant_name || "Unknown"}</p>
-                                </div>
-                                <div className='w-full flex justify-between items-center gap-2'>
-                                    <p className='font-poppins text-neutral-700 text-md'>To</p>
-                                    <p className='font-poppins text-neutral-600 text-md text-right text-wrap whitespace-break-spaces overflow-auto'>{order?.delivery_address || "Unknown"}</p>
-                                </div>
-                                <div className='w-full flex justify-between items-center gap-2'>
-                                    <p className='font-poppins text-neutral-700 text-md'>Payment Method</p>
-                                    <p className='font-poppins text-neutral-600 text-md'>{getPaymentMethod(order?.payment_method)}</p>
-                                </div>
+                        <div className='w-full flex-1 flex flex-col justify-between items-center p-4'>
+                            <div className='w-full flex justify-between items-center border-b-[1px] border-neutral-300'>
+                                <p className='font-poppins text-neutral-700 text-md'>Date</p>
+                                <p className='font-poppins text-neutral-600 text-md'>{formatDate(order?.created_at)}</p>
                             </div>
-                            <div className='w-1/2 h-full pt-5 p-4 flex flex-col justify-start items-center'>
-                                <div className='w-full flex justify-between items-center gap-2'>
-                                    <p className='font-poppins text-neutral-700 text-sm'>Estimated Delivery</p>
-                                    <p className='font-poppins text-neutral-600 text-sm text-nowrap'>10-20 Minutes</p>
-                                </div>
+                            <div className='w-full flex justify-between items-center border-b-[1px] border-neutral-300'>
+                                <p className='font-poppins text-neutral-700 text-md'>From</p>
+                                <p className='font-poppins text-neutral-600 text-md'>{order?.restaurantName || order?.restaurant_name || "Unknown"}</p>
+                            </div>
+                            <div className='w-full flex justify-between items-center border-b-[1px] border-neutral-300'>
+                                <p className='font-poppins text-neutral-700 text-md'>To</p>
+                                <p className='font-poppins text-neutral-600 text-md text-right text-wrap whitespace-break-spaces overflow-auto'>{order?.delivery_address || "Unknown"}</p>
+                            </div>
+                            <div className='w-full flex justify-between items-center border-b-[1px] border-neutral-300'>
+                                <p className='font-poppins text-neutral-700 text-md'>Payment Method</p>
+                                <p className='font-poppins text-neutral-600 text-md'>{getPaymentMethod(order?.payment_method)}</p>
+                            </div>
+                            <div className='w-full flex justify-between items-center '>
+                                <p className='font-poppins text-neutral-700 text-md'>Estimated Delivery</p>
+                                <p className='font-poppins text-neutral-600 text-md text-nowrap'>10-20 Minutes</p>
                             </div>
                         </div>
                     </div>
@@ -199,7 +204,7 @@ const OrderPage = () => {
                             <p className='font-notoserif text-xl cursor-default text-neutral-700'>Discount</p>
                             <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {Math.round(order?.total_price) - Math.round(order?.discounted_price)}</p>
                         </div>
-                        <div className='w-full flex justify-between items-center border-b-[1px] border-neutral-400'>
+                        <div className='w-full flex justify-between items-center '>
                             <p className='font-notoserif text-xl cursor-default text-neutral-700'>Total</p>
                             <div className='flex flex-col justify-start items-end'>
                                 <p className='font-hedwig cursor-default text-lg text-neutral-700'> Rs. {Math.round(order?.discounted_price)}</p>
