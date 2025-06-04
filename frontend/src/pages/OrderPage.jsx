@@ -114,19 +114,11 @@ const OrderPage = () => {
         const wsUrl = `ws://127.0.0.1:8000/ws/orders/${order_uuid}/status/`;
         websocket.current = new WebSocket(wsUrl);
 
-        websocket.current.onopen = () => {
-            console.log("Websocket connection opened!");
-        }
-
         websocket.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.order_status) {
                 setOrder(prevOrder => ({ ...prevOrder, order_status: data.order_status }));
             }
-        }
-
-        websocket.current.onclose = () => {
-            console.log("Websocket connection closed");
         }
         
         websocket.current.onerror = (error) => {

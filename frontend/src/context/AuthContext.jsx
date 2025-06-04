@@ -264,8 +264,7 @@ export const AuthProvider = ({children}) => {
 
     useEffect(() => {
         const refreshExp = parseInt(localStorage.getItem("refreshTokenExp"), 10);
-        const accessExp = parseInt(localStorage.getItem("accessTokenExp"), 10);
-        if (isExpiredSeconds(refreshExp) || isExpiredSeconds(accessExp)) {
+        if (isExpiredSeconds(refreshExp)) {
             logoutUser();
         }
     }, [])

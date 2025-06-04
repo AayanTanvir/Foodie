@@ -3,13 +3,14 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from .managers import CustomUserManager
 from django_q.tasks import schedule
 from datetime import timedelta
 import uuid
 import pytz
 import random
-
+    
 
 class CustomUser(AbstractUser):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -273,4 +274,26 @@ class Discount(models.Model):
             return f"Free Delivery on minimum Rs.{self.min_order_amount} orders - {self.restaurant.name}"
         
         return f"{self.discount_type} - {self.restaurant.name}"
-
+    
+    
+class Review(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="reviews")
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="reviews")
+    body = models.TextField()
+    rating = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    items = models.ManyToManyField(MenuItem, related_name="reviews")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def clean(self):
+        for item in self.items.all():
+            if item.restaurant != self.restaurant:
+                raise ValidationError("All items must belong to the same restaurant as the review.")
+        
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"{self.rating} star(s) review on {self.restaurant} by {self.user}"
+    

@@ -58,3 +58,6 @@ class DiscountAdmin(admin.ModelAdmin):
     
     def is_valid(self, obj):
         return obj.is_valid
+    
+
+admin.site.register(Review)
