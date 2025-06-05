@@ -285,14 +285,7 @@ class Review(models.Model):
     items = models.ManyToManyField(MenuItem, related_name="reviews")
     created_at = models.DateTimeField(auto_now_add=True)
     
-    def clean(self):
-        for item in self.items.all():
-            if item.restaurant != self.restaurant:
-                raise ValidationError("All items must belong to the same restaurant as the review.")
-        
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
+    #add items and restaurant check in serializer
     
     def __str__(self):
         return f"{self.rating} star(s) review on {self.restaurant} by {self.user}"

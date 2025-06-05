@@ -1,50 +1,61 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import star from '../assets/star.svg';
+import star_white from '../assets/star_white.svg';
 import { formatTime } from '../utils/Utils';
 
-
 const RestaurantInfo = ({ restaurant }) => {
-
-    const formattedTimings = `${formatTime(restaurant.opening_time)} - ${formatTime(restaurant.closing_time)}`;
     const [moreInfo, setMoreInfo] = useState(false);
+    const formattedTimings = `${formatTime(restaurant.opening_time)} - ${formatTime(restaurant.closing_time)}`;
 
     return (
-        <div className='relative h-fit w-full py-2 pl-48 flex justify-start items-center gap-5'>
-            <div className='flex justify-center items-center overflow-hidden rounded-lg shadow-gray-500 shadow-md w-[12rem] h-[12rem] mr-2'>
-                <img src={restaurant.image} alt='' className='object-cover w-full h-full'/>
+        <div className="relative mt-2 w-full max-w-3xl mx-auto bg-white rounded-xl border-[1px] border-neutral-300 overflow-hidden flex flex-col md:flex-row">
+            <div className="md:w-1/3 w-full h-48 md:h-auto flex justify-center items-center">
+                <img
+                    src={restaurant.image}
+                    alt={restaurant.name}
+                    className="object-cover w-full h-full"
+                />
             </div>
-            <div className='relative h-[12rem] py-4'>
-                <div className='w-fit h-fit'>
-                    <p className='font-hedwig text-left text-neutral-800'>{restaurant.restaurant_category}</p>
-                </div>
-                <div className='w-fit h-fit mb-5'>
-                    <h1 className='text-5xl font-poppins text-left text-neutral-800'>{restaurant.name}</h1>
-                </div>
-                <div className='flex flex-col justify-center items-start w-fit h-fit'>
-                    <div className='w-fit h-fit flex justify-center items-center'>
-                        <img src={star} alt="" className='w-4 h-4 mr-1' />
-                        <h1 className='text-sm font-roboto text-center text-neutral-800'>4.1/5</h1>
+            <div className="flex-1 p-6 flex flex-col justify-between">
+                <div>
+                    <p className="text-sm text-neutral-500 mb-1">{restaurant.restaurant_category}</p>
+                    <h1 className="text-3xl font-bold text-neutral-800 mb-2">{restaurant.name}</h1>
+                    <div className="flex items-center mb-2">
+                        <img src={star} alt="star" className="w-5 h-5 mr-1" />
+                        <span className="text-lg font-medium text-neutral-700">{restaurant.rating || "4.1"}/5</span>
                     </div>
-                    <h1 className='text-sm font-roboto text-center text-neutral-800'>{formattedTimings}</h1>
-                    {moreInfo ? (
-                        <>
-                            <h1 className='text-sm font-roboto text-center text-neutral-800'>{restaurant.address}</h1>
-                            <h1 className='text-sm font-roboto text-center text-neutral-800'>{restaurant.phone}</h1>
-                        </>
-                    ) : (
-                        <>
-                            <button onClick={() => {setMoreInfo(!moreInfo)}} className='px-2 py-1 border-2 border-gray-200 rounded-lg hover:bg-gray-100 text-sm'>More Info</button>
-                        </>
-                    )}
+                    <div className="text-sm text-neutral-600 mb-2">
+                        <span className="font-semibold">Timings:</span> {formattedTimings}
+                    </div>
                 </div>
+                {moreInfo && (
+                    <div className="mt-4 text-sm text-neutral-700">
+                        <div><span className="font-semibold">Address:</span> {restaurant.address}</div>
+                        <div><span className="font-semibold">Phone:</span> {restaurant.phone}</div>
+                    </div>
+                )}
+                <button
+                    onClick={() => setMoreInfo(!moreInfo)}
+                    className="mt-4 px-4 py-2 bg-neutral-100 border-[1px] border-neutral-400 transition hover:scale-[101%] rounded-lg text-sm font-medium text-neutral-700 self-start"
+                >
+                    {moreInfo ? "Hide Info" : "More Info"}
+                </button>
             </div>
-            <div className='h-fit absolute top-6 right-48'>
-                <div className='border-red-500 border-2 rounded-xl w-[3rem] h-[2.75rem] flex justify-center items-start cursor-pointer hover:bg-red-100'>
-                    <h1 className='text-4xl text-red-500 cursor-pointer'>&#9825;</h1>
+            <div className="absolute top-4 right-4">
+                <button className="border-red-500 border-2 rounded-xl w-12 h-11 flex justify-center items-center hover:bg-red-100">
+                    <span className="text-3xl text-red-500">&#9825;</span>
+                </button>
+            </div>
+            <button onClick={() => {  }} className='absolute bottom-6 right-4 w-fit h-9 border-[1px] border-neutral-400 flex rounded-lg justify-center items-center transition hover:scale-[101%]'>
+                <div className='w-8 h-full rounded-l-lg bg-amber-500 flex justify-center items-center'>
+                    <img src={star_white} alt="" className='w-5' />
                 </div>
-            </div>
+                <div className='h-full flex justify-center items-center px-2 bg-gray-100 rounded-r-lg text-sm font-medium text-neutral-700'>
+                    Reviews
+                </div>
+            </button>
         </div>
-    )
-}
+    );
+};
 
-export default RestaurantInfo
+export default RestaurantInfo;

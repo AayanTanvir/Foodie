@@ -77,12 +77,12 @@ const OrdersPage = () => {
                             <h1 className='font-notoserif text-4xl text-neutral-800'>Your Orders</h1>
                         </div>
                         <div className='h-full w-full grid grid-cols-2 auto-rows-auto gap-4'>
-                                <div className='w-full h-full bg-neutral-200 rounded-lg p-2 '></div>
-                                <div className='w-full h-full bg-neutral-200 rounded-lg p-2 '></div>
-                                <div className='w-full h-full bg-neutral-200 rounded-lg p-2 '></div>
-                                <div className='w-full h-full bg-neutral-200 rounded-lg p-2 '></div>
-                                <div className='w-full h-full bg-neutral-200 rounded-lg p-2 '></div>
-                                <div className='w-full h-full bg-neutral-200 rounded-lg p-2 '></div>
+                                <div className='w-full h-full bg-neutral-100 rounded-lg p-2 '></div>
+                                <div className='w-full h-full bg-neutral-100 rounded-lg p-2 '></div>
+                                <div className='w-full h-full bg-neutral-100 rounded-lg p-2 '></div>
+                                <div className='w-full h-full bg-neutral-100 rounded-lg p-2 '></div>
+                                <div className='w-full h-full bg-neutral-100 rounded-lg p-2 '></div>
+                                <div className='w-full h-full bg-neutral-100 rounded-lg p-2 '></div>
                             <div className='w-full h-5'></div>
                         </div>
                     </div>
