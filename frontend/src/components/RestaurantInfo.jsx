@@ -8,7 +8,7 @@ const RestaurantInfo = ({ restaurant }) => {
     const formattedTimings = `${formatTime(restaurant.opening_time)} - ${formatTime(restaurant.closing_time)}`;
 
     return (
-        <div className="relative mt-2 w-full max-w-3xl mx-auto bg-white rounded-xl border-[1px] border-neutral-300 overflow-hidden flex flex-col md:flex-row">
+        <div className="relative mt-2 w-full max-w-4xl mx-auto bg-white rounded-xl border-[1px] border-neutral-300 overflow-hidden flex flex-col md:flex-row">
             <div className="md:w-1/3 w-full h-48 md:h-auto flex justify-center items-center">
                 <img
                     src={restaurant.image}

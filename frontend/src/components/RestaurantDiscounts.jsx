@@ -46,13 +46,13 @@ const RestaurantDiscounts = ({ restaurant }) => {
     }
     
     return (
-        <div className='relative min-h-[10rem] w-full mt-5 px-48'>
-            <div className='w-full h-[3rem]'>
-                <h1 className='absolute left-48 text-left font-roboto font-semibold text-3xl text-neutral-800'>Discounts</h1>
+        <div className='relative w-full max-w-4xl h-fit mt-5 mx-auto flex flex-col justify-center items-center border-[1px] border-neutral-300 rounded-lg'>
+            <div className='w-full h-[3rem] px-5 border-b-[1px] border-neutral-300 flex justify-start items-center'>
+                <h1 className='text-3xl font-bold text-neutral-800'>Discounts</h1>
             </div>
-            <div className='w-[80%] h-fit grid grid-cols-3 auto-rows-auto gap-x-4 gap-y-2 '>
+            <div className='w-full h-full grid grid-cols-3 auto-rows-auto gap-x-4 gap-y-2 p-5 overflow-y-auto'>
                 {discounts.map((discount) => (
-                    <div key={discount.uuid} className='w-full h-fit border-2 border-neutral-300 rounded-l-md flex justify-between items-center cursor-pointer transition duration-150 ease-out hover:border-neutral-500 hover:scale-[101%]'>
+                    <div key={discount.uuid} className='w-full h-fit border-[1.5px] border-neutral-300 rounded-l-md flex justify-between items-center cursor-pointer transition duration-150 ease-out hover:border-neutral-500 hover:scale-[101%]'>
                         <div className='h-full w-fit ml-2 flex justify-center items-center'>
                             <img src={discount_svg} alt='' className='w-5 h-5' />
                         </div>
