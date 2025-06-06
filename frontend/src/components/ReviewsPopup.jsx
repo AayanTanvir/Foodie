@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { RestaurantContext } from '../context/RestaurantContext'
 import axiosClient from '../utils/axiosClient';
-import { useNavigate } from 'react-router-dom';
 
 const ReviewsPopup = () => {
     const restaurantUUID = localStorage.getItem("restaurantUUID") ? localStorage.getItem("restaurantUUID") : null;
@@ -14,7 +13,6 @@ const ReviewsPopup = () => {
             const res = await axiosClient.get(`/restaurants/${restaurantUUID}/reviews/`);
             if (res.status === 200) {
                 setReviews(res.data);
-                console.log(reviews);
             } else {
                 console.error("Unexpected response from server: ", res.status);
                 setReviews(null);
@@ -33,11 +31,15 @@ const ReviewsPopup = () => {
         } else {
             fetchReviews();
         }
-    }, [restaurantUUID])
+    }, [])
+
+    console.log(reviews);
 
     return (
-        <div>
-            hi
+        <div className='fixed z-50 top-0 left-0 w-full h-screen flex items-center justify-center flex-col bg-black/50'>
+            <div className='w-2/4 h-3/4 bg-neutral-100 border-2 border-gray-200 flex flex-col justify-start items-center rounded-t-lg overflow-y-auto py-4 px-5 relative'>
+                
+            </div>
         </div>
     )
 }

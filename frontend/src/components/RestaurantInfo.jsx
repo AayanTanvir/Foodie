@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import star from '../assets/star.svg';
 import star_white from '../assets/star_white.svg';
 import favorite from '../assets/favorite.svg';
 import { formatTime } from '../utils/Utils';
+import { RestaurantContext } from '../context/RestaurantContext';
 
 const RestaurantInfo = ({ restaurant }) => {
     const formattedTimings = `${formatTime(restaurant.opening_time)} - ${formatTime(restaurant.closing_time)}`;
-
+    const { setShowReviewsPopup } = useContext(RestaurantContext);
     
     return (
         <div className="relative mt-2 w-full max-w-4xl mx-auto bg-white rounded-xl border-[1px] border-neutral-300 overflow-hidden flex flex-col md:flex-row">
@@ -43,7 +44,7 @@ const RestaurantInfo = ({ restaurant }) => {
                         Add to Favorites
                     </div>
                 </button>
-                <button onClick={() => {  }} className='w-fit h-9 flex rounded-lg justify-center items-center'>
+                <button onClick={() => { setShowReviewsPopup(true) }} className='w-fit h-9 flex rounded-lg justify-center items-center'>
                     <div className='w-8 h-full rounded-l-lg bg-amber-500 flex justify-center items-center'>
                         <img src={star_white} alt="" className='w-5' />
                     </div>
