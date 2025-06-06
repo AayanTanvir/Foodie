@@ -15,6 +15,7 @@ export const RestaurantContextProvider = ({ children }) => {
     const [menuItemModifiers, setMenuItemModifiers] = useState(null);
     const [sideItems, setSideItems] = useState([]);
     const [discounts, setDiscounts] = useState([]);
+    const [showReviewsPopup, setShowReviewsPopup] = useState(false);
     let { user } = useContext(AuthContext);
     let { setFailureMessage } = useContext(GlobalContext);
     const navigate = useNavigate();
@@ -130,7 +131,9 @@ export const RestaurantContextProvider = ({ children }) => {
         restaurants,
         menuItemModifiers,
         sideItems,
-        discounts,
+        discounts, 
+        showReviewsPopup,
+        setShowReviewsPopup,
         fetchRestaurant,
     }
 

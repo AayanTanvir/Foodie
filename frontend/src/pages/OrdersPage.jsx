@@ -37,12 +37,12 @@ const OrdersPage = () => {
                 setOrders(res.data);
             } else {
                 console.error('Unexpected response status:', res.status);
-                setOrders([]);
+                setOrders(null);
                 navigate('/');
             }
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error);
-            setOrders([]);
+            setOrders(null);
             navigate('/');
         }
     }

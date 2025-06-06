@@ -22,11 +22,14 @@ import OrderPage from '../pages/OrderPage';
 import OrdersPage from '../pages/OrdersPage';
 import { GlobalContext } from '../context/GlobalContext';
 import ProfilePage from '../pages/ProfilePage';
+import ReviewsPopup from './ReviewsPopup';
+import { RestaurantContext } from '../context/RestaurantContext';
 
 const AppContent = () => {
     let { showOTPForm } = useContext(AuthContext);
     let { successMessage, noticeMessage, failureMessage } = useContext(GlobalContext);
     let { showChoicesPopup, choicesItem } = useContext(CartContext);
+    let { showReviewsPopup } = useContext(RestaurantContext);
 
     return (
         <>
@@ -38,6 +41,7 @@ const AppContent = () => {
 
             {showOTPForm && <OTPForm />}
             {showChoicesPopup && <ItemChoicesPopup item={choicesItem}/>}
+            {showReviewsPopup && <ReviewsPopup />}
 
             <Routes>
                 <Route element={<ProtectedRoutes/>}>

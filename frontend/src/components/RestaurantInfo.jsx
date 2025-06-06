@@ -35,19 +35,19 @@ const RestaurantInfo = ({ restaurant }) => {
                 </div>
             </div>
             <div className='absolute bottom-2 right-2 w-full h-fit flex justify-end items-center gap-4'>
-                <button className="w-fit h-9  flex rounded-lg justify-center items-center transition hover:scale-[101%]">
+                <button className="w-fit h-9  flex rounded-lg justify-center items-center">
                     <div className='w-8 h-full rounded-l-lg border-[2px] border-rose-600 flex justify-center items-center'>
                         <img src={favorite} alt="&#9825;" className='w-5' />
                     </div>
-                    <div className='h-full flex justify-center border-[1px] border-l-0 border-neutral-400  items-center px-2 rounded-r-lg text-sm font-medium text-neutral-700'>
+                    <div className='h-full flex justify-center border-[1px] border-l-0 border-neutral-400 items-center px-2 rounded-r-lg text-sm font-medium text-neutral-700'>
                         Add to Favorites
                     </div>
                 </button>
-                <button onClick={() => {  }} className='w-fit h-9 border-[1px] border-neutral-400 flex rounded-lg justify-center items-center transition hover:scale-[101%]'>
+                <button onClick={() => {  }} className='w-fit h-9 flex rounded-lg justify-center items-center'>
                     <div className='w-8 h-full rounded-l-lg bg-amber-500 flex justify-center items-center'>
                         <img src={star_white} alt="" className='w-5' />
                     </div>
-                    <div className='h-full flex justify-center items-center px-2 rounded-r-lg text-sm font-medium text-neutral-700'>
+                    <div className='h-full flex justify-center items-center border-[1px] border-l-0 border-neutral-400 px-2 rounded-r-lg text-sm font-medium text-neutral-700'>
                         Reviews
                     </div>
                 </button>
