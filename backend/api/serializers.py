@@ -132,6 +132,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
     is_open = serializers.SerializerMethodField(method_name='is_open')
     restaurant_category = serializers.SerializerMethodField()
     item_categories = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
     
     def get_restaurant_category(self, obj):
         return obj.get_category_display()
@@ -142,6 +143,8 @@ class RestaurantSerializer(serializers.ModelSerializer):
     def is_open(self, obj):
         return obj.is_open
     
+    def get_rating(self, obj):
+        return obj.rating
     
     class Meta:
         model = Restaurant
@@ -149,7 +152,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
             'uuid', 'name', 'owner', 'slug', 'image',
             'address', 'phone', 'restaurant_category', 'is_open', 'opening_time',
             'closing_time', 'is_verified', 'created_at', 'menu_items',
-            'item_categories',
+            'item_categories', 'rating',
         ]
         
     

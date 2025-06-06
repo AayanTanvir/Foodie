@@ -46,7 +46,7 @@ const RestaurantDiscounts = ({ restaurant }) => {
     }
     
     return (
-        <div className='relative w-full max-w-4xl h-fit mt-5 mx-auto flex flex-col justify-center items-center border-[1px] border-neutral-300 rounded-lg'>
+        <div className='relative w-full max-w-4xl max-h-[16rem] mt-5 mx-auto flex flex-col justify-center items-center border-[1px] border-neutral-300 rounded-lg'>
             <div className='w-full h-[3rem] px-5 border-b-[1px] border-neutral-300 flex justify-start items-center'>
                 <h1 className='text-3xl font-bold text-neutral-800'>Discounts</h1>
             </div>

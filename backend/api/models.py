@@ -80,6 +80,15 @@ class Restaurant(models.Model):
     def popularity(self):
         return self.orders.count()
     
+    @property
+    def rating(self):
+        reviews = self.reviews.all()
+        rating_count = reviews.count()
+        if rating_count == 0:
+            return 0
+        total_ratings = sum(review.rating for review in reviews)
+        rating = total_ratings / rating_count
+        return rating
     
     def __str__(self):
         return self.name
@@ -264,6 +273,10 @@ class Discount(models.Model):
         now = timezone.now().astimezone(local_tz)
         
         return now >= self.valid_from and now <= self.valid_to
+    
+    def clean(self):
+        if self.valid_from >= self.valid_to:
+            raise ValidationError("Invalid expiration date")        
     
     def __str__(self):
         if self.discount_type == self.DiscountType.PERCENTAGE:
