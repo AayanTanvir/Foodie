@@ -364,9 +364,19 @@ class OrderListSerializer(serializers.ModelSerializer):
 
 class CustomUserReadSerializer(serializers.ModelSerializer):
     
-    
     class Meta:
         model = CustomUser
         fields = [
             'date_joined', 'uuid', 'username', 'email', 'is_email_verified',
+        ]
+
+
+class RestaurantReviewReadSerializer(serializers.ModelSerializer):
+    user_name = serializers.CharField(source="user.username", read_only=True)
+    items = MenuItemSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Review
+        fields = [
+            'uuid', 'user_name', 'body', 'rating', 'items', 'created_at'
         ]

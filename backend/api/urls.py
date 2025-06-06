@@ -13,9 +13,10 @@ urlpatterns = [
     path('email-verification/verify-otp/', OTPVerificationAPIView.as_view()),
     
     path('restaurants/', RestaurantListAPIView.as_view()),
-    path('restaurants/<uuid:restaurant_uuid>/', RestaurantAPIView.as_view()),
-    path('restaurants/<uuid:restaurant_uuid>/discounts/', RestaurantDiscountsAPIView.as_view()),
-    path('restaurants/<uuid:restaurant_uuid>/menu_item_modifiers/', MenuItemModifierAPIView.as_view()),
+    path('restaurants/<uuid:uuid>/', RestaurantAPIView.as_view()),
+    path('restaurants/<uuid:uuid>/discounts/', RestaurantDiscountsAPIView.as_view()),
+    path('restaurants/<uuid:uuid>/menu_item_modifiers/', MenuItemModifierAPIView.as_view()),
+    path('restaurants/<uuid:uuid>/reviews/', RestaurantReviewsAPIView.as_view()),
     
     path('orders/create/', OrderCreateAPIView.as_view()),
     path('orders/<uuid:uuid>/update/', OrderUpdateAPIView.as_view()),

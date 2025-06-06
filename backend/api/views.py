@@ -139,9 +139,9 @@ class RestaurantListAPIView(generics.ListAPIView):
 class RestaurantAPIView(generics.GenericAPIView):
     serializer_class = RestaurantSerializer
 
-    def get(self, request, restaurant_uuid):
+    def get(self, request, uuid):
         try:
-            restaurant = Restaurant.objects.get(uuid=restaurant_uuid)
+            restaurant = Restaurant.objects.get(uuid=uuid)
             serializer = self.get_serializer(restaurant)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Restaurant.DoesNotExist:
@@ -151,9 +151,9 @@ class RestaurantAPIView(generics.GenericAPIView):
 class RestaurantDiscountsAPIView(generics.GenericAPIView):
     serializer_class = RestaurantDiscountSerializer
     
-    def get(self, request, restaurant_uuid):
+    def get(self, request, uuid):
         try:
-            restaurant = Restaurant.objects.get(uuid=restaurant_uuid)
+            restaurant = Restaurant.objects.get(uuid=uuid)
             discounts = restaurant.discounts.all()
             serializer = self.get_serializer(discounts, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -166,9 +166,9 @@ class RestaurantDiscountsAPIView(generics.GenericAPIView):
 class MenuItemModifierAPIView(generics.GenericAPIView):
     serializer_class = MenuItemModifierSerializer
     
-    def get(self, request, restaurant_uuid):
+    def get(self, request, uuid):
         try:
-            restaurant = Restaurant.objects.get(uuid=restaurant_uuid)
+            restaurant = Restaurant.objects.get(uuid=uuid)
             modifiers = restaurant.menu_item_modifiers.all()
             serializer = self.get_serializer(modifiers, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -197,9 +197,12 @@ class UserOrdersAPIView(generics.ListAPIView):
     serializer_class = OrderListSerializer
     
     def get_queryset(self):
-        user_uuid = self.kwargs['uuid']
-        user = get_object_or_404(CustomUser, uuid=user_uuid)
-        return Order.objects.filter(user=user)
+        try:
+            user_uuid = self.kwargs['uuid']
+            user = CustomUser.objects.get(uuid=user_uuid)
+            return Order.objects.filter(user=user)
+        except CustomUser.DoesNotExist:
+            raise ValidationError("No user found with the given UUID")
     
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -211,5 +214,20 @@ class UserInfoReadAPIView(generics.RetrieveAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserReadSerializer
     lookup_field = 'uuid'
-    permission_classes = [AllowAny]
     
+    
+class RestaurantReviewsAPIView(generics.ListAPIView):
+    serializer_class = RestaurantReviewReadSerializer
+    
+    def get_queryset(self):
+        try:
+            restaurant_uuid = self.kwargs['uuid']
+            restaurant = Restaurant.objects.get(uuid=restaurant_uuid)
+            return Review.objects.filter(restaurant=restaurant)
+        except Restaurant.DoesNotExist:
+            raise ValidationError("No restaurant found with the given UUID")
+        
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
