@@ -5,6 +5,7 @@ import { formatDate } from '../utils/Utils';
 import check from '../assets/check.svg';
 import close from '../assets/white_close.svg';
 import AuthContext from '../context/AuthContext';
+import { CapitalizeString } from '../utils/Utils';
 
 const ProfilePage = () => {
 
@@ -41,7 +42,7 @@ const ProfilePage = () => {
                 <div className='w-full h-fit p-4 border-b-[1px] border-neutral-300 flex justify-between items-center'>
                     <h1 className='font-notoserif text-neutral-800 text-4xl cursor-default'>
                         {userInfo?.username
-                            ? userInfo.username.charAt(0).toUpperCase() + userInfo.username.slice(1)
+                            ? CapitalizeString(userInfo.username)
                             : "Unknown"
                         }
                     </h1>

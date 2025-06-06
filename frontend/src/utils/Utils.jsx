@@ -32,4 +32,8 @@ export const objArrayIncludes = (arr = [], obj = {}) => {
 export const isExpiredSeconds = (exp) => {
     const now = Math.floor(Date.now() / 1000);
     return exp < now;
-} 
+}
+
+export const CapitalizeString = (str) => {
+    return str ? str.charAt(0).toUpperCase() + str.slice(1) : ""
+}
