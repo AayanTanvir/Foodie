@@ -7,7 +7,7 @@ import add from '../assets/add.svg';
 import close from '../assets/close.svg';
 import { CartContext } from '../context/CartContext';
 
-const ReviewsPopup = () => {
+const ReviewsPopup = ({ mode }) => {
     const restaurantUUID = localStorage.getItem("restaurantUUID") ? localStorage.getItem("restaurantUUID") : null;
     const { setShowReviewsPopup } = useContext(RestaurantContext);
     const { doCartItemAction } = useContext(CartContext);
@@ -44,7 +44,8 @@ const ReviewsPopup = () => {
     return (
         <div className='fixed z-50 top-0 left-0 w-full h-screen flex items-center justify-center flex-col bg-black/50'>
             <div className='w-2/4 h-3/4 bg-neutral-100 border-2 border-gray-200 rounded-lg overflow-y-auto py-4 px-5 relative'>
-                {reviews?.length === 0 ? (
+            {mode === "read" ? (
+                reviews?.length === 0 ? (
                     <>
                         <div className='w-full h-fit flex justify-between items-center'>
                             <h1 className='text-xl cursor-default font-medium text-neutral-800'>Reviews</h1>
@@ -88,9 +89,13 @@ const ReviewsPopup = () => {
                                                 </div>
                                                 <div className='h-full flex-1 flex flex-col justify-between items-start p-2 relative'>
                                                     <h1 className='text-md text-neutral-700'>{item.name}</h1>
-                                                    <button onClick={() => { doCartItemAction(item, 'addItem') }} className='w-6 h-6 rounded-full border-[1px] border-neutral-300 flex justify-center items-center hover:border-neutral-500'>
-                                                        <img src={add} alt="+" className='w-5'/>
-                                                    </button>
+                                                    {item.is_available ? (
+                                                        <button onClick={() => { doCartItemAction(item, 'addItem') }} className='w-6 h-6 rounded-full border-[1px] border-neutral-300 flex justify-center items-center hover:border-neutral-500'>
+                                                            <img src={add} alt="+" className='w-5'/>
+                                                        </button>
+                                                    ) : (
+                                                        <h1 className='text-md text-rose-700 font-roboto font-semibold'>Unavailable</h1>
+                                                    )}
                                                 </div>
                                             </div>
                                         ))}
@@ -99,7 +104,9 @@ const ReviewsPopup = () => {
                             ))}
                         </div>
                     )
-                }
+            ) : (
+                <h1>WRITE MODE</h1>
+            )}
             </div>
         </div>
     )

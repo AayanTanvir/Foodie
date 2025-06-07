@@ -38,9 +38,9 @@ const RestaurantDiscounts = ({ restaurant }) => {
 
         return (
             <>
-                <h1 className='font-poppins font-semibold text-lg text-neutral-600'>{discountLabel}</h1>
-                <p className='text-sm text-neutral-700 text-nowrap'>Valid till <span className='tracking-wider font-hedwig'>{validTill}</span></p>
-                <p className='text-sm font-roboto text-neutral-700 text-nowrap'>{discountInfo}</p>
+                <h1 className='font-poppins font-semibold text-lg text-neutral-600 cursor-default'>{discountLabel}</h1>
+                <p className='text-sm text-neutral-700 text-nowrap cursor-default'>Valid till <span className='tracking-wider cursor-default font-hedwig'>{validTill}</span></p>
+                <p className='text-sm font-roboto text-neutral-700 text-nowrap cursor-default'>{discountInfo}</p>
             </>
         )
     }
@@ -48,11 +48,11 @@ const RestaurantDiscounts = ({ restaurant }) => {
     return (
         <div className='relative w-full max-w-4xl max-h-[16rem] mt-5 mx-auto flex flex-col justify-center items-center border-[1px] border-neutral-300 rounded-lg'>
             <div className='w-full h-[3rem] px-5 border-b-[1px] border-neutral-300 flex justify-start items-center'>
-                <h1 className='text-3xl font-bold text-neutral-800'>Discounts</h1>
+                <h1 className='text-3xl font-bold text-neutral-800 my-1'>Discounts</h1>
             </div>
             <div className='w-full h-full grid grid-cols-3 auto-rows-auto gap-x-4 gap-y-2 p-5 overflow-y-auto'>
                 {discounts.map((discount) => (
-                    <div key={discount.uuid} className='w-full h-fit border-[1.5px] border-neutral-300 rounded-l-md flex justify-between items-center cursor-pointer transition duration-150 ease-out hover:border-neutral-500 hover:scale-[101%]'>
+                    <div key={discount.uuid} className='w-full h-fit border-[1px] border-neutral-300 rounded-l-md flex justify-between items-center'>
                         <div className='h-full w-fit ml-2 flex justify-center items-center'>
                             <img src={discount_svg} alt='' className='w-5 h-5' />
                         </div>

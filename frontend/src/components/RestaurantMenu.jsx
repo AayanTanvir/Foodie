@@ -112,25 +112,25 @@ const RestaurantMenu = ({ restaurant }) => {
                             {searchedItems.map((item) => (
                                 <div
                                 key={item.uuid}
-                                className='w-[20rem] h-32 px-4 py-2 mb-5 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-[101%] relative'
+                                className='w-[20rem] h-32 px-4 py-2 mb-5 flex justify-between items-center border-[1px] border-neutral-200 rounded-xl transition-transform duration-200 hover:border-neutral-500 relative'
                                 >
                                     <div className='w-4/5 h-full text-left overflow-hidden'>
-                                        <h1 className='text-lg font-roboto font-semibold truncate text-neutral-700'>{item.name}</h1>
-                                        <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>Rs. {item.price}</h1>
+                                        <h1 className='text-lg font-roboto font-semibold truncate text-neutral-700 cursor-default'>{item.name}</h1>
+                                        <h1 className='text-xl text-nowrap font-hedwig text-neutral-700 cursor-default'>Rs. {item.price}</h1>
                                         {item.is_available ? (
                                             <>
-                                                <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
+                                                <h1 className='text-sm font-roboto text-gray-600 truncate cursor-default'>{item.description}</h1>
                                                 {isInCart(item) ? (
-                                                    <h1 className='text-lg font-roboto text-gray-600'>Added to cart</h1>
+                                                    <h1 className='text-lg font-roboto text-gray-600 cursor-default'>Added to cart</h1>
                                                 ) : (
-                                                        <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                    <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-neutral-300 flex justify-center items-center mt-2 hover:border-neutral-400'>
                                                         <img src={add} alt="add" className='w-full h-full' />
                                                     </button>
                                                 )}
                                             </>
                                         ) : (
                                             <>
-                                                <h1 className='text-md font-roboto font-semibold text-red-700 bg-red-400 w-fit px-2 rounded-lg mt-4'>Not Available</h1>
+                                                <h1 className='text-md font-roboto font-semibold text-red-700 cursor-default bg-red-400 w-fit px-2 rounded-lg mt-4'>Not Available</h1>
                                             </>
                                         )}
                                     </div>
@@ -142,7 +142,7 @@ const RestaurantMenu = ({ restaurant }) => {
                         </div>
                     ) : (
                         <div className='w-full h-full flex justify-center items-center'>
-                            <h1 className='text-3xl font-semibold font-poppins text-neutral-800'>No results found</h1>
+                            <h1 className='text-3xl font-semibold font-poppins text-neutral-800 cursor-default'>No results found</h1>
                         </div>
                     )
                 ) : (
@@ -153,25 +153,25 @@ const RestaurantMenu = ({ restaurant }) => {
                                 {popularItems.map((item) => (
                                     <div
                                     key={item.uuid}
-                                    className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-[101%] relative'
+                                    className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-[1px] border-neutral-200 rounded-xl transition-transform duration-200 hover:border-neutral-500 relative'
                                     >
                                         <div className='w-4/5 h-full text-left overflow-hidden'>
-                                            <h1 className='text-lg font-roboto font-semibold truncate text-neutral-700'>{item.name}</h1>
-                                            <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>Rs. {item.price}</h1>
+                                            <h1 className='text-lg font-roboto font-semibold truncate text-neutral-700 cursor-default'>{item.name}</h1>
+                                            <h1 className='text-xl text-nowrap font-hedwig text-neutral-700 cursor-default'>Rs. {item.price}</h1>
                                             {item.is_available ? (
                                                 <>
-                                                    <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
+                                                    <h1 className='text-sm font-roboto text-gray-600 truncate cursor-default'>{item.description}</h1>
                                                     {isInCart(item) ? (
-                                                        <h1 className='text-lg font-roboto text-gray-600'>Added to cart</h1>
+                                                        <h1 className='text-lg font-roboto text-gray-600 cursor-default'>Added to cart</h1>
                                                     ) : (
-                                                        <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                        <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-neutral-300 flex justify-center items-center mt-2 hover:border-neutral-400'>
                                                             <img src={add} alt="add" className='w-full h-full' />
                                                         </button>
                                                     )}
                                                 </>
                                             ) : (
                                                 <>
-                                                    <h1 className='text-md font-roboto font-semibold text-red-700 bg-red-400 w-fit px-2 rounded-lg mt-4'>Not Available</h1>
+                                                    <h1 className='text-md font-roboto font-semibold cursor-default text-red-700 bg-red-400 w-fit px-2 rounded-lg mt-4'>Not Available</h1>
                                                 </>
                                             )}
                                         </div>
@@ -195,25 +195,25 @@ const RestaurantMenu = ({ restaurant }) => {
                                     .map((item) => (
                                         <div
                                         key={item.uuid}
-                                        className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-[101%] relative'
+                                        className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-[1px] border-neutral-200 rounded-xl transition-transform duration-200 hover:border-neutral-500 relative'
                                         >   
                                             <div className='w-4/5 h-full text-left overflow-hidden'>
-                                                <h1 className='text-lg font-roboto font-semibold text-neutral-700 truncate'>{item.name}</h1>
-                                                <h1 className='text-xl text-nowrap font-hedwig text-neutral-700'>Rs. {item.price}</h1>
+                                                <h1 className='text-lg font-roboto font-semibold text-neutral-700 truncate cursor-default'>{item.name}</h1>
+                                                <h1 className='text-xl text-nowrap font-hedwig text-neutral-700 cursor-default'>Rs. {item.price}</h1>
                                                 {item.is_available ? (
                                                     <>
-                                                        <h1 className='text-sm font-roboto text-gray-600 truncate'>{item.description}</h1>
+                                                        <h1 className='text-sm font-roboto text-gray-600 truncate cursor-default'>{item.description}</h1>
                                                         {isInCart(item) ? (
-                                                            <h1 className='text-lg font-roboto text-gray-600'>Added to cart</h1>
+                                                            <h1 className='text-lg font-roboto text-gray-600 cursor-default'>Added to cart</h1>
                                                         ) : (
-                                                            <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                            <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-neutral-300 flex justify-center items-center mt-2 hover:border-neutral-400'>
                                                                 <img src={add} alt="add" className='w-full h-full' />
                                                             </button>
                                                         )}
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <h1 className='text-md font-roboto font-semibold text-red-700 bg-red-400 w-fit px-2 rounded-lg mt-4'>Not Available</h1>
+                                                        <h1 className='text-md font-roboto font-semibold text-red-700 bg-red-400 w-fit px-2 rounded-lg mt-4 cursor-default'>Not Available</h1>
                                                     </>
                                                 )}
                                             </div>
@@ -232,7 +232,7 @@ const RestaurantMenu = ({ restaurant }) => {
                                     {sideItems.map((item) => (
                                         <div
                                             key={item.uuid}
-                                            className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-2 border-gray-200 rounded-xl cursor-pointer transition-transform duration-200 hover:scale-[101%] relative'
+                                            className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-[1px] border-neutral-200 rounded-xl cursor-pointer transition-transform duration-200 hover:border-neutral-500 relative'
                                         >
                                             <div className='w-4/5 h-full text-left overflow-hidden'>
                                                 <h1 className='text-lg font-roboto font-semibold truncate text-neutral-700'>{item.name}</h1>
@@ -243,7 +243,7 @@ const RestaurantMenu = ({ restaurant }) => {
                                                         {isInCart(item) ? (
                                                             <h1 className='text-lg font-roboto text-gray-600'>Added to cart</h1>
                                                         ) : (
-                                                            <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center mt-2 hover:bg-gray-100'>
+                                                            <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-[1px] border-neutral-300 flex justify-center items-center mt-2 hover:border-neutral-500'>
                                                                 <img src={add} alt="add" className='w-full h-full' />
                                                             </button>
                                                         )}

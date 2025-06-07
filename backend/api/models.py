@@ -88,7 +88,7 @@ class Restaurant(models.Model):
             return 0
         total_ratings = sum(review.rating for review in reviews)
         rating = total_ratings / rating_count
-        return rating
+        return round(rating, 2)
     
     def __str__(self):
         return self.name

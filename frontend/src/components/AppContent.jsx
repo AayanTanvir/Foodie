@@ -29,7 +29,7 @@ const AppContent = () => {
     let { showOTPForm } = useContext(AuthContext);
     let { successMessage, noticeMessage, failureMessage } = useContext(GlobalContext);
     let { showChoicesPopup, choicesItem } = useContext(CartContext);
-    let { showReviewsPopup } = useContext(RestaurantContext);
+    let { showReviewsPopup, reviewsPopupMode } = useContext(RestaurantContext);
 
     return (
         <>
@@ -41,7 +41,7 @@ const AppContent = () => {
 
             {showOTPForm && <OTPForm />}
             {showChoicesPopup && <ItemChoicesPopup item={choicesItem}/>}
-            {showReviewsPopup && <ReviewsPopup />}
+            {showReviewsPopup && <ReviewsPopup mode={reviewsPopupMode}/>}
 
             <Routes>
                 <Route element={<ProtectedRoutes/>}>

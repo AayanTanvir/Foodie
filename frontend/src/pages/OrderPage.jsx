@@ -3,6 +3,7 @@ import { GlobalContext } from '../context/GlobalContext'
 import { useNavigate, useParams } from 'react-router-dom';
 import { formatDate } from '../utils/Utils';
 import axiosClient from '../utils/axiosClient';
+import { RestaurantContext } from '../context/RestaurantContext';
 
 const OrderPage = () => {
     const [order, setOrder] = useState({});
@@ -11,6 +12,7 @@ const OrderPage = () => {
     const [showingCancelConfirm, setShowingCancelConfirm] = useState(false);
     const [isCancellingOrder, setIsCancellingOrder] = useState(false);
     let { setSuccessMessage } = useContext(GlobalContext);
+    let { setShowReviewsPopup, setReviewsPopupMode } = useContext(RestaurantContext);
     const websocket = useRef(null);
     const navigate = useNavigate();
 
@@ -213,20 +215,22 @@ const OrderPage = () => {
                             </div>
                         ) : (
                             <>
-                                {order?.order_status === "completed" ? (
-                                    <button onClick={() => {setSuccessMessage("Clicked")}} className='w-full h-5 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                                {order?.order_status === "delivered" ? (
+                                    <button onClick={() => { setReviewsPopupMode("write"); setShowReviewsPopup(true); }} className='w-full h-5 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
                                         Submit a Review
                                     </button>
                                 ) : (
-                                    <button className='w-full h-5 rounded cursor-not-allowed bg-neutral-300 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
-                                        Submit a Review
-                                    </button>
+                                    <>
+                                        <button className='w-full h-5 rounded cursor-not-allowed bg-neutral-300 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                                            Submit a Review
+                                        </button>
+                                        <div className='w-full flex-1 flex justify-center items-center'>
+                                            <button onClick={() => { showCancelConfirmPopup(true) }} className='w-full h-5 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                                                Cancel Order
+                                            </button>
+                                        </div>
+                                    </>
                                 )}
-                                <div className='w-full flex-1 flex justify-center items-center'>
-                                    <button onClick={() => { showCancelConfirmPopup(true) }} className='w-full h-5 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
-                                        Cancel Order
-                                    </button>
-                                </div>
                             </>
                         )}
                     </div>

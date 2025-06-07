@@ -16,6 +16,7 @@ export const RestaurantContextProvider = ({ children }) => {
     const [sideItems, setSideItems] = useState([]);
     const [discounts, setDiscounts] = useState([]);
     const [showReviewsPopup, setShowReviewsPopup] = useState(false);
+    const [reviewsPopupMode, setReviewsPopupMode] = useState("read");
     let { user } = useContext(AuthContext);
     let { setFailureMessage } = useContext(GlobalContext);
     const navigate = useNavigate();
@@ -133,6 +134,8 @@ export const RestaurantContextProvider = ({ children }) => {
         sideItems,
         discounts, 
         showReviewsPopup,
+        reviewsPopupMode,
+        setReviewsPopupMode,
         setShowReviewsPopup,
         fetchRestaurant,
     }
