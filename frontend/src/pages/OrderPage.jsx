@@ -12,7 +12,7 @@ const OrderPage = () => {
     const [showingCancelConfirm, setShowingCancelConfirm] = useState(false);
     const [isCancellingOrder, setIsCancellingOrder] = useState(false);
     let { setSuccessMessage } = useContext(GlobalContext);
-    let { setShowReviewsPopup, setReviewsPopupMode } = useContext(RestaurantContext);
+    let { setShowReviewsPopup, setReviewsPopupMode, setReviewItems } = useContext(RestaurantContext);
     const websocket = useRef(null);
     const navigate = useNavigate();
 
@@ -216,13 +216,13 @@ const OrderPage = () => {
                         ) : (
                             <>
                                 {order?.order_status === "delivered" ? (
-                                    <button onClick={() => { setReviewsPopupMode("write"); setShowReviewsPopup(true); }} className='w-full h-5 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
-                                        Submit a Review
+                                    <button onClick={() => { setReviewsPopupMode("write"); setShowReviewsPopup(true); setReviewItems(order?.order_items) }} className='w-full h-5 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                                        Write a Review
                                     </button>
                                 ) : (
                                     <>
                                         <button className='w-full h-5 rounded cursor-not-allowed bg-neutral-300 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
-                                            Submit a Review
+                                            Write a Review
                                         </button>
                                         <div className='w-full flex-1 flex justify-center items-center'>
                                             <button onClick={() => { showCancelConfirmPopup(true) }} className='w-full h-5 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
