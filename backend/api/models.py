@@ -3,7 +3,6 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from django.core.validators import MaxValueValidator, MinValueValidator
 from .managers import CustomUserManager
 from django_q.tasks import schedule
 from datetime import timedelta
@@ -294,11 +293,9 @@ class Review(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="reviews")
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="reviews")
     body = models.TextField()
-    rating = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(5)])
+    rating = models.IntegerField(default=1)
     items = models.ManyToManyField(MenuItem, related_name="reviews")
     created_at = models.DateTimeField(auto_now_add=True)
-    
-    #add items and restaurant check in serializer
     
     def __str__(self):
         return f"{self.rating} star(s) review on {self.restaurant} by {self.user}"

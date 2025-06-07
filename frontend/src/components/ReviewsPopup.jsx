@@ -6,13 +6,18 @@ import star from '../assets/star.svg';
 import add from '../assets/add.svg';
 import close from '../assets/close.svg';
 import { CartContext } from '../context/CartContext';
+import AuthContext from '../context/AuthContext';
+import { GlobalContext } from '../context/GlobalContext';
 
 const ReviewsPopup = ({ mode }) => {
     const restaurantUUID = localStorage.getItem("restaurantUUID") ? localStorage.getItem("restaurantUUID") : null;
-    const { setShowReviewsPopup, reviewItems } = useContext(RestaurantContext);
-    const { doCartItemAction } = useContext(CartContext);
+    let { setShowReviewsPopup, reviewItems } = useContext(RestaurantContext);
+    let { doCartItemAction } = useContext(CartContext);
+    let { user } = useContext(AuthContext);
+    let { setSuccessMessage, setFailureMessage } = useContext(GlobalContext);
     const [reviews, setReviews] = useState(null);
-    const [userReview, setUserReview] = useState({ body: "", rating: 1, restaurant: 0, user: 0, items: [] });
+    const [writeReviewRating, setWriteReviewRating] = useState(1);
+    const [writeReviewBody, setWriteReviewBody] = useState("");
 
     const fetchReviews = async () => {
         try {
@@ -30,6 +35,38 @@ const ReviewsPopup = ({ mode }) => {
             setShowReviewsPopup(false);
         }
     }
+
+    const submitReview = async () => {
+        let writeReview = {
+            body: writeReviewBody,
+            rating: writeReviewRating,
+            restaurant: restaurantUUID,
+            user: user.uuid,
+            items: reviewItems.map((item) => {
+               return item.menu_item.uuid
+            })
+        }
+        try {
+            const res = await axiosClient.post("/reviews/create/", writeReview);
+            if (res.status === 201) {
+                setSuccessMessage("Review submitted!");
+                setShowReviewsPopup(false);
+                setWriteReviewBody("");
+                setWriteReviewRating(1);
+            } else {
+                console.error("Unexpected response from server: ", res.status);
+                setFailureMessage("Unexpected response: ", res.status);
+                setShowReviewsPopup(false);
+                setWriteReviewBody("");
+                setWriteReviewRating(1);
+            }
+        } catch (err) {
+            console.error("An error occurred while fetching reviews");
+            console.error(err);
+            setShowReviewsPopup(false);
+            setFailureMessage("An error occurred please try again.")
+        }
+    }
     
     useEffect(() => {
         if (!restaurantUUID) {
@@ -38,7 +75,7 @@ const ReviewsPopup = ({ mode }) => {
             fetchReviews();
         }
     }, [])
-    console.log(reviewItems);
+
     return (
         <div className='fixed z-50 top-0 left-0 w-full h-screen flex items-center justify-center flex-col bg-black/50'>
             {mode === "read" ? (
@@ -113,21 +150,25 @@ const ReviewsPopup = ({ mode }) => {
                         className="w-full h-24 p-3 border-[1px] border-neutral-300 resize-none rounded-md transition duration-150 ease focus:outline-none focus:border-neutral-500"
                         pattern="[a-zA-Z0-9\s,.-]+"
                         placeholder="Review"
-                        onChange={(e) => { let newReview = { ...userReview, body: e.target.value }; setUserReview(newReview); }}
+                        onChange={(e) => { setWriteReviewBody(e.target.value) }}
                         onInput={(e) => {
                             e.target.value = e.target.value.replace(/[^a-zA-Z0-9\s,.-]/g, "");
                         }}
-                        value={userReview.body}
+                        value={writeReviewBody}
                     />
                     <div className='w-full h-fit flex justify-start items-center gap-2 mb-2'>
                         <input 
                             type="text"
                             inputMode='numeric'
                             className="w-10 h-10 text-center border-[1px] border-neutral-300 text-md rounded-md transition duration-150 ease focus:outline-none focus:border-neutral-500"
-                            pattern='\d{1}'
                             maxLength={1}
-                            defaultValue={"1"}
-                            onChange={(e) => { let newReview = { ...userReview, rating: parseInt(e.target.value, 10) || 1 }; setUserReview(newReview); }}
+                            defaultValue={1}
+                            onChange={(e) => { 
+                                let val = parseInt(e.target.value, 10);
+                                if (isNaN(val) || val < 1) val = 1;
+                                if (val > 5) val = 5;
+                                setWriteReviewRating(val);
+                            }}
                             onInput={(e) => {
                                 if (e.target.value > 5 || (e.target.value == 0 && e.target.value != "")) {
                                     e.target.value = 1
@@ -136,7 +177,7 @@ const ReviewsPopup = ({ mode }) => {
                             }}
                         />
                         <div className='w-fit h-fit flex justify-center items-center'>
-                                {[...Array(userReview.rating)].map((_, i) => (
+                                {[...Array(writeReviewRating)].map((_, i) => (
                                     <img key={i} src={star} alt="star" />
                                 ))}
                         </div>
@@ -155,8 +196,8 @@ const ReviewsPopup = ({ mode }) => {
                         ))}
                     </div>
                     <div className='w-full h-fit flex justify-end items-center'>
-                        {userReview.body.trim() !== "" ? (
-                            <button className='w-fit bg-neutral-800 text-neutral-100 rounded px-4 py-2 '>
+                        {writeReviewBody.trim() !== "" ? (
+                            <button onClick={() => { submitReview() }} className='w-fit bg-neutral-800 text-neutral-100 rounded px-4 py-2 '>
                                 Submit
                             </button>
                         ) : (

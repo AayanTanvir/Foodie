@@ -3,6 +3,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import serializers
 from .models import *
 from django.core.cache import cache
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -380,3 +381,47 @@ class RestaurantReviewReadSerializer(serializers.ModelSerializer):
         fields = [
             'uuid', 'user_name', 'body', 'rating', 'items', 'created_at'
         ]
+        
+        
+class ReviewWriteSerializer(serializers.ModelSerializer):
+    restaurant = serializers.UUIDField(write_only=True)
+    user = serializers.UUIDField(write_only=True)
+    items = serializers.ListField(
+        child=serializers.UUIDField(), write_only=True
+    )
+    rating = serializers.IntegerField(write_only=True, validators=[MinValueValidator(1), MaxValueValidator(5)])
+
+    class Meta:
+        model = Review
+        fields = ['body', 'rating', 'restaurant', 'user', 'items']
+    
+    def create(self, validated_data):
+        restaurant_uuid = validated_data.pop('restaurant')
+        user_uuid = validated_data.pop('user')
+        items_uuids = validated_data.pop('items')
+
+        try:
+            restaurant = Restaurant.objects.get(uuid=restaurant_uuid)
+        except Restaurant.DoesNotExist:
+            raise serializers.ValidationError("Invalid restaurant UUID.")
+
+        try:
+            user = CustomUser.objects.get(uuid=user_uuid)
+        except CustomUser.DoesNotExist:
+            raise serializers.ValidationError("Invalid user UUID.")
+
+        menu_items = MenuItem.objects.filter(uuid__in=items_uuids)
+        if menu_items.count() != len(items_uuids):
+            raise serializers.ValidationError("One or more menu item UUIDs are invalid.")
+        
+        for item in menu_items:
+            if item.restaurant != restaurant:
+                raise serializers.ValidationError("Items need to belong to the same restaurant as the review")
+        
+        review = Review.objects.create(
+            restaurant=restaurant,
+            user=user,
+            **validated_data
+        )
+        review.items.set(menu_items)
+        return review
