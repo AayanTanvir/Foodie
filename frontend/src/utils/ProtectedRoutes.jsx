@@ -4,7 +4,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../context/GlobalContext';
 
 const ProtectedRoutes = () => {
-    let { setNoticeMessage } = useContext(GlobalContext);
+    let { setMessageAndMode } = useContext(GlobalContext);
     let { user } = useContext(AuthContext);
     const authTokens = JSON.parse(localStorage.getItem("authTokens"));
     let navigate = useNavigate();
@@ -12,7 +12,7 @@ const ProtectedRoutes = () => {
     useEffect(() => {
         if (!user || !authTokens) {
             navigate('/login');
-            setNoticeMessage("Please Login for access");
+            setMessageAndMode("Please Login for access", "notice");
         }
     }, [user, authTokens]);
 

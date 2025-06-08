@@ -24,7 +24,7 @@ const CheckoutPage = () => {
     let { cartItems, isCartEmpty, clearCart, getSubtotal, getShippingExpense, getItemSubtotal, getDiscountAmount } = useContext(CartContext);
     let { discounts } = useContext(RestaurantContext);
     let { user } = useContext(AuthContext);
-    let { setNoticeMessage, setFailureMessage, setCurrentOrderAndPersist } = useContext(GlobalContext);
+    let { setMessageAndMode } = useContext(GlobalContext);
     const restaurantName = cartItems[0]?.restaurant_name;
     const restaurantUUID = cartItems[0]?.restaurant_uuid;
     const userUUID = user?.uuid;
@@ -67,12 +67,12 @@ const CheckoutPage = () => {
     const handlePlaceOrder = async () => {
 
         if (deliveryAddress.trim() === "") {
-            setNoticeMessage("Please enter a delivery address.");
+            setMessageAndMode("Please enter a delivery address.", "notice");
             return;
         }
 
         if (paymentMethod === "card" && (cardDetails.cardNumber === "" || cardDetails.cvc === "" || cardDetails.cardHolderName === "" || cardDetails.expiryDate === "")) {
-            setNoticeMessage("Please enter card details");
+            setMessageAndMode("Please enter card details", "notice");
             return;
         }
 
@@ -104,13 +104,13 @@ const CheckoutPage = () => {
                 navigate(`/orders/${res.data?.uuid}`);
             } else {
                 console.error("Unexpected response:", res);
-                setFailureMessage("Unexpected response. Please try again later.");
+                setMessageAndMode("Unexpected response. Please try again later.", "failure");
                 navigate("/");
                 clearCart();
             }
         } catch (error) {
             console.error("An error occurred while placing the order.", error);
-            setFailureMessage("An error occurred. Please try again later.");
+            setMessageAndMode("An error occurred. Please try again later.", "failure");
             clearCart();
             navigate("/");
         }

@@ -9,7 +9,7 @@ const PasswordResetNewPasswordPage = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
     const { authError, setAuthError, validateCredentials } = useContext(AuthContext);
-    let { setSuccessMessage } = useContext(GlobalContext);
+    let { setMessageAndMode } = useContext(GlobalContext);
     let token = searchParams.get('token');
     let navigate = useNavigate();
 
@@ -28,7 +28,7 @@ const PasswordResetNewPasswordPage = () => {
 
                 if (response.status === 200) {
                     navigate('/login');
-                    setSuccessMessage("Password reset successfully");
+                    setMessageAndMode("Password reset successfully", "success");
                 } else {
                     navigate('/login');
                     setNoticeMessage("Unexpected response from server.", response.status);

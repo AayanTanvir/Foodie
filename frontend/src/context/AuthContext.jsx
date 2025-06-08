@@ -16,7 +16,7 @@ export const AuthProvider = ({children}) => {
     let [authError, setAuthError] = useState("");
     let [showOTPForm, setShowOTPForm] = useState(false);
     let [canResendOTP, setCanResendOTP] = useState(false);
-    let { setSuccessMessage, setNoticeMessage, setFailureMessage } = useContext(GlobalContext);
+    let { setMessageAndMode } = useContext(GlobalContext);
 
     let loginUser = async (event) => {
         event.preventDefault();
@@ -44,15 +44,14 @@ export const AuthProvider = ({children}) => {
                 navigate("/");
                 
             } catch (error) {
-                const status = error.response?.status;
-                const detail = error.response?.data?.detail || "Unknown server error. Check internet connection";
-            
-                if (status === 401) {
+                if (error.response.status === 401) {
                     setAuthError("Invalid Credentials");
-                } else if (status === 500) {
-                    setFailureMessage("Internal Server Error (500)");
+                } else if (error.response.status === 500) {
+                    setMessageAndMode("Internal Server Error (500) Please retry later.", "failure");
+                    console.error(error);
                 } else {
-                    setFailureMessage(detail);
+                    setMessageAndMode("An error occurred", "failure");
+                    console.error(error);
                 }
             }
         }
@@ -98,32 +97,30 @@ export const AuthProvider = ({children}) => {
                         localStorage.setItem("refreshTokenExp", jwtDecode(login_response.data.refresh).exp);
                         localStorage.setItem("accessTokenExp", jwtDecode(login_response.data.access).exp);
                         navigate("/");
-                        setSuccessMessage("Account Created Successfully!");
-                    } catch (error) {
-                        const status = error.response?.status;
-                        const detail = error.response?.data?.detail || "Something went wrong. Check internet connection";
-                    
-                        if (status === 401) {
-                            setFailureMessage("Invalid Credentials. Please try again");
-                        } else if (status === 500) {
-                            setFailureMessage("Internal Server Error (500)");  
+                        setMessageAndMode("Account Created Successfully!", "success");
+                    } catch (error) {  
+                        if (error.response.status === 401) {
+                            setMessageAndMode("Invalid Credentials. Please try again", "failure");
+                        } else if (error.response.status === 500) {
+                            setMessageAndMode("Internal Server Error (500) Please try later", "failure");  
+                            console.error(error);
                         } else {
-                            setFailureMessage(detail);
+                            setMessageAndMode("An error occurred", "failure");
+                            console.error(error);
                         }
                         navigate('/login');
                     }
                 }
             } catch (error) {
-                const status = error.response?.status;
-                const detail = error.response?.data;
-
-                if (status === 400) {
+                if (error.response?.status === 400) {
                     setAuthError("User with this email already exists");
                 }
-                if (status === 500) {
-                    setFailureMessage("Internal Server Error 500");
+                if (error.response?.status === 500) {
+                    setMessageAndMode("Internal Server Error (500) Please try later.", "failure");
+                    console.error(error);
                 } else {
-                    setFailureMessage(detail);
+                    setMessageAndMode("An error occurred", "failure");
+                    console.error(error);
                 }
             }
 
@@ -187,7 +184,7 @@ export const AuthProvider = ({children}) => {
             });
 
             if (response.status === 200) {
-                setNoticeMessage("Verification email sent! (check spam)");
+                setMessageAndMode("Verification email sent! (check spam)", "notice");
         
                 if (mode !== "resend") {
                     const timer_for_resend = 60000;
@@ -198,15 +195,15 @@ export const AuthProvider = ({children}) => {
                 }
             } else {
                 console.warn("Unexpected response:", response);
-                setNoticeMessage("Unexpected response from server.");
+                setMessageAndMode("Unexpected response from server.", "notice");
                 setShowOTPForm(false);
             }
         } catch (error) {
             if (error.response?.data?.error === "An OTP has already been sent to your email") {
-                setFailureMessage("An OTP has already been sent to your email");
+                setMessageAndMode("An OTP has already been sent to your email", "failure");
                 setShowOTPForm(false);
             } else {
-                setFailureMessage("Please try again later.");
+                setMessageAndMode("Please try again later.", "failure");
                 console.log(error);
                 setShowOTPForm(false);
             }
@@ -226,13 +223,13 @@ export const AuthProvider = ({children}) => {
                 });
 
                 if (response.status === 200) {
-                    setSuccessMessage("Email Verified!");
+                    setMessageAndMode("Email Verified!", "success");
                     setShowOTPForm(false);
                 }
             }
             catch (error) {
                 const status = error.response?.status;
-                setFailureMessage("Something went wrong. Retry later", status);
+                setMessageAndMode("Something went wrong. Retry later", "failure");
             }
         }
 

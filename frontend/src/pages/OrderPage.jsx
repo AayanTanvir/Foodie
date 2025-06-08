@@ -11,7 +11,6 @@ const OrderPage = () => {
     const [cancelConfirmPopup, setCancelConfirmPopup] = useState(null);
     const [showingCancelConfirm, setShowingCancelConfirm] = useState(false);
     const [isCancellingOrder, setIsCancellingOrder] = useState(false);
-    let { setSuccessMessage } = useContext(GlobalContext);
     let { setShowReviewsPopup, setReviewsPopupMode, setReviewItems } = useContext(RestaurantContext);
     const websocket = useRef(null);
     const navigate = useNavigate();

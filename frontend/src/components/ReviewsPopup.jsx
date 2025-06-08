@@ -14,7 +14,7 @@ const ReviewsPopup = ({ mode }) => {
     let { setShowReviewsPopup, reviewItems } = useContext(RestaurantContext);
     let { doCartItemAction } = useContext(CartContext);
     let { user } = useContext(AuthContext);
-    let { setSuccessMessage, setFailureMessage } = useContext(GlobalContext);
+    let { setMessageAndMode } = useContext(GlobalContext);
     const [reviews, setReviews] = useState(null);
     const [writeReviewRating, setWriteReviewRating] = useState(1);
     const [writeReviewBody, setWriteReviewBody] = useState("");
@@ -49,13 +49,13 @@ const ReviewsPopup = ({ mode }) => {
         try {
             const res = await axiosClient.post("/reviews/create/", writeReview);
             if (res.status === 201) {
-                setSuccessMessage("Review submitted!");
+                setMessageAndMode("Review submitted!", "success");
                 setShowReviewsPopup(false);
                 setWriteReviewBody("");
                 setWriteReviewRating(1);
             } else {
                 console.error("Unexpected response from server: ", res.status);
-                setFailureMessage("Unexpected response: ", res.status);
+                setMessageAndMode("Unexpected response from server", "failure");
                 setShowReviewsPopup(false);
                 setWriteReviewBody("");
                 setWriteReviewRating(1);
@@ -64,7 +64,7 @@ const ReviewsPopup = ({ mode }) => {
             console.error("An error occurred while fetching reviews");
             console.error(err);
             setShowReviewsPopup(false);
-            setFailureMessage("An error occurred please try again.")
+            setMessageAndMode("An error occurred please try again.", "failure")
         }
     }
     

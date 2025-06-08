@@ -3,22 +3,24 @@ import React, { createContext, useState, useEffect } from 'react'
 export const GlobalContext = createContext()
 
 export const GlobalContextProvider = ({ children }) => {
-    const [successMessage, setSuccessMessage] = useState("");
-    const [failureMessage, setFailureMessage] = useState("");
-    const [noticeMessage, setNoticeMessage] = useState("");
+    const [message, setMessage] = useState("");
+    const [messageMode, setMessageMode] = useState("success");
+
+    const setMessageAndMode = (message="", mode="") => {
+        setMessageMode(mode);
+        setMessage(message);
+    }
+
 
     useEffect(() => {
-        const timeout = setTimeout(() => {setSuccessMessage(""), setNoticeMessage(""), setFailureMessage("")}, 3000);
+        const timeout = setTimeout(() => { setMessage("") }, 5000);
         return () => clearTimeout(timeout);
-    }, [successMessage, noticeMessage, failureMessage]);
+    }, [message]);
 
     let context = {
-        noticeMessage,
-        failureMessage,
-        successMessage,
-        setNoticeMessage,
-        setFailureMessage,
-        setSuccessMessage,
+        message, 
+        messageMode,
+        setMessageAndMode,
     }
 
     return (

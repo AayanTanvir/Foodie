@@ -77,11 +77,13 @@ axiosClient.interceptors.response.use(
                     refresh: tokens.refresh
                 });
                 
-                const refresh = jwtDecode(response.data.refresh);
                 const access = jwtDecode(response.data.access);
+                const newAuthTokens = {
+                    refresh: tokens.response,
+                    access: response.data.access,
+                }
 
-                localStorage.setItem("authTokens", JSON.stringify(response.data));
-                localStorage.setItem("refreshTokenExp", refresh.exp);
+                localStorage.setItem("authTokens", JSON.stringify(newAuthTokens));
                 localStorage.setItem("accessTokenExp", access.exp);
 
                 axiosClient.defaults.headers.Authorization = `Bearer ${response.data.access}`;

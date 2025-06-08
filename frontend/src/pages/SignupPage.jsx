@@ -4,7 +4,7 @@ import AuthContext from '../context/AuthContext';
 
 const SignupPage = () => {
 
-    const {signupUser, user, authError} = useContext(AuthContext)
+    const { signupUser, user, authError } = useContext(AuthContext)
     let navigate = useNavigate()
 
     useEffect(() => {

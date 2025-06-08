@@ -7,7 +7,7 @@ import { GlobalContext } from '../context/GlobalContext';
 const PasswordResetEmailPage = () => {
 
     let { authError, user, setAuthError } = useContext(AuthContext);
-    let { setFailureMessage, setNoticeMessage } = useContext(GlobalContext);
+    let { setMessageAndMode } = useContext(GlobalContext);
     let navigate = useNavigate();
 
     useEffect(() => {
@@ -29,15 +29,14 @@ const PasswordResetEmailPage = () => {
 
                 if (response.status === 200) {
                     navigate('/login');
-                    setNoticeMessage("Password reset link sent to email. You can close this page");
+                    setMessageAndMode("Password reset link sent to email. You can close this page", "notice");
                 } else {
                     navigate('/login');
-                    setNoticeMessage("Unexpected response from server.", response.status);
+                    setMessageAndMode("Unexpected response from server.", "failure");
                 }
             } catch (error) {
-                const data = error.response?.data;
-                const status = error.response?.status;
-                setFailureMessage(data || "Something went wrong. Try again", status);
+                console.error(error)
+                setMessageAndMode("Something went wrong. Try again", "failure");
                 navigate('/login');
             }
         }

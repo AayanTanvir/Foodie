@@ -19,7 +19,7 @@ export const RestaurantContextProvider = ({ children }) => {
     const [reviewsPopupMode, setReviewsPopupMode] = useState("read");
     const [reviewItems, setReviewItems] = useState([]);
     let { user } = useContext(AuthContext);
-    let { setFailureMessage } = useContext(GlobalContext);
+    let { setMessageAndMode } = useContext(GlobalContext);
     const navigate = useNavigate();
 
     const fetchRestaurant = async (uuid) => {
@@ -31,14 +31,14 @@ export const RestaurantContextProvider = ({ children }) => {
                 setRestaurantUUID(uuid);
                 localStorage.setItem("restaurantUUID", uuid);
             } else {
-                setFailureMessage("Unexpected response please try again.", response.status);
+                setMessageAndMode("Unexpected response please try again.", "failure");
                 console.error("Unexpected response:", response);
                 setRestaurant(null);
                 setRestaurantUUID("");
             }
 
         } catch (error) {
-            setFailureMessage("An error occurred.");
+            setMessageAndMode("An error occurred.", "failure");
             console.error("Error fetching restaurant:", error);
             setRestaurant(null);
             setRestaurantUUID("");
@@ -53,13 +53,13 @@ export const RestaurantContextProvider = ({ children }) => {
             if (response.status === 200) {
                 setRestaurants(response.data || null);
             } else {
-                setFailureMessage("Unexpected response.", response.status);
+                setMessageAndMode("Unexpected response.", "failure");
                 console.error("Unexpected response:", response);
                 setRestaurants(null);
             }
 
         } catch (error) {
-            setFailureMessage("An error occurred.");
+            setMessageAndMode("An error occurred.", "failure");
             console.error("Error fetching restaurants:", error);
             setRestaurants(null);
         }
@@ -79,11 +79,11 @@ export const RestaurantContextProvider = ({ children }) => {
                 setMenuItemModifiers(res.data || null);
             } else {
                 console.error("Unexpected response status", res.status);
-                setFailureMessage("Unexpected response", res.status);
+                setMessageAndMode("Unexpected response", "failure");
                 setMenuItemModifiers(null);
             }
         } catch (error) {
-            setFailureMessage("An error occurred.");
+            setMessageAndMode("An error occurred.", "failure");
             console.error("Error fetching menu item modifiers:", error);
             setMenuItemModifiers(null);
         }
@@ -100,13 +100,13 @@ export const RestaurantContextProvider = ({ children }) => {
             if (response.status === 200) {
                 setDiscounts(response.data);
             } else {
-                setFailureMessage("Unexpected response", response.status);
+                setMessageAndMode("Unexpected response", "failure");
                 console.error("Unexpected response:", response);
                 setDiscounts([]);
             }
 
         } catch (error) {
-            setFailureMessage("An error occurred.");
+            setMessageAndMode("An error occurred.", "failure");
             console.error("Error fetching discounts:", error);
             setDiscounts([]);
         }

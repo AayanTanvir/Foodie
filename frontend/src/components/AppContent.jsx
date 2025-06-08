@@ -11,9 +11,7 @@ import CheckoutPage from '../pages/CheckoutPage';
 import ProtectedRoutes from '../utils/ProtectedRoutes';
 import { CartContext } from '../context/CartContext';
 import Navbar from './Navbar';
-import SuccessMessage from './SuccessMessage';
-import FailureMessage from './FailureMessage';
-import NoticeMessage from './NoticeMessage';
+import Message from './Message';
 import OTPForm from './OTPForm';
 import ItemChoicesPopup from './ItemChoicesPopup';
 import { useContext } from 'react';
@@ -27,7 +25,7 @@ import { RestaurantContext } from '../context/RestaurantContext';
 
 const AppContent = () => {
     let { showOTPForm } = useContext(AuthContext);
-    let { successMessage, noticeMessage, failureMessage } = useContext(GlobalContext);
+    let { messageMode, message } = useContext(GlobalContext);
     let { showChoicesPopup, choicesItem } = useContext(CartContext);
     let { showReviewsPopup, reviewsPopupMode } = useContext(RestaurantContext);
 
@@ -35,9 +33,7 @@ const AppContent = () => {
         <>
             <Navbar />
 
-            {successMessage !== "" && <SuccessMessage />}
-            {failureMessage !== "" && <FailureMessage />}
-            {noticeMessage !== "" && <NoticeMessage />}
+            {message !== "" && <Message mode={ messageMode }/>}
 
             {showOTPForm && <OTPForm />}
             {showChoicesPopup && <ItemChoicesPopup item={choicesItem}/>}

@@ -8,6 +8,7 @@ import menu from '../assets/menu.svg';
 import logout from '../assets/logout.svg';
 import orders from '../assets/orders.svg';
 import profile from '../assets/profile.svg';
+import { GlobalContext } from '../context/GlobalContext';
 
 const Navbar = () => {
 
@@ -15,7 +16,7 @@ const Navbar = () => {
     let { isCartEmpty, cartItems } = useContext(CartContext);
     const cartCount = cartItems.length
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-
+    let { setMessageAndMode } = useContext(GlobalContext);
 
     return (
         <>
