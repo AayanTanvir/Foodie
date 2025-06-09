@@ -22,6 +22,8 @@ import { GlobalContext } from '../context/GlobalContext';
 import ProfilePage from '../pages/ProfilePage';
 import ReviewsPopup from './ReviewsPopup';
 import { RestaurantContext } from '../context/RestaurantContext';
+import RestaurantOwnerRoutes from '../utils/RestaurantOwnerRoutes';
+import RestaurantOwnerDashboard from '../pages/RestaurantOwnerDashboard';
 
 const AppContent = () => {
     let { showOTPForm } = useContext(AuthContext);
@@ -48,9 +50,12 @@ const AppContent = () => {
                     <Route element={<OrderPage/>} path='/orders/:order_uuid'/>
                     <Route element={<OrdersPage/>} path='/u/:user_uuid/orders'/>
                     <Route element={<ProfilePage/>} path='/u/:user_uuid'/>
+                    
+                    <Route element={<RestaurantOwnerRoutes/>}>
+                        <Route element={<RestaurantOwnerDashboard/>} path='/restaurant-owner/dashboard'/>
+                    </Route>
                 </Route>
 
-                {/* auth */}
                 <Route element={<LoginPage/>} path='/login'/>
                 <Route element={<SignupPage/>} path='/signup'/>
                 <Route element={<PasswordResetEmailPage/>} path='/reset-password'/>
