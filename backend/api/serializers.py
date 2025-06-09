@@ -15,6 +15,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['email'] = user.email
         token['username'] = user.username
         token['is_email_verified'] = user.is_email_verified
+        token['groups'] = list(user.groups.values_list('name', flat=True))
 
         return token
     

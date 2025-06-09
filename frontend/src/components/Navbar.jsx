@@ -16,7 +16,6 @@ const Navbar = () => {
     let { isCartEmpty, cartItems } = useContext(CartContext);
     const cartCount = cartItems.length
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-    let { setMessageAndMode } = useContext(GlobalContext);
 
     return (
         <>
