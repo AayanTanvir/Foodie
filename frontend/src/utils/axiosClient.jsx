@@ -79,7 +79,7 @@ axiosClient.interceptors.response.use(
                 
                 const access = jwtDecode(response.data.access);
                 const newAuthTokens = {
-                    refresh: tokens.response,
+                    refresh: tokens.refresh,
                     access: response.data.access,
                 }
 
@@ -97,6 +97,7 @@ axiosClient.interceptors.response.use(
             } catch (refreshError) {
                 isRefreshing = false;
                 logout();
+                console.error(refreshError);
                 return Promise.reject(refreshError);
             }
         }

@@ -240,7 +240,7 @@ class ReviewCreateAPIView(generics.CreateAPIView):
 
 class UserRestaurantsAPIView(generics.ListAPIView):
     serializer_class = RestaurantListSerializer
-    
+    permission_classes = [AllowAny]
     def get_queryset(self):
         try:
             user_uuid = self.kwargs['uuid']
