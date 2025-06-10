@@ -24,6 +24,8 @@ import ReviewsPopup from './ReviewsPopup';
 import { RestaurantContext } from '../context/RestaurantContext';
 import RestaurantOwnerRoutes from '../utils/RestaurantOwnerRoutes';
 import RestaurantOwnerDashboard from '../pages/RestaurantOwnerDashboard';
+import AdminRoutes from '../utils/AdminRoutes';
+import AdminDashboard from '../pages/AdminDashboard';
 
 const AppContent = () => {
     let { showOTPForm } = useContext(AuthContext);
@@ -35,33 +37,37 @@ const AppContent = () => {
         <>
             <Navbar />
 
-            {message !== "" && <Message mode={ messageMode }/>}
+            { message !== "" && <Message mode={ messageMode }/> }
 
-            {showOTPForm && <OTPForm />}
-            {showChoicesPopup && <ItemChoicesPopup item={choicesItem}/>}
-            {showReviewsPopup && <ReviewsPopup mode={reviewsPopupMode}/>}
+            { showOTPForm && <OTPForm />}
+            { showChoicesPopup && <ItemChoicesPopup item={choicesItem}/> }
+            { showReviewsPopup && <ReviewsPopup mode={reviewsPopupMode}/> }
 
             <Routes>
-                <Route element={<ProtectedRoutes/>}>
-                    <Route element={<HomePage/>} path='/' exact/>
-                    <Route element={<RestaurantPage/>} path='/r/:slug/:uuid'/>
-                    <Route element={<CartPage/>} path='/cart'/>
-                    <Route element={<CheckoutPage/>} path='/checkout'/>
-                    <Route element={<OrderPage/>} path='/orders/:order_uuid'/>
-                    <Route element={<OrdersPage/>} path='/u/:user_uuid/orders'/>
-                    <Route element={<ProfilePage/>} path='/u/:user_uuid'/>
+                <Route element={ <ProtectedRoutes/> }>
+                    <Route element={ <HomePage/> } path='/' exact/>
+                    <Route element={ <RestaurantPage/> } path='/r/:slug/:uuid'/>
+                    <Route element={ <CartPage/> } path='/cart'/>
+                    <Route element={ <CheckoutPage/> } path='/checkout'/>
+                    <Route element={ <OrderPage/> } path='/orders/:order_uuid'/>
+                    <Route element={ <OrdersPage/> } path='/u/:user_uuid/orders'/>
+                    <Route element={ <ProfilePage/> } path='/u/:user_uuid'/>
                     
-                    <Route element={<RestaurantOwnerRoutes/>}>
-                        <Route element={<RestaurantOwnerDashboard/>} path='/restaurant-owner/dashboard'/>
+                    <Route element={ <RestaurantOwnerRoutes/> }>
+                        <Route element={ <RestaurantOwnerDashboard/> } path='/restaurant-owner/dashboard'/>
+                    </Route>
+
+                    <Route element={ <AdminRoutes/> }>
+                        <Route element={ <AdminDashboard/> } path='/admin/dashboard'/>
                     </Route>
                 </Route>
 
-                <Route element={<LoginPage/>} path='/login'/>
-                <Route element={<SignupPage/>} path='/signup'/>
-                <Route element={<PasswordResetEmailPage/>} path='/reset-password'/>
-                <Route element={<PasswordResetNewPasswordPage/>} path='/reset-password/new-password'/>
+                <Route element={ <LoginPage/> } path='/login'/>
+                <Route element={ <SignupPage/> } path='/signup'/>
+                <Route element={ <PasswordResetEmailPage/> } path='/reset-password'/>
+                <Route element={ <PasswordResetNewPasswordPage/> } path='/reset-password/new-password'/>
 
-                <Route element={<PageNotFound/>} path='*'/>
+                <Route element={ <PageNotFound/> } path='*'/>
             </Routes>
         </>
     );
