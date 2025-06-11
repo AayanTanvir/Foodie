@@ -2,13 +2,12 @@ import React, { useContext, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
-import shopping_bag from '../assets/shopping_bag.svg';
-import disabled_shopping_bag from '../assets/disabled_shopping_bag.svg';
-import menu from '../assets/menu.svg';
-import logout from '../assets/logout.svg';
-import orders from '../assets/orders.svg';
-import profile from '../assets/profile.svg';
-import restaurant_manager from '../assets/restaurant_manager.svg';
+import { PiShoppingCartSimpleThin } from "react-icons/pi";
+import { IoIosMenu } from "react-icons/io";
+import { IoIosLogOut } from "react-icons/io";
+import { IoIosList } from "react-icons/io";
+import { RxPerson } from "react-icons/rx";
+import { CiShop } from "react-icons/ci";
 
 const Navbar = () => {
 
@@ -30,33 +29,33 @@ const Navbar = () => {
                     {user ? (
                         <>
                             {isCartEmpty ? (
-                                <a className='relative w-fit h-full px-2 bg-neutral-800 flex justify-center items-center transition cursor-not-allowed'>
-                                    <img src={disabled_shopping_bag} alt="Cart" className='w-6'/>
+                                <a className='relative w-fit h-full px-3 bg-neutral-800 flex justify-center items-center transition cursor-not-allowed'>
+                                    <span className='text-neutral-600 text-2xl'><PiShoppingCartSimpleThin /></span>
                                 </a>
                             ) : (
                                 <NavLink to="/cart" className={({ isActive }) =>
-                                        `relative w-fit h-full px-2 hover:bg-neutral-700
+                                        `relative w-fit h-full px-3 hover:bg-neutral-700
                                         flex justify-center items-center transition
                                         ${isActive && 'bg-neutral-700'}`}>
 
-                                    <img src={shopping_bag} alt="Cart" className='w-6'/>
+                                        <span className='text-neutral-100 text-2xl text-center'><PiShoppingCartSimpleThin /></span>
                                     {!isCartEmpty && (
-                                        <div className="w-[0.9rem] h-[0.9rem] rounded-full bg-neutral-100 absolute
-                                            top-[15%] right-1 flex justify-center items-center">
-                                            <div className='text-center rounded-full flex justify-center items-center'>
-                                                <p className='font-poppins text-neutral-800 text-[0.8rem]'>{cartCount}</p>
-                                            </div>
+                                        <div className="w-3 h-3 rounded-full bg-neutral-100 absolute
+                                            top-[20%] right-[15%] flex justify-center items-center">
+                                            <div className='w-[7px] h-1.5 rounded-full bg-rose-500'></div>
                                         </div>
                                     )}
                                 </NavLink>
                             )}
                             {user.groups.includes("restaurant owner") && (
                                 <NavLink to="/restaurant-owner/dashboard" className={({ isActive }) => `h-full w-fit flex justify-center items-center px-3 transition hover:bg-neutral-700 ${isActive && 'bg-neutral-700'} cursor-pointer`}>
-                                    <img src={restaurant_manager} alt="Manager" className='w-5' />
+                                    <span className='text-2xl text-neutral-100'><CiShop /></span>
                                 </NavLink>
                             )}
                             <a onMouseEnter={() => { setShowProfileDropdown(true) }} className={`h-full w-fit transition ${showProfileDropdown && 'bg-neutral-700'} flex justify-center items-center px-3 cursor-pointer`}>
-                                <img src={menu} alt="Menu" className='w-5'/>
+                                <span className='text-neutral-100 text-xl'>
+                                    <IoIosMenu />
+                                </span>
                             </a>
                         </>
                     ) : (
@@ -70,15 +69,21 @@ const Navbar = () => {
             {showProfileDropdown && (
                 <div onMouseLeave={() => { setShowProfileDropdown(false) }} className='fixed right-8 z-50 top-12 w-32 h-fit bg-neutral-800 flex flex-col justify-start items-center rounded-b-md'>
                     <div className='w-full h-fit flex justify-center items-center gap-2 p-2 cursor-pointer transition hover:bg-neutral-700'>
-                        <img src={profile} className='w-5 h-5' />
+                        <span className='text-neutral-100 text-xl'>
+                            <RxPerson />
+                        </span>
                         <NavLink to={`/u/${user.uuid}`} className="font-poppins text-neutral-100 transition hover:bg-neutral-700">Profile</NavLink>
                     </div>
                     <div className='w-full h-fit flex justify-center items-center gap-2 p-2 cursor-pointer transition hover:bg-neutral-700'>
-                        <img src={orders} className='w-5 h-5' />
+                        <span className='text-neutral-100 text-xl'>
+                            <IoIosList />
+                        </span>
                         <NavLink to={`/u/${user.uuid}/orders`} className="font-poppins text-neutral-100 transition hover:bg-neutral-700">Orders</NavLink>
                     </div>
                     <div className='w-full h-fit flex justify-center items-center gap-2 p-2 cursor-pointer transition hover:bg-neutral-700 rounded-b-md'>
-                        <img src={logout} className='w-5 h-5' />
+                        <span className='text-neutral-100 text-xl'>
+                            <IoIosLogOut />
+                        </span>
                         <NavLink onClick={() => { logoutUser() }} className="font-poppins text-neutral-100 transition hover:bg-neutral-700">Logout</NavLink>
                     </div>
                 </div>

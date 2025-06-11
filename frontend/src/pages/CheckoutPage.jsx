@@ -1,13 +1,13 @@
 import { useState, useContext, useEffect } from "react";
-import card from "../assets/card.svg";
-import cash from "../assets/cash.svg";
+import { CiCreditCard1 } from "react-icons/ci";
+import { CiDiscount1 } from "react-icons/ci";
 import { CartContext } from "../context/CartContext";
 import AuthContext from "../context/AuthContext";
 import axiosClient from "../utils/axiosClient";
-import discount_svg from "../assets/discount.svg";
 import { RestaurantContext } from "../context/RestaurantContext";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalContext";
+import { PiMoneyWavyThin } from "react-icons/pi";
 
 
 const CheckoutPage = () => {
@@ -139,7 +139,9 @@ const CheckoutPage = () => {
                         <div onClick={() => { paymentMethod !== "cash_on_delivery" && setPaymentMethod("cash_on_delivery") }} className={`w-fit h-fit flex justify-between items-center gap-2 cursor-pointer border-[1.5px] rounded-md px-3 py-2 hover:border-neutral-600 ${paymentMethod === "cash_on_delivery" ? "border-neutral-600" : "border-neutral-300"} `}>
                             <div className={`w-4 h-4 rounded-full border-2 border-gray-600 ${paymentMethod === "cash_on_delivery" && "bg-neutral-400"}`}></div>
                             <div className="w-fit h-fit flex justify-center items-center gap-2">
-                                <img src={cash} alt="" className="w-6 h-6" />
+                                <span className="text-neutral-800 text-2xl">
+                                    <PiMoneyWavyThin />
+                                </span>
                                 <h1 className="text-lg font-roboto text-neutral-700 text-left">Cash On Delivery</h1>
                             </div>
                         </div>
@@ -148,7 +150,9 @@ const CheckoutPage = () => {
                                 <div className="flex justify-start items-center gap-2 w-fit h-fit">
                                     <div className="w-4 h-4 rounded-full border-2 border-gray-600 bg-neutral-400"></div>
                                     <div className="w-fit h-fit flex justify-center items-center gap-2">
-                                        <img src={card} alt="" className="w-6 h-6" />
+                                        <span className="text-neutral-800 text-2xl">
+                                            <CiCreditCard1 />
+                                        </span>
                                         <h1 className="text-lg font-roboto text-neutral-700 text-left cursor-default">Card</h1>
                                     </div>
                                 </div>
@@ -211,7 +215,9 @@ const CheckoutPage = () => {
                             <div onClick={() => { paymentMethod !== "card" && setPaymentMethod("card") }} className="w-fit h-fit flex justify-between items-center gap-2 cursor-pointer border-[1.5px] rounded-md px-3 py-2 hover:border-neutral-600">
                                 <div className="w-4 h-4 rounded-full border-2 border-gray-600"></div>
                                 <div className="w-fit h-fit flex justify-center items-center gap-2">
-                                    <img src={card} alt="" className="w-6 h-6" />
+                                    <span className="text-neutral-800 text-2xl">
+                                        <CiCreditCard1 />
+                                    </span>
                                     <h1 className="text-lg font-roboto text-neutral-700 text-left">Card</h1>
                                 </div>
                             </div>
@@ -228,7 +234,9 @@ const CheckoutPage = () => {
                                     selectedDiscount?.uuid === discount.uuid ? (
                                         <div key={discount.uuid} className="w-full h-fit border-[1.5px] border-neutral-500 rounded-l-md flex justify-between items-center cursor-pointer scale-[101%]">
                                             <div className="h-full w-fit ml-2 flex justify-center items-center">
-                                                <img src={discount_svg} alt="" className="w-5 h-5" />
+                                                <span className="text-2xl text-neutral-600">
+                                                    <CiDiscount1 />            
+                                                </span>
                                             </div>
                                             <div className="h-full flex-1 p-2 flex flex-col justify-start items-start">
                                                 <h1 className="font-poppins font-semibold text-lg text-neutral-600">{getDiscountLabel(discount)}</h1>
@@ -245,7 +253,9 @@ const CheckoutPage = () => {
                                     ) : (
                                         <div key={discount.uuid} onClick={() => {setSelectedDiscount(discount)}} className="w-full h-fit border-[1.5px] border-neutral-300 rounded-l-md flex justify-between items-center cursor-pointer transition duration-150 ease-out hover:border-neutral-500 hover:scale-[101%]">
                                             <div className="h-full w-fit ml-2 flex justify-center items-center">
-                                                    <img src={discount_svg} alt="" className="w-5 h-5" />
+                                                <span className="text-2xl text-neutral-600">
+                                                    <CiDiscount1 />
+                                                </span>
                                             </div>
                                             <div className="h-full flex-1 p-2 flex flex-col justify-start items-start">
                                                 <h1 className="font-poppins font-semibold text-lg text-neutral-600">{getDiscountLabel(discount)}</h1>

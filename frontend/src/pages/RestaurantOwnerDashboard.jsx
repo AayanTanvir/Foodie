@@ -3,8 +3,9 @@ import AuthContext from '../context/AuthContext';
 import axiosClient from '../utils/axiosClient';
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../context/GlobalContext';
-import edit from '../assets/edit.svg';
-import delete_svg from '../assets/delete.svg';
+import { MdEdit } from "react-icons/md";
+import { MdDeleteOutline } from "react-icons/md";
+import { IoCreateOutline } from "react-icons/io5";
 
 const RestaurantOwnerDashboard = () => {
 
@@ -67,7 +68,7 @@ const RestaurantOwnerDashboard = () => {
                         ) : (
                             <>
                                 {ownedRestaurants?.map(restaurant => (
-                                    <div key={restaurant.uuid} className='group w-full h-36 border-[1px] border-neutral-400 rounded flex flex-col justify-start items-center transition duration-150 ease-out relative'>
+                                    <div key={restaurant.uuid} className='group w-full h-36 border-[1px] border-neutral-400 rounded flex flex-col justify-start items-center cursor-pointer transition duration-150 ease-out relative'>
                                         <div className='w-full h-[60%] flex justify-center items-center overflow-hidden'>
                                             <img src={restaurant.image} alt="" className='w-full object-cover' />
                                         </div>
@@ -78,15 +79,22 @@ const RestaurantOwnerDashboard = () => {
                                         </div>
                                         <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <button className="bg-white w-8 h-8 rounded-full flex justify-center items-center hover:bg-neutral-100">
-                                                <img src={edit} alt="Edit" className='w-5' />
+                                                <span className='text-neutral-800 text-lg'>
+                                                    <MdEdit />
+                                                </span>
                                             </button>
                                             <button className="bg-white w-8 h-8 rounded-full flex justify-center items-center hover:bg-neutral-100">
-                                                <img src={delete_svg} alt="Edit" className='w-5' />
+                                                <span className='text-rose-600 text-lg'>
+                                                    <MdDeleteOutline />
+                                                </span>
                                             </button>
                                         </div>
                                     </div>
                                 ))}
-                                <div onClick={() => {  }} className='w-full h-36 border-2 border-emerald-500 hover:bg-green-100 rounded flex justify-center items-center cursor-pointer'>
+                                <div onClick={() => {  }} className='w-full h-36 border-2 border-emerald-500 hover:bg-green-100 rounded flex justify-center items-center cursor-pointer gap-2'>
+                                    <span className='text-emerald-700 text-4xl'>
+                                        <IoCreateOutline />
+                                    </span>
                                     <h1 className='font-poppins text-emerald-700 text-3xl'>Create</h1>
                                 </div>
                             </>

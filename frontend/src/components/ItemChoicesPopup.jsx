@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef, useState, useMemo } from 'react'
 import { CartContext } from '../context/CartContext'
 import { RestaurantContext } from '../context/RestaurantContext';
-import close from '../assets/close.svg';
-import remove from '../assets/remove.svg';
-import add from '../assets/add.svg';
+import { IoMdClose } from "react-icons/io";
+import { FiMinus } from "react-icons/fi";
+import { FiPlus } from "react-icons/fi";
 import { objArrayIncludes } from '../utils/Utils';
 
 
@@ -102,7 +102,9 @@ const ItemChoicesPopup = ({ item }) => {
                     <>
                         <div className='w-full h-[2.5rem] px-4 flex justify-between items-center mb-4'>
                             <h1 className='text-left font-hedwig text-xl cursor-default text-neutral-800'>Modifications</h1>
-                            <img src={close} alt="Close" className='cursor-pointer' onClick={() => { activateChoicesPopup(null, false) }}/>
+                            <span onClick={() => { activateChoicesPopup(null, false) }} className='text-neutral-800 cursor-pointer text-xl'>
+                                <IoMdClose />
+                            </span>
                         </div>
                         <div className='w-full h-fit flex flex-col justify-start items-center gap-5 mb-5'>
                             {itemModifiers?.map((modifier) => (
@@ -144,7 +146,7 @@ const ItemChoicesPopup = ({ item }) => {
                     </>
                 ) : (
                     <div className='w-full h-[2.5rem] flex justify-end items-center px-2'>
-                        <img src={close} alt="Close" className='cursor-pointer' onClick={() => { activateChoicesPopup(null, false) }} />
+                        <img src={IoMdClose} alt="Close" className='cursor-pointer' onClick={() => { activateChoicesPopup(null, false) }} />
                     </div>
                 )}
                 <div className='w-full h-[2.5rem] px-4'>
@@ -187,17 +189,23 @@ const ItemChoicesPopup = ({ item }) => {
                     <h1 className='text-left font-hedwig text-xl cursor-default text-neutral-800'>Quantity</h1>
                     <div className='flex justify-center items-center gap-2'>
                         {itemQuantity === 1 ? (
-                            <button className='w-fit h-fit rounded-2xl border-2 border-gray-300 flex justify-center items-center cursor-not-allowed bg-neutral-200'>
-                                <img src={remove} alt="-" className='w-full h-full' />
+                            <button className='w-8 h-8 rounded-2xl border-2 border-gray-300 flex justify-center items-center cursor-not-allowed bg-neutral-200'>
+                                <span className='text-neutral-400 text-xl'>
+                                    <FiMinus />
+                                </span>
                             </button>
                         ) : (
-                            <button onClick={() => {setItemQuantity(itemQuantity - 1)}} className='w-fit h-fit rounded-2xl border-2 border-gray-300 flex justify-center items-center hover:bg-gray-100'>
-                                <img src={remove} alt="-" className='w-full h-full' />
+                            <button onClick={() => { setItemQuantity(itemQuantity - 1) }} className='w-8 h-8 rounded-2xl border-2 border-gray-300 flex justify-center items-center hover:bg-gray-100'>
+                                <span className='text-neutral-500 text-xl'>
+                                    <FiMinus />
+                                </span>
                             </button>
                         )}
                         <p className='text-center cursor-default text-lg text-neutral-800 font-hedwig'>{itemQuantity}</p>
-                        <button onClick={() => {setItemQuantity(itemQuantity + 1)}} className='w-fit h-fit rounded-2xl border-2 border-gray-300 flex justify-center items-center hover:bg-gray-100'>
-                            <img src={add} alt="+" className='w-full h-full' />
+                        <button onClick={() => {setItemQuantity(itemQuantity + 1)}} className='w-8 h-8 rounded-2xl border-2 border-gray-300 flex justify-center items-center hover:bg-gray-100'>
+                            <span className='text-neutral-500 text-lg'>
+                                <FiPlus />
+                            </span>
                         </button>
                     </div>
                 </div>

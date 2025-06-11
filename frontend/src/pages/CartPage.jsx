@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { CartContext } from '../context/CartContext'
-import add from '../assets/add.svg';
-import remove from '../assets/remove.svg';
-import close from '../assets/close.svg';
+import { FiMinus } from "react-icons/fi";
+import { FiPlus } from "react-icons/fi";
+import { IoMdClose } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 
 
@@ -29,7 +29,9 @@ const CartPage = () => {
             <div className='absolute top-0 left-0 w-full h-screen flex items-center justify-center bg-black/50 z-40'>
                 <div className='w-[50rem] h-[30rem] z-10 p-4 flex flex-col justify-start items-start gap-2 rounded bg-neutral-100 border-2 border-neutral-300 relative overflow-y-auto'>
                     <button onClick={() => {setShowExtrasCard(false); setExtrasCard(null);}} className='absolute top-4 right-4'>
-                        <img src={close} alt="X" />
+                        <span className='text-neutral-800 cursor-pointer text-xl'>
+                            <IoMdClose />
+                        </span>
                     </button>
                     <div className='w-full h-fit flex justify-start items-start gap-2'>
                         {(Object.keys(extras.modifiers).length === 0) ? null : (
@@ -107,7 +109,9 @@ const CartPage = () => {
                                                                 )
                                                             )}
                                                             <button onClick={() => {doCartItemAction(item, "removeItem")}}>
-                                                                <img src={close} alt="X" />
+                                                                <span className='text-neutral-800 cursor-pointer text-xl'>
+                                                                    <IoMdClose />
+                                                                </span>
                                                             </button>
                                                         </td>
                                                         <td className='w-40 h-40 flex justify-center items-center my-4'>
@@ -118,12 +122,24 @@ const CartPage = () => {
                                                         <td className='font-hedwig font-normal text-neutral-700 cursor-default text-center'>Rs. {item.price}</td>
                                                         <td className='font-hedwig font-normal text-center cursor-default'>
                                                             <div className='w-fit h-fit inline-flex justify-start items-center gap-2'>
-                                                                <button onClick={() => {doCartItemAction(item, "addQuantity")}} className='w-fit h-fit rounded-2xl border-2 border-gray-300 flex justify-center items-center hover:bg-gray-100'>
-                                                                    <img src={add} alt="+" className='w-full h-full' />
-                                                                </button>
+                                                                {item.quantity === 1 ? (
+                                                                    <button className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center cursor-not-allowed bg-neutral-200'>
+                                                                        <span className='text-neutral-400 text-xl'>
+                                                                            <FiMinus />
+                                                                        </span>
+                                                                    </button>
+                                                                ) : (
+                                                                    <button onClick={() => { doCartItemAction(item, "subtractQuantity") }} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center hover:bg-gray-100'>
+                                                                        <span className='text-neutral-500 text-xl'>
+                                                                            <FiMinus />
+                                                                        </span>
+                                                                    </button>
+                                                                )}
                                                                 <p className='text-center'>{item.quantity}</p>
-                                                                <button onClick={() => {doCartItemAction(item, "subtractQuantity")}} className='w-fit h-fit rounded-2xl border-2 border-gray-300 flex justify-center items-center hover:bg-gray-100'>
-                                                                    <img src={remove} alt="-" className='w-full h-full' />
+                                                                <button onClick={() => { doCartItemAction(item, "addQuantity") }} className='w-6 h-6 rounded-2xl border-2 border-gray-300 flex justify-center items-center hover:bg-gray-100'>
+                                                                    <span className='text-neutral-500 text-lg'>
+                                                                        <FiPlus />
+                                                                    </span>
                                                                 </button>
                                                             </div>
                                                         </td>

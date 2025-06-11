@@ -2,10 +2,10 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import axiosClient from '../utils/axiosClient';
 import { formatDate } from '../utils/Utils';
-import check from '../assets/check.svg';
-import close from '../assets/white_close.svg';
 import AuthContext from '../context/AuthContext';
 import { CapitalizeString } from '../utils/Utils';
+import { IoMdClose } from 'react-icons/io';
+import { FaCheckCircle } from 'react-icons/fa';
 
 const ProfilePage = () => {
 
@@ -49,16 +49,16 @@ const ProfilePage = () => {
                     <div className='w-fit h-full flex justify-center items-center gap-2'>
                         {userInfo?.is_email_verified ? (
                             <>
-                                <div className='w-5 h-5 bg-lime-500 rounded-full flex justify-center items-center'>
-                                    <img src={check} alt="" className='w-5' />
-                                </div>
+                                <span className='text-lime-500 text-2xl'>
+                                    <FaCheckCircle />
+                                </span>
                                 <h1 className='font-poppins text-neutral-800 text-lg cursor-default'>Verified</h1>
                             </>
                         ) : (
                             <>
-                                <div className='w-5 h-5 bg-rose-500 rounded-full flex justify-center items-center'>
-                                    <img src={close} alt="" className='w-5' />
-                                </div>
+                                <span className='text-rose-500 cursor-pointer text-xl'>
+                                    <IoMdClose />
+                                </span>
                                 <h1 className='font-poppins text-neutral-800 text-lg cursor-default'>Unverified</h1>
                             </>
                         )}

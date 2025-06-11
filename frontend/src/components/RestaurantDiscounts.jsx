@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { RestaurantContext } from '../context/RestaurantContext';
-import discount_svg from '../assets/discount.svg';
+import { CiDiscount1 } from "react-icons/ci";
 
 
 const RestaurantDiscounts = ({ restaurant }) => {
@@ -54,7 +54,9 @@ const RestaurantDiscounts = ({ restaurant }) => {
                 {discounts.map((discount) => (
                     <div key={discount.uuid} className='w-full h-fit border-[1px] border-neutral-300 rounded-l-md flex justify-between items-center'>
                         <div className='h-full w-fit ml-2 flex justify-center items-center'>
-                            <img src={discount_svg} alt='' className='w-5 h-5' />
+                            <span className='text-2xl text-neutral-700'>
+                                <CiDiscount1 />
+                            </span>
                         </div>
                         <div className='h-full flex-1 p-2 flex flex-col justify-start items-start'>
                             {discountInfo(discount)}

@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
-import search from '../assets/search.svg';
-import arrow_right from '../assets/arrow_right.svg';
-import arrow_left from '../assets/arrow_left.svg';
-import add from '../assets/add.svg';
-import close from '../assets/close.svg';
+import { IoIosSearch } from "react-icons/io";
+import { IoIosArrowDropright } from "react-icons/io";
+import { IoIosArrowDropleft } from "react-icons/io";
+import { FiPlus } from "react-icons/fi";
+import { IoMdClose } from "react-icons/io";
 import { CartContext } from '../context/CartContext';
 import { RestaurantContext } from '../context/RestaurantContext';
 
@@ -72,16 +72,22 @@ const RestaurantMenu = ({ restaurant }) => {
             <div className='sticky z-10 top-12 w-full h-12 border-b-2 border-gray-200 bg-white flex justify-start items-center flex-row'>
                 <form method='get' action="" onSubmit={(e) => {e.preventDefault()}} className='relative w-[30%]'>
                     <div className='w-[80%] h-8 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2'>
-                        <img src={search} alt="" className='absolute top-[20%] left-[4%]'/>
+                        <span className='text-neutral-700 text-lg absolute top-[20%] left-[3%]'>
+                            <IoIosSearch />
+                        </span>
                         <button type='button' className={`absolute top-[20%] right-[4%] ${!isSearching ? "hidden" : ""}`} onClick={(event) => {setIsSearching(false); setSearchedItems([]);}}>
-                            <img src={close} alt="X"/>
+                            <span className='text-neutral-700 text-lg'>
+                                <IoMdClose />
+                            </span>
                         </button>
                         <input onChange={handleSearching} type="text" name='search' placeholder='Search items' className='w-full h-full border-2 border-gray-300 rounded-2xl pl-8 focus:shadow-lg outline-gray-400'/>
                     </div>
                 </form>
                 {isOverflowing && ( 
                     <button className='border-none w-fit h-fit cursor-pointer' onClick={() => handleScroll('left')}>
-                        <img src={arrow_left} alt="" className='rounded-2xl w-8 h-8 cursor-pointer hover:bg-gray-100'/>
+                        <span className='text-2xl cursor-pointer text-neutral-700 hover:text-neutral-800'>
+                            <IoIosArrowDropleft />
+                        </span>
                     </button>
                 )}
                 <div ref={scrollRef} className='flex-1 w-full h-full flex flex-row justify-start items-center overflow-x-auto whitespace-nowrap scrollbar-hide'>
@@ -101,7 +107,9 @@ const RestaurantMenu = ({ restaurant }) => {
                 </div>
                 {isOverflowing && ( 
                     <button className='w-fit h-fit cursor-pointer ml-1' onClick={() => handleScroll('right')}>
-                        <img src={arrow_right} alt="" className='rounded-2xl w-8 h-8 cursor-pointer hover:bg-gray-100'/>
+                        <span className='text-2xl cursor-pointer text-neutral-700 hover:text-neutral-800'>
+                            <IoIosArrowDropright />
+                        </span>
                     </button>
                 )}
             </div>
@@ -124,7 +132,9 @@ const RestaurantMenu = ({ restaurant }) => {
                                                     <h1 className='text-lg font-roboto text-gray-600 cursor-default'>Added to cart</h1>
                                                 ) : (
                                                     <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-neutral-300 flex justify-center items-center mt-2 hover:border-neutral-400'>
-                                                        <img src={add} alt="add" className='w-full h-full' />
+                                                        <span className='text-lg text-neutral-500'>
+                                                            <FiPlus />
+                                                        </span>
                                                     </button>
                                                 )}
                                             </>
@@ -165,7 +175,9 @@ const RestaurantMenu = ({ restaurant }) => {
                                                         <h1 className='text-lg font-roboto text-gray-600 cursor-default'>Added to cart</h1>
                                                     ) : (
                                                         <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-neutral-300 flex justify-center items-center mt-2 hover:border-neutral-400'>
-                                                            <img src={add} alt="add" className='w-full h-full' />
+                                                            <span className='text-lg text-neutral-500'>
+                                                                <FiPlus />
+                                                            </span>
                                                         </button>
                                                     )}
                                                 </>
@@ -207,7 +219,9 @@ const RestaurantMenu = ({ restaurant }) => {
                                                             <h1 className='text-lg font-roboto text-gray-600 cursor-default'>Added to cart</h1>
                                                         ) : (
                                                             <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-neutral-300 flex justify-center items-center mt-2 hover:border-neutral-400'>
-                                                                <img src={add} alt="add" className='w-full h-full' />
+                                                                <span className='text-lg text-neutral-500'>
+                                                                    <FiPlus />
+                                                                </span>
                                                             </button>
                                                         )}
                                                     </>
@@ -243,8 +257,10 @@ const RestaurantMenu = ({ restaurant }) => {
                                                         {isInCart(item) ? (
                                                             <h1 className='text-lg font-roboto text-gray-600'>Added to cart</h1>
                                                         ) : (
-                                                            <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-[1px] border-neutral-300 flex justify-center items-center mt-2 hover:border-neutral-500'>
-                                                                <img src={add} alt="add" className='w-full h-full' />
+                                                            <button onClick={() => handleAdd(item)} className='w-6 h-6 rounded-2xl border-2 border-neutral-300 flex justify-center items-center mt-2 hover:border-neutral-500'>
+                                                                <span className='text-lg text-neutral-500'>
+                                                                    <FiPlus />
+                                                                </span>
                                                             </button>
                                                         )}
                                                     </>
