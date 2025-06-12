@@ -13,15 +13,14 @@ const Navbar = () => {
 
     let { user, logoutUser } = useContext(AuthContext);
     let { isCartEmpty, cartItems } = useContext(CartContext);
-    const cartCount = cartItems.length
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const navigate = useNavigate();
 
     return (
         <>
-            <div className='w-full h-12 bg-neutral-800 flex justify-between items-center fixed top-0 left-0 px-8 text-neutral-100 z-50'>
+            <div className='w-full h-12 border-b-[1px] border-neutral-800 bg-white flex justify-between items-center fixed top-0 left-0 px-8 text-neutral-100 z-50'>
                 {user ? (
-                    <NavLink to='/' className='font-poppins font-extrabold tracking-wider h-full w-fit transition flex justify-center items-center px-3 cursor-pointer'>Food<span className='text-neutral-400'>ie</span></NavLink>
+                    <NavLink to='/' className='font-poppins text-xl font-extrabold tracking-tight h-full w-fit transition flex justify-center items-center px-3 cursor-pointer text-neutral-800'>Food<span className='text-neutral-500'>ie</span></NavLink>
                 ) : (
                     <a className='font-poppins font-extrabold tracking-wider h-full w-fit transition flex justify-center items-center px-3 cursor-default'>Food<span className='text-neutral-400'>ie</span></a>
                 )}
@@ -29,18 +28,18 @@ const Navbar = () => {
                     {user ? (
                         <>
                             {isCartEmpty ? (
-                                <a className='relative w-fit h-full px-3 bg-neutral-800 flex justify-center items-center transition cursor-not-allowed'>
-                                    <span className='text-neutral-600 text-2xl'><PiShoppingCartSimpleThin /></span>
+                                <a className='relative w-fit h-full px-3 flex justify-center items-center transition cursor-not-allowed'>
+                                    <span className='text-neutral-300 text-2xl'><PiShoppingCartSimpleThin /></span>
                                 </a>
                             ) : (
                                 <NavLink to="/cart" className={({ isActive }) =>
-                                        `relative w-fit h-full px-3 hover:bg-neutral-700
+                                        `relative w-fit h-full px-3
                                         flex justify-center items-center transition
-                                        ${isActive && 'bg-neutral-700'}`}>
+                                        ${isActive && 'bg-neutral-300'}`}>
 
-                                        <span className='text-neutral-100 text-2xl text-center'><PiShoppingCartSimpleThin /></span>
+                                        <span className='text-neutral-800 text-2xl text-center'><PiShoppingCartSimpleThin /></span>
                                     {!isCartEmpty && (
-                                        <div className="w-3 h-3 rounded-full bg-neutral-100 absolute
+                                        <div className="w-3 h-3 rounded-full bg-white border-[1px] border-neutral-800 absolute
                                             top-[20%] right-[15%] flex justify-center items-center">
                                             <div className='w-[7px] h-1.5 rounded-full bg-rose-500'></div>
                                         </div>
@@ -48,20 +47,20 @@ const Navbar = () => {
                                 </NavLink>
                             )}
                             {user.groups.includes("restaurant owner") && (
-                                <NavLink to="/restaurant-owner/dashboard" className={({ isActive }) => `h-full w-fit flex justify-center items-center px-3 transition hover:bg-neutral-700 ${isActive && 'bg-neutral-700'} cursor-pointer`}>
-                                    <span className='text-2xl text-neutral-100'><CiShop /></span>
+                                <NavLink to="/restaurant-owner/dashboard" className={({ isActive }) => `h-full w-fit flex justify-center items-center px-3 transition ${isActive && 'bg-neutral-300'} cursor-pointer`}>
+                                    <span className='text-2xl text-neutral-800'><CiShop /></span>
                                 </NavLink>
                             )}
-                            <a onMouseEnter={() => { setShowProfileDropdown(true) }} className={`h-full w-fit transition ${showProfileDropdown && 'bg-neutral-700'} flex justify-center items-center px-3 cursor-pointer`}>
-                                <span className='text-neutral-100 text-xl'>
+                            <a onMouseEnter={() => { setShowProfileDropdown(true) }} className={`h-full w-fit transition ${showProfileDropdown && 'bg-neutral-300'} flex justify-center items-center px-3 cursor-pointer`}>
+                                <span className='text-neutral-800 text-xl'>
                                     <IoIosMenu />
                                 </span>
                             </a>
                         </>
                     ) : (
                         <>
-                            <NavLink className={({ isActive }) => `font-poppins h-full w-fit transition hover:bg-neutral-700 ${isActive && 'bg-neutral-700'} flex justify-center items-center px-3 cursor-pointer`} to='/login'>Login</NavLink>
-                            <NavLink className={({ isActive }) => `font-poppins h-full w-fit transition hover:bg-neutral-700 ${isActive && 'bg-neutral-700'} flex justify-center items-center px-3 cursor-pointer`} to='/signup'>Signup</NavLink>
+                            <NavLink className={({ isActive }) => `font-poppins h-full w-fit transition ${isActive && 'bg-neutral-300'} flex justify-center items-center px-3 cursor-pointer`} to='/login'>Login</NavLink>
+                            <NavLink className={({ isActive }) => `font-poppins h-full w-fit transition ${isActive && 'bg-neutral-300'} flex justify-center items-center px-3 cursor-pointer`} to='/signup'>Signup</NavLink>
                         </>
                     )}
                 </div>

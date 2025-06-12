@@ -98,7 +98,7 @@ const RestaurantOwnerDashboard = () => {
                                     <h1 className='font-poppins text-emerald-700 text-3xl'>Create</h1>
                                 </div>
                             </>
-                        )}                    
+                        )}
                     </div>
                 </div>
             </div>
