@@ -39,7 +39,7 @@ const RestaurantDiscounts = ({ restaurant }) => {
         return (
             <>
                 <h1 className='font-poppins font-semibold text-lg text-neutral-600 cursor-default'>{discountLabel}</h1>
-                <p className='text-sm text-neutral-700 text-nowrap cursor-default'>Valid till <span className='tracking-wider cursor-default font-hedwig'>{validTill}</span></p>
+                <p className='text-sm font-roboto text-neutral-700 text-nowrap cursor-default'>Valid till <span className='tracking-wider cursor-default font-hedwig'>{validTill}</span></p>
                 <p className='text-sm font-roboto text-neutral-700 text-nowrap cursor-default'>{discountInfo}</p>
             </>
         )

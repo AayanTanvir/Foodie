@@ -1,14 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Hedvig+Letters+Sans&family=Inter:opsz,wght@14..32,100..900&family=Noto+Serif:wght@100..900&family=Open+Sans:wght@300..800&family=Poppins:wght@300;400;500;600;700;800;900&family=Roboto:wght@100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 
 html, body {
-  margin: 0;
-  padding: 0;
-  overflow: auto;
-  overflow-y: scroll;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    overflow-y: scroll;
+    box-sizing: border-box;
 }
 
 ::-webkit-scrollbar {

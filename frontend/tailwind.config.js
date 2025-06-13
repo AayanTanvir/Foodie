@@ -9,9 +9,10 @@ export default {
       fontFamily: {
         poppins: ['Poppins', 'sans-serif'],
         roboto: ['Roboto', 'sans-serif'],
-        inter: ['Inter', 'sans-serif'],
+        opensans: ['Open Sans', 'sans-serif'],
+        inter: ['Inter', 'sans-serif',],
+        hedwig: ['Hedvig Letters Sans', 'sans-serif'],
         notoserif: ['Noto Serif', 'serif'],
-        hedwig: ['Hedwig Letters Sans', 'sans-serif'],
       }
     },
   },
