@@ -26,10 +26,11 @@ import RestaurantOwnerRoutes from '../utils/RestaurantOwnerRoutes';
 import RestaurantOwnerDashboard from '../pages/RestaurantOwnerDashboard';
 import AdminRoutes from '../utils/AdminRoutes';
 import AdminDashboard from '../pages/AdminDashboard';
+import Sidebar from '../components/Sidebar';
 
 const AppContent = () => {
     let { showOTPForm } = useContext(AuthContext);
-    let { messageMode, message } = useContext(GlobalContext);
+    let { messageMode, message, showSidebar } = useContext(GlobalContext);
     let { showChoicesPopup, choicesItem } = useContext(CartContext);
     let { showReviewsPopup, reviewsPopupMode } = useContext(RestaurantContext);
 
@@ -42,6 +43,7 @@ const AppContent = () => {
             { showOTPForm && <OTPForm />}
             { showChoicesPopup && <ItemChoicesPopup item={choicesItem}/> }
             { showReviewsPopup && <ReviewsPopup mode={reviewsPopupMode}/> }
+            { showSidebar && <Sidebar /> }
 
             <Routes>
                 <Route element={ <ProtectedRoutes/> }>

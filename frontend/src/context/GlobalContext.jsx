@@ -5,6 +5,7 @@ export const GlobalContext = createContext()
 export const GlobalContextProvider = ({ children }) => {
     const [message, setMessage] = useState("");
     const [messageMode, setMessageMode] = useState("success");
+    const [showSidebar, setShowSidebar] = useState(false);
 
     const setMessageAndMode = (message="", mode="") => {
         setMessageMode(mode);
@@ -19,8 +20,8 @@ export const GlobalContextProvider = ({ children }) => {
 
     let context = {
         message, 
-        messageMode,
-        setMessageAndMode,
+        messageMode, setMessageAndMode,
+        showSidebar, setShowSidebar,
     }
 
     return (
