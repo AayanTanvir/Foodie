@@ -5,8 +5,10 @@ import { NavLink } from 'react-router-dom';
 import { IoIosLogOut } from "react-icons/io";
 import { IoIosList } from "react-icons/io";
 import { RxPerson } from "react-icons/rx";
-import { CiShop } from 'react-icons/ci';
+import { CiSettings, CiShop } from 'react-icons/ci';
+import { CiReceipt } from "react-icons/ci";
 import AuthContext from "../context/AuthContext";
+import { GiSettingsKnobs } from "react-icons/gi";
 
 const Sidebar = () => {
 
@@ -49,30 +51,53 @@ const Sidebar = () => {
             <div className='w-full flex-1 flex flex-col justify-start items-center '>
                 <div className='w-full flex flex-col justify-start items-start'>
                     <h1 className='text-md font-roboto font-semibold cursor-default text-neutral-400 mb-2'>PAGES</h1>
-                    <div className='w-full h-fit flex justify-start items-start gap-2 p-2 cursor-pointer transition'>
-                        <span className='text-neutral-800 text-xl'>
+                    <div className='w-full h-fit flex justify-start items-center gap-2 p-2 cursor-pointer transition'>
+                        <span className='text-neutral-800 text-2xl'>
                             <RxPerson />
                         </span>
                         <SidebarLink to={`/u/${user.uuid}`} title="Profile" />
                     </div>
-                    <div className='w-full h-fit flex justify-start items-start gap-2 p-2 cursor-pointer transition'>
-                        <span className='text-neutral-800 text-xl'>
-                            <IoIosList />
+                    <div className='w-full h-fit flex justify-start items-center gap-2 p-2 cursor-pointer transition'>
+                        <span className='text-neutral-800 text-2xl'>
+                            <CiReceipt />
                         </span>
                         <SidebarLink to={`/u/${user.uuid}/orders`} title="Your Orders" />
                     </div>
-                    <div className='w-full h-fit flex justify-start items-start gap-2 p-2 cursor-pointer transition'>
-                        <span className='text-neutral-800 text-xl'>
-                            <CiShop />
-                        </span>
-                        <SidebarLink to='/restaurant-owner/dashboard' title="Restaurant Manager"/>
-                    </div>
+                    {user.groups.includes("restaurant owner") && (
+                        <>
+                            <h1 className='text-md font-roboto font-semibold cursor-default text-neutral-400 my-2'>RESTAURANT ADMIN</h1>
+                            <div className='w-full h-fit flex justify-start items-center gap-2 p-2 cursor-pointer transition'>
+                                <span className='text-neutral-800 text-2xl'>
+                                    <GiSettingsKnobs />
+                                </span>
+                                <SidebarLink to='/restaurant-owner/dashboard' title="Dashboard"/>
+                            </div>
+                            <div className='w-full h-fit flex justify-start items-center gap-2 p-2 cursor-pointer transition'>
+                                <span className='text-neutral-800 text-2xl'>
+                                    <CiShop />
+                                </span>
+                                <SidebarLink to='/restaurant-owner/dashboard' title="Restaurants"/>
+                            </div>
+                            <div className='w-full h-fit flex justify-start items-center gap-2 p-2 cursor-pointer transition'>
+                                <span className='text-neutral-800 text-2xl'>
+                                    <IoIosList />
+                                </span>
+                                <SidebarLink to='/restaurant-owner/dashboard' title="Orders"/>
+                            </div>
+                        </>
+                    )}
                     <h1 className='text-md font-roboto font-semibold cursor-default text-neutral-400 my-2'>OTHER</h1>
-                    <div className='w-full h-fit flex justify-start items-start gap-2 p-2 cursor-pointer transition'>
-                        <span className='text-neutral-800 text-xl'>
+                    <div className='w-full h-fit flex justify-start items-center gap-2 p-2 cursor-pointer transition'>
+                        <span className='text-neutral-800 text-2xl'>
                             <IoIosLogOut />
                         </span>
                         <SidebarLink title='Logout' clickHandler={() => { closeSidebar(); logoutUser(); }} />
+                    </div>
+                    <div className='w-full h-fit flex justify-start items-center gap-2 p-2 cursor-pointer transition'>
+                        <span className='text-neutral-800 text-2xl'>
+                            <CiSettings />
+                        </span>
+                        <SidebarLink title='Settings' to='/' />
                     </div>
                 </div>
             </div>

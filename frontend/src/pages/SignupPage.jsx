@@ -15,6 +15,8 @@ const SignupPage = () => {
 
     return (
       <div className="absolute top-0 left-0 w-full h-screen flex items-center justify-center flex-col">
+        <div className='absolute -top-12 left-16 bg-neutral-800 w-0 md:w-16 h-[30rem] rotate-[40deg]' />
+        <div className='absolute -top-12 left-0 bg-neutral-800 w-0 md:w-4 h-[30rem] rotate-[40deg]' />
         <div className='w-1/4 h-fit'>
             <h1 className='mb-6 text-4xl font-notoserif text-neutral-800 font-medium text-left cursor-default'>Signup</h1>
         </div>

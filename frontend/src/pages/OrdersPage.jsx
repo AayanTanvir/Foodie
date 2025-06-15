@@ -73,8 +73,8 @@ const OrdersPage = () => {
                 </div>
             ) : !orders ? (
                     <div className='w-[80%] h-full flex flex-col justify-start items-start pt-4 overflow-y-visible'>
-                        <div className='w-full h-fit flex justify-between items-center gap-3 mb-4 border-b-2 border-neutral-300 pb-2'>
-                            <h1 className='font-notoserif text-4xl text-neutral-800'>Your Orders</h1>
+                        <div className='w-full h-fit flex justify-between items-center gap-3 mb-4 pb-2'>
+                            <h1 className='font-notoserif text-4xl text-neutral-800 cursor-default'>Your Orders</h1>
                         </div>
                         <div className='h-full w-full grid grid-cols-2 auto-rows-auto gap-4'>
                                 <div className='w-full h-full bg-neutral-100 rounded-lg p-2 '></div>
@@ -88,8 +88,8 @@ const OrdersPage = () => {
                     </div>
                 ) : (
                     <div className='w-[80%] h-full flex flex-col justify-start items-start pt-4 overflow-y-visible'>
-                        <div className='w-full h-fit flex justify-between items-center gap-3 mb-4 border-b-2 border-neutral-300 pb-2'>
-                            <h1 className='font-notoserif text-4xl text-neutral-800'>Your Orders</h1>
+                        <div className='w-full h-fit flex justify-between items-center gap-3 mb-4 pb-2'>
+                            <h1 className='font-notoserif text-4xl text-neutral-800 cursor-default'>Your Orders</h1>
                         </div>
                         <div className='h-fit w-full grid grid-cols-2 auto-rows-auto gap-4'>
                             {sortedOrders?.map((order) => (
