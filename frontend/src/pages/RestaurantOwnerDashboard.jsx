@@ -6,6 +6,8 @@ import { GlobalContext } from '../context/GlobalContext';
 import { MdEdit } from "react-icons/md";
 import { MdDeleteOutline } from "react-icons/md";
 import { IoCreateOutline } from "react-icons/io5";
+import { FaStar } from "react-icons/fa";
+import { FiPlus } from "react-icons/fi";
 
 const RestaurantOwnerDashboard = () => {
 
@@ -46,9 +48,116 @@ const RestaurantOwnerDashboard = () => {
                 <div className='w-full h-fit flex justify-start items-center gap-4 mt-2 mb-6'>
                     <h1 className='cursor-default font-notoserif text-4xl text-neutral-800 '>Dashboard</h1>
                 </div>
-                <div className='w-full h-full grid grid-rows-10 grid-cols-1 md:grid-rows-10 md:grid-cols-10'>
-                    <div className='border-[1px] border-neutral-500 md:row-start-1 md:col-start-1 md:row-end-4 md:col-end-6'>
-
+                <div className='w-full h-full flex flex-col justify-normal items-start gap-6'>
+                    <div className='w-full h-fit flex justify-between items-start'>
+                        <div className='w-[34%] h-full border-[1px] border-neutral-500 rounded py-4 px-6 flex flex-col justify-normal items-center'>
+                            <h1 className='font-opensans text-2xl text-neutral-800 cursor-default'>Revenue Earned</h1>
+                            <div className='w-full h-full flex flex-col justify-center items-start gap-2 mt-2'>
+                                <div className='w-full flex justify-between items-center gap-4'>
+                                    <h1 className='font-opensans text-xl text-neutral-800 cursor-default'>Today</h1>
+                                    <div className='flex-1 w-full border-t-[1px] border-neutral-800'/>
+                                    <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>$102</h1>
+                                </div>
+                                <div className='w-full flex justify-between items-center gap-4'>
+                                    <h1 className='font-opensans text-xl text-neutral-800 cursor-default'>Week</h1>
+                                    <div className='flex-1 w-full border-t-[1px] border-neutral-800'/>
+                                    <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>$102</h1>
+                                </div>
+                                <div className='w-full flex justify-between items-center gap-4'>
+                                    <h1 className='font-opensans text-xl text-neutral-800 cursor-default'>Month</h1>
+                                    <div className='flex-1 w-full border-t-[1px] border-neutral-800'/>
+                                    <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>$102</h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div className='w-[64%] border-[1px] border-neutral-500 py-4 rounded flex flex-col justify-normal items-center gap-5'>
+                            <h1 className='font-opensans text-2xl text-neutral-800 cursor-default'>Orders Completed</h1>
+                            <div className='w-full h-fit flex justify-around items-start'>
+                                <div className='w-fit h-fit flex flex-col justify-normal items-center'>
+                                    <div className='w-32 h-28 border-[1px] border-neutral-500 rounded mb-2 flex justify-center items-center'>
+                                        <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>102</h1>
+                                    </div>
+                                    <h1 className='font-opensans text-lg text-neutral-800 cursor-default'>Today</h1>
+                                </div>
+                                <div className='w-fit h-fit flex flex-col justify-normal items-center'>
+                                    <div className='w-32 h-28 border-[1px] border-neutral-500 rounded mb-2 flex justify-center items-center'>
+                                        <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>102</h1>
+                                    </div>
+                                    <h1 className='font-opensans text-lg text-neutral-800 cursor-default'>Week</h1>
+                                </div>
+                                <div className='w-fit h-fit flex flex-col justify-normal items-center'>
+                                    <div className='w-32 h-28 border-[1px] border-neutral-500 rounded mb-2 flex justify-center items-center'>
+                                        <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>102</h1>
+                                    </div>
+                                    <h1 className='font-opensans text-lg text-neutral-800 cursor-default'>Month</h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='w-full min-h-36 border-[1px] border-neutral-500 rounded flex flex-col justify-start items-start p-4'>
+                        <h1 className='font-opensans text-2xl text-neutral-800 cursor-default'>Recent Feedback</h1>
+                        <div className='w-full h-fit flex flex-col justify-start items-start gap-2 mt-2'>
+                            <div className='w-full min-h-16 rounded-md border-[1px] border-neutral-400 flex flex-col justify-start items-start gap-2 p-4'>
+                                <div className='w-full h-fit flex justify-between items-center'>
+                                    <div className='flex gap-2'>
+                                        <h1 className='text-lg text-neutral-700 font-poppins font-bold capitalize'>Username</h1>
+                                        <div className="flex items-center gap-1">
+                                            <span className='text-2xl text-amber-400'>
+                                                <FaStar />
+                                            </span>
+                                            <span className="text-xl text-neutral-700 mr-1 font-semibold">4</span>
+                                        </div>
+                                    </div>
+                                    <div className='w-fit h-fit flex justify-normal items-center gap-2'>
+                                        <p className='text-xs text-neutral-600'>6 June 2025</p>
+                                        <p className='text-xs text-neutral-600'>On Aayan</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p className='text-md text-neutral-700 font-poppins font-medium text-wrap whitespace-break-spaces'>Seems like you cannot be replaced</p>
+                                </div>
+                            </div>
+                            <div className='w-full min-h-16 rounded-md border-[1px] border-neutral-400 flex flex-col justify-start items-start gap-2 p-4'>
+                                <div className='w-full h-fit flex justify-between items-center'>
+                                    <div className='flex gap-2'>
+                                        <h1 className='text-lg text-neutral-700 font-poppins font-bold capitalize'>Username</h1>
+                                        <div className="flex items-center gap-1">
+                                            <span className='text-2xl text-amber-400'>
+                                                <FaStar />
+                                            </span>
+                                            <span className="text-xl text-neutral-700 mr-1 font-semibold">4</span>
+                                        </div>
+                                    </div>
+                                    <div className='w-fit h-fit flex justify-normal items-center gap-2'>
+                                        <p className='text-xs text-neutral-600'>6 June 2025</p>
+                                        <p className='text-xs text-neutral-600'>On Aayan</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p className='text-md text-neutral-700 font-poppins font-medium text-wrap whitespace-break-spaces'>Seems like you cannot be replaced</p>
+                                </div>
+                            </div>
+                            <div className='w-full min-h-16 rounded-md border-[1px] border-neutral-400 flex flex-col justify-start items-start gap-2 p-4'>
+                                <div className='w-full h-fit flex justify-between items-center'>
+                                    <div className='flex gap-2'>
+                                        <h1 className='text-lg text-neutral-700 font-poppins font-bold capitalize'>Username</h1>
+                                        <div className="flex items-center gap-1">
+                                            <span className='text-2xl text-amber-400'>
+                                                <FaStar />
+                                            </span>
+                                            <span className="text-xl text-neutral-700 mr-1 font-semibold">4</span>
+                                        </div>
+                                    </div>
+                                    <div className='w-fit h-fit flex justify-normal items-center gap-2'>
+                                        <p className='text-xs text-neutral-600'>6 June 2025</p>
+                                        <p className='text-xs text-neutral-600'>On Aayan</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p className='text-md text-neutral-700 font-poppins font-medium text-wrap whitespace-break-spaces'>Seems like you cannot be replaced</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 {/* <div className='border-[1.5px] border-neutral-400 w-full h-fit rounded-md flex flex-col justify-start items-start'>
