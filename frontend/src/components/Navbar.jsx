@@ -22,7 +22,7 @@ const Navbar = () => {
                 <div className='w-full h-12 border-b-[1px] border-neutral-800 bg-white flex justify-between items-center fixed top-0 left-0 px-8 text-neutral-100 z-50'>
                     <div className='flex justify-center items-center h-full'>
                         <a onClick={() => { setShowSidebar(true) }} className={`h-full w-fit flex justify-center items-center px-3 cursor-pointer`}>
-                            <span className='text-neutral-800 text-xl'>
+                            <span className='text-neutral-800 text-xl cursor-pointer'>
                                 <IoIosMenu />
                             </span>
                         </a>
@@ -33,8 +33,8 @@ const Navbar = () => {
                         ) : (
                             <NavLink to="/cart" className={({ isActive }) =>
                                 `relative w-fit h-full px-3
-                                            flex justify-center items-center transition
-                                            ${isActive && 'bg-neutral-300'}`}>
+                                flex justify-center items-center transition cursor-pointer
+                                ${isActive && 'bg-neutral-300'}`}>
     
                                 <span className='text-neutral-800 text-2xl text-center'><PiShoppingCartSimpleThin /></span>
                                 {!isCartEmpty && (

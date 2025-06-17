@@ -20,17 +20,17 @@ const RestaurantInfo = ({ restaurant }) => {
             </div>
             <div className="flex-1 p-6 flex flex-col justify-between">
                 <div>
-                    <p className="text-sm text-neutral-500">{restaurant.restaurant_category}</p>
+                    <p className="text-sm text-neutral-500 cursor-default">{restaurant.restaurant_category}</p>
                     <div className='flex justify-between items-center w-full h-fit mb-4'>
-                        <h1 className="text-3xl font-bold text-neutral-800 mb-2">{restaurant.name}</h1>
+                        <h1 className="text-3xl font-bold text-neutral-800 mb-2 cursor-default">{restaurant.name}</h1>
                         <div className="flex items-center mb-2">
-                            <span className='text-xl text-amber-400'>
+                            <span className='text-xl text-amber-400 cursor-default'>
                                 <FaStar />
                             </span>
-                            <span className="text-lg font-medium text-neutral-700 ml-1">{restaurant.rating}</span>
+                            <span className="text-lg font-medium text-neutral-700 ml-1 cursor-default">{restaurant.rating}</span>
                         </div>
                     </div>
-                    <div className="text-sm text-neutral-600 mb-2">
+                    <div className="text-sm text-neutral-600 mb-2 cursor-default">
                         <span className="font-semibold">Timings:</span> {formattedTimings}
                         <div><span className="font-semibold">Address:</span> {restaurant.address}</div>
                         <div><span className="font-semibold">Phone:</span> {restaurant.phone}</div>
