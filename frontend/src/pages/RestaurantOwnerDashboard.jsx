@@ -7,13 +7,16 @@ import { MdEdit } from "react-icons/md";
 import { MdDeleteOutline } from "react-icons/md";
 import { IoCreateOutline } from "react-icons/io5";
 import { FaStar } from "react-icons/fa";
-import { FiPlus } from "react-icons/fi";
-import axios from 'axios';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 
 const RestaurantOwnerDashboard = () => {
 
     // const [ownedRestaurants, setOwnedRestaurants] = useState(null);
     const [totalRevenueAndOrders, setTotalRevenueAndOrders] = useState(null);
+    const [ordersPeriod, setOrdersPeriod] = useState("today");
     const { user } = useContext(AuthContext);
     const { setMessageAndMode } = useContext(GlobalContext);
     const navigate = useNavigate();
@@ -73,35 +76,40 @@ const RestaurantOwnerDashboard = () => {
                 <div className='w-full h-full flex flex-col justify-normal items-start gap-6'>
                     <div className='w-full h-fit flex justify-between items-start'>
                         <div className='w-[34%] h-full border-[1px] border-neutral-500 rounded py-4 px-6 flex flex-col justify-normal items-center'>
-                            <h1 className='font-opensans text-2xl text-neutral-800 cursor-default'>Revenue Earned</h1>
-                            <div className='w-full h-full flex flex-col justify-center items-start gap-2 mt-2'>
-                                <div className='w-full flex justify-between items-center gap-4'>
-                                    <h1 className='font-opensans text-xl text-neutral-800 cursor-default'>Today</h1>
-                                    <div className='flex-1 w-full border-t-[1px] border-neutral-800'/>
+                            <h1 className='font-opensans text-2xl text-neutral-800 cursor-default'>Orders Completed</h1>
+                            <div className='w-full h-full flex flex-col justify-center items-center mt-2'>
+                                <div className='w-32 h-28 border-[1px] border-neutral-500 rounded mb-2 flex justify-center items-center'>
                                     {!totalRevenueAndOrders ? (
-                                        <div className='w-12 h-8 bg-emerald-200 rounded' />
+                                        <div className='w-16 h-16 bg-neutral-300 rounded' />
                                     ) : (
-                                        <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>${totalRevenueAndOrders.revenue.today}</h1>
+                                        ordersPeriod === "today" ? (
+                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{totalRevenueAndOrders.orders.today}</h1>
+                                        ) : ordersPeriod === "week" ? (
+                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{totalRevenueAndOrders.orders.week}</h1>
+                                        ) : ordersPeriod === "month" ? (
+                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{totalRevenueAndOrders.orders.month}</h1>
+                                        ) : null
                                     )}
                                 </div>
-                                <div className='w-full flex justify-between items-center gap-4'>
-                                    <h1 className='font-opensans text-xl text-neutral-800 cursor-default'>Week</h1>
-                                    <div className='flex-1 w-full border-t-[1px] border-neutral-800'/>
-                                    {!totalRevenueAndOrders ? (
-                                        <div className='w-12 h-8 bg-emerald-200 rounded' />
-                                    ) : (
-                                        <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>${totalRevenueAndOrders.revenue.week}</h1>
-                                    )}
-                                </div>
-                                <div className='w-full flex justify-between items-center gap-4'>
-                                    <h1 className='font-opensans text-xl text-neutral-800 cursor-default'>Month</h1>
-                                    <div className='flex-1 w-full border-t-[1px] border-neutral-800'/>
-                                    {!totalRevenueAndOrders ? (
-                                        <div className='w-12 h-8 bg-emerald-200 rounded' />
-                                    ) : (
-                                        <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>${totalRevenueAndOrders.revenue.month}</h1>
-                                    )}
-                                </div>
+                                <Select
+                                    value={ordersPeriod}
+                                    autoWidth
+                                    onChange={e => setOrdersPeriod(e.target.value)}
+                                    size='small'
+                                    sx={{ 
+                                        minWidth: 120,
+                                        '& .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: 'gray', // default border color
+                                        },
+                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: '#262626', // border color on focus
+                                        },
+                                    }}
+                                >
+                                    <MenuItem value="today">Today</MenuItem>
+                                    <MenuItem value="week">Week</MenuItem>
+                                    <MenuItem value="month">Month</MenuItem>
+                                </Select>
                             </div>
                         </div>
                         <div className='w-[64%] border-[1px] border-neutral-500 py-4 rounded flex flex-col justify-normal items-center gap-5'>
@@ -112,7 +120,7 @@ const RestaurantOwnerDashboard = () => {
                                         {!totalRevenueAndOrders ? (
                                             <div className='w-16 h-16 bg-neutral-300 rounded' />
                                         ) : (
-                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{totalRevenueAndOrders.orders.today}</h1>
+                                            <h1 className='font-hedwig text-4xl text-emerald-600 cursor-default'>${totalRevenueAndOrders.revenue.today}</h1>
                                         )}
                                     </div>
                                     <h1 className='font-opensans text-lg text-neutral-800 cursor-default'>Today</h1>
@@ -122,7 +130,7 @@ const RestaurantOwnerDashboard = () => {
                                         {!totalRevenueAndOrders ? (
                                             <div className='w-16 h-16 bg-neutral-300 rounded' />
                                         ) : (
-                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{totalRevenueAndOrders.orders.week}</h1>
+                                            <h1 className='font-hedwig text-4xl text-emerald-600 cursor-default'>${totalRevenueAndOrders.revenue.week}</h1>
                                         )}
                                     </div>
                                     <h1 className='font-opensans text-lg text-neutral-800 cursor-default'>Week</h1>
@@ -132,7 +140,7 @@ const RestaurantOwnerDashboard = () => {
                                         {!totalRevenueAndOrders ? (
                                             <div className='w-16 h-16 bg-neutral-300 rounded' />
                                         ) : (
-                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{totalRevenueAndOrders.orders.month}</h1>
+                                            <h1 className='font-hedwig text-4xl text-emerald-600 cursor-default'>${totalRevenueAndOrders.revenue.month}</h1>
                                         )}
                                     </div>
                                     <h1 className='font-opensans text-lg text-neutral-800 cursor-default'>Month</h1>
