@@ -426,3 +426,11 @@ class ReviewWriteSerializer(serializers.ModelSerializer):
         )
         review.items.set(menu_items)
         return review
+    
+
+class OwnerTotalRevenueSerializer(serializers.Serializer):
+    today = serializers.IntegerField(read_only=True)
+    week = serializers.IntegerField(read_only=True)
+    month = serializers.IntegerField(read_only=True)
+
+    

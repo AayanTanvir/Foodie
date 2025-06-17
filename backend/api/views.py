@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.core.cache import cache
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import Group
+from django.core.exceptions import ValidationError
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -202,8 +204,8 @@ class UserOrdersAPIView(generics.ListAPIView):
             user = CustomUser.objects.get(uuid=user_uuid)
             return Order.objects.filter(user=user)
         except CustomUser.DoesNotExist:
-            raise ValidationError("No user found with the given UUID")
-    
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
@@ -225,8 +227,8 @@ class RestaurantReviewsAPIView(generics.ListAPIView):
             restaurant = Restaurant.objects.get(uuid=restaurant_uuid)
             return Review.objects.filter(restaurant=restaurant)
         except Restaurant.DoesNotExist:
-            raise ValidationError("No restaurant found with the given UUID")
-        
+            return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
+
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
@@ -247,9 +249,39 @@ class UserRestaurantsAPIView(generics.ListAPIView):
             user = CustomUser.objects.get(uuid=user_uuid)
             return Restaurant.objects.filter(owner=user)
         except CustomUser.DoesNotExist:
-            raise ValidationError("User with the given UUID does not exist")
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
+class OwnerTotalRevenueAPIView(generics.GenericAPIView):
+    serializer_class = OwnerTotalRevenueSerializer
+    permission_classes = [AllowAny]
+    
+    def get(self, request, uuid):
+        try:
+            user = CustomUser.objects.get(uuid=uuid)
+            
+            if not user.groups.filter(name='restaurant owner').exists():
+                return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
+            
+            today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            week_start = today_start - timezone.timedelta(days=today_start.weekday())
+            month_start = today_start.replace(day=1)
+            
+            restaurants = Restaurant.objects.filter(owner=user)
+            orders = Order.objects.filter(restaurant__in=restaurants, order_status=Order.OrderStatus.DELIVERED)
+            revenue = {
+                'today': round(sum(order.discounted_price for order in orders.filter(created_at__gte=today_start))),
+                'week': round(sum(order.discounted_price for order in orders.filter(created_at__gte=week_start))),
+                'month': round(sum(order.discounted_price for order in orders.filter(created_at__gte=month_start)))
+            }
+            
+            serializer = self.get_serializer({'today': revenue['today'], 'week': revenue['week'], 'month': revenue['month']})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)

@@ -8,10 +8,12 @@ import { MdDeleteOutline } from "react-icons/md";
 import { IoCreateOutline } from "react-icons/io5";
 import { FaStar } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
+import axios from 'axios';
 
 const RestaurantOwnerDashboard = () => {
 
     // const [ownedRestaurants, setOwnedRestaurants] = useState(null);
+    const [revenueEarned, setRevenueEarned] = useState(null);
     const { user } = useContext(AuthContext);
     const { setMessageAndMode } = useContext(GlobalContext);
     const navigate = useNavigate();
@@ -36,11 +38,31 @@ const RestaurantOwnerDashboard = () => {
     //     }
     // }
 
-    // useEffect(() => {
-    //     if (user && user.uuid) {
-    //         fetchOwnedRestaurants();
-    //     }
-    // }, [user])
+    const fetchRevenueEarned = async () => {
+        try {
+            const res = await axiosClient.get(`/owners/${user.uuid}/stats/total_revenue/`)
+
+            if (res.status === 200) {
+                setRevenueEarned(res.data);
+            } else {
+                setMessageAndMode("Unexpected response", "failure");
+                console.error("unexpected response status: ", res.status);
+                navigate("/");
+            }
+
+        } catch (err) {
+            console.error("Error while fetching revenue earned");
+            console.error(err);
+            setMessageAndMode("An error occurred while fetching revenue", "failure");
+            navigate('/');
+        }
+    }
+
+    useEffect(() => {
+        if (user && user.uuid) {
+            fetchRevenueEarned();
+        }
+    }, [user])
 
     return (
         <div className='absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center mt-12'>
@@ -56,17 +78,29 @@ const RestaurantOwnerDashboard = () => {
                                 <div className='w-full flex justify-between items-center gap-4'>
                                     <h1 className='font-opensans text-xl text-neutral-800 cursor-default'>Today</h1>
                                     <div className='flex-1 w-full border-t-[1px] border-neutral-800'/>
-                                    <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>$102</h1>
+                                    { !revenueEarned ? (
+                                        <div className='w-6 h-4 bg-emerald-200 rounded' />
+                                    ) : (
+                                        <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>${revenueEarned.today}</h1>
+                                    )}
                                 </div>
                                 <div className='w-full flex justify-between items-center gap-4'>
                                     <h1 className='font-opensans text-xl text-neutral-800 cursor-default'>Week</h1>
                                     <div className='flex-1 w-full border-t-[1px] border-neutral-800'/>
-                                    <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>$102</h1>
+                                    {!revenueEarned ? (
+                                        <div className='w-12 h-8 bg-emerald-200 rounded' />
+                                    ) : (
+                                        <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>${revenueEarned.week}</h1>
+                                    )}
                                 </div>
                                 <div className='w-full flex justify-between items-center gap-4'>
                                     <h1 className='font-opensans text-xl text-neutral-800 cursor-default'>Month</h1>
                                     <div className='flex-1 w-full border-t-[1px] border-neutral-800'/>
-                                    <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>$102</h1>
+                                    {!revenueEarned ? (
+                                        <div className='w-6 h-4 bg-emerald-200 rounded' />
+                                    ) : (
+                                        <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>${revenueEarned.month}</h1>
+                                    )}
                                 </div>
                             </div>
                         </div>
