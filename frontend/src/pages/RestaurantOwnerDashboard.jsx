@@ -13,7 +13,7 @@ import axios from 'axios';
 const RestaurantOwnerDashboard = () => {
 
     // const [ownedRestaurants, setOwnedRestaurants] = useState(null);
-    const [revenueEarned, setRevenueEarned] = useState(null);
+    const [totalRevenueAndOrders, setTotalRevenueAndOrders] = useState(null);
     const { user } = useContext(AuthContext);
     const { setMessageAndMode } = useContext(GlobalContext);
     const navigate = useNavigate();
@@ -40,10 +40,10 @@ const RestaurantOwnerDashboard = () => {
 
     const fetchRevenueEarned = async () => {
         try {
-            const res = await axiosClient.get(`/owners/${user.uuid}/stats/total_revenue/`)
+            const res = await axiosClient.get(`/owners/${user.uuid}/stats/total_revenue_and_orders/`)
 
             if (res.status === 200) {
-                setRevenueEarned(res.data);
+                setTotalRevenueAndOrders(res.data);
             } else {
                 setMessageAndMode("Unexpected response", "failure");
                 console.error("unexpected response status: ", res.status);
@@ -78,28 +78,28 @@ const RestaurantOwnerDashboard = () => {
                                 <div className='w-full flex justify-between items-center gap-4'>
                                     <h1 className='font-opensans text-xl text-neutral-800 cursor-default'>Today</h1>
                                     <div className='flex-1 w-full border-t-[1px] border-neutral-800'/>
-                                    { !revenueEarned ? (
-                                        <div className='w-6 h-4 bg-emerald-200 rounded' />
+                                    {!totalRevenueAndOrders ? (
+                                        <div className='w-12 h-8 bg-emerald-200 rounded' />
                                     ) : (
-                                        <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>${revenueEarned.today}</h1>
+                                        <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>${totalRevenueAndOrders.revenue.today}</h1>
                                     )}
                                 </div>
                                 <div className='w-full flex justify-between items-center gap-4'>
                                     <h1 className='font-opensans text-xl text-neutral-800 cursor-default'>Week</h1>
                                     <div className='flex-1 w-full border-t-[1px] border-neutral-800'/>
-                                    {!revenueEarned ? (
+                                    {!totalRevenueAndOrders ? (
                                         <div className='w-12 h-8 bg-emerald-200 rounded' />
                                     ) : (
-                                        <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>${revenueEarned.week}</h1>
+                                        <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>${totalRevenueAndOrders.revenue.week}</h1>
                                     )}
                                 </div>
                                 <div className='w-full flex justify-between items-center gap-4'>
                                     <h1 className='font-opensans text-xl text-neutral-800 cursor-default'>Month</h1>
                                     <div className='flex-1 w-full border-t-[1px] border-neutral-800'/>
-                                    {!revenueEarned ? (
-                                        <div className='w-6 h-4 bg-emerald-200 rounded' />
+                                    {!totalRevenueAndOrders ? (
+                                        <div className='w-12 h-8 bg-emerald-200 rounded' />
                                     ) : (
-                                        <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>${revenueEarned.month}</h1>
+                                        <h1 className='font-hedwig text-2xl text-emerald-600 cursor-default'>${totalRevenueAndOrders.revenue.month}</h1>
                                     )}
                                 </div>
                             </div>
@@ -109,19 +109,31 @@ const RestaurantOwnerDashboard = () => {
                             <div className='w-full h-fit flex justify-around items-start'>
                                 <div className='w-fit h-fit flex flex-col justify-normal items-center'>
                                     <div className='w-32 h-28 border-[1px] border-neutral-500 rounded mb-2 flex justify-center items-center'>
-                                        <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>102</h1>
+                                        {!totalRevenueAndOrders ? (
+                                            <div className='w-16 h-16 bg-neutral-300 rounded' />
+                                        ) : (
+                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{totalRevenueAndOrders.orders.today}</h1>
+                                        )}
                                     </div>
                                     <h1 className='font-opensans text-lg text-neutral-800 cursor-default'>Today</h1>
                                 </div>
                                 <div className='w-fit h-fit flex flex-col justify-normal items-center'>
                                     <div className='w-32 h-28 border-[1px] border-neutral-500 rounded mb-2 flex justify-center items-center'>
-                                        <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>102</h1>
+                                        {!totalRevenueAndOrders ? (
+                                            <div className='w-16 h-16 bg-neutral-300 rounded' />
+                                        ) : (
+                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{totalRevenueAndOrders.orders.week}</h1>
+                                        )}
                                     </div>
                                     <h1 className='font-opensans text-lg text-neutral-800 cursor-default'>Week</h1>
                                 </div>
                                 <div className='w-fit h-fit flex flex-col justify-normal items-center'>
                                     <div className='w-32 h-28 border-[1px] border-neutral-500 rounded mb-2 flex justify-center items-center'>
-                                        <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>102</h1>
+                                        {!totalRevenueAndOrders ? (
+                                            <div className='w-16 h-16 bg-neutral-300 rounded' />
+                                        ) : (
+                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{totalRevenueAndOrders.orders.month}</h1>
+                                        )}
                                     </div>
                                     <h1 className='font-opensans text-lg text-neutral-800 cursor-default'>Month</h1>
                                 </div>

@@ -428,9 +428,7 @@ class ReviewWriteSerializer(serializers.ModelSerializer):
         return review
     
 
-class OwnerTotalRevenueSerializer(serializers.Serializer):
-    today = serializers.IntegerField(read_only=True)
-    week = serializers.IntegerField(read_only=True)
-    month = serializers.IntegerField(read_only=True)
+class OwnerTotalRevenueAndOrdersSerializer(serializers.Serializer):
+    revenue = serializers.DictField(child=serializers.IntegerField())
+    orders = serializers.DictField(child=serializers.IntegerField())
 
-    
