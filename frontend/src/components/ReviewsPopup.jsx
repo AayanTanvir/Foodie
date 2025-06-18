@@ -109,18 +109,18 @@ const ReviewsPopup = ({ mode }) => {
                                     <div key={review.uuid} className='w-full min-h-16 rounded-md border-[1px] border-neutral-400 flex flex-col justify-start items-start gap-2 p-4'>
                                         <div className='w-full h-fit flex justify-between items-center'>
                                             <div className='flex gap-2'>
-                                                <h1 className='text-lg text-neutral-700 font-poppins font-bold'>{CapitalizeString(review.user_name)}</h1>
+                                                <h1 className='text-lg text-neutral-700 font-poppins font-bold cursor-default'>{CapitalizeString(review.user_name)}</h1>
                                                 <div className="flex items-center gap-1">
                                                     <span className='text-xl text-amber-400'>
                                                         <FaStar />
                                                     </span>
-                                                    <span className="text-md text-neutral-700 mr-1 font-semibold">{review.rating}</span>
+                                                    <span className="text-md text-neutral-700 mr-1 font-semibold cursor-default">{review.rating}</span>
                                                 </div>
                                             </div>
-                                            <p className='text-xs text-neutral-600'>{formatDate(review.created_at)}</p>
+                                            <p className='text-xs text-neutral-600 cursor-default'>{formatDate(review.created_at)}</p>
                                         </div>
                                         <div>
-                                            <p className='text-md text-neutral-700 font-poppins font-medium text-wrap whitespace-break-spaces'>{review.body}</p>
+                                            <p className='text-md text-neutral-700 font-poppins font-medium text-wrap whitespace-break-spaces cursor-default'>{review.body}</p>
                                         </div>
                                         <div className='w-full h-fit grid auto-row-auto grid-cols-3 gap-2'>
                                             {review.items.map((item) => (
@@ -129,15 +129,15 @@ const ReviewsPopup = ({ mode }) => {
                                                         <img src={item.image} alt="" className='w-full h-full object-cover rounded-l-lg' />
                                                     </div>
                                                     <div className='h-full flex-1 flex flex-col justify-between items-start p-2 relative'>
-                                                        <h1 className='text-md text-neutral-700'>{item.name}</h1>
+                                                        <h1 className='text-md text-neutral-700 cursor-default'>{item.name}</h1>
                                                         {item.is_available ? (
                                                             <button onClick={() => { doCartItemAction(item, 'addItem') }} className='w-6 h-6 rounded-full border-2 border-neutral-300 flex justify-center items-center hover:border-neutral-500'>
-                                                                <span className='text-neutral-500 text-lg'>
+                                                                <span className='text-neutral-500 text-lg cursor-default'>
                                                                     <FiPlus />
                                                                 </span>
                                                             </button>
                                                         ) : (
-                                                            <h1 className='text-md text-rose-700 font-roboto font-semibold'>Unavailable</h1>
+                                                            <h1 className='text-md text-rose-700 font-roboto font-semibold cursor-default'>Unavailable</h1>
                                                         )}
                                                     </div>
                                                 </div>

@@ -65,15 +65,15 @@ const RestaurantOwnerDashboard = () => {
         if (user && user.uuid) {
             fetchRevenueEarned();
         }
-    }, [user])
+    }, [])
 
     return (
         <div className='absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center mt-12'>
-            <div className='w-full h-full flex flex-col justify-start items-center py-4 px-8 overflow-x-hidden'>
+            <div className='w-full h-full flex flex-col justify-start items-center py-4 px-8'>
                 <div className='w-full h-fit flex justify-start items-center gap-4 mt-2 mb-6'>
                     <h1 className='cursor-default font-notoserif text-4xl text-neutral-800 '>Dashboard</h1>
                 </div>
-                <div className='w-full h-full flex flex-col justify-normal items-start gap-6'>
+                <div className='w-full h-fit flex flex-col justify-normal items-start gap-6'>
                     <div className='w-full h-fit flex justify-between items-start'>
                         <div className='w-[34%] h-full border-[1px] border-neutral-500 rounded py-4 px-6 flex flex-col justify-normal items-center'>
                             <h1 className='font-opensans text-2xl text-neutral-800 cursor-default'>Orders Completed</h1>
@@ -113,7 +113,7 @@ const RestaurantOwnerDashboard = () => {
                             </div>
                         </div>
                         <div className='w-[64%] border-[1px] border-neutral-500 py-4 rounded flex flex-col justify-normal items-center gap-5'>
-                            <h1 className='font-opensans text-2xl text-neutral-800 cursor-default'>Orders Completed</h1>
+                            <h1 className='font-opensans text-2xl text-neutral-800 cursor-default'>Revenue Earned</h1>
                             <div className='w-full h-fit flex justify-around items-start'>
                                 <div className='w-fit h-fit flex flex-col justify-normal items-center'>
                                     <div className='w-32 h-28 border-[1px] border-neutral-500 rounded mb-2 flex justify-center items-center'>
@@ -148,71 +148,109 @@ const RestaurantOwnerDashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className='w-full min-h-36 border-[1px] border-neutral-500 rounded flex flex-col justify-start items-start p-4'>
+                    <div className='w-full h-fit border-[1px] border-neutral-500 rounded flex flex-col justify-start items-start p-4'>
+                        <h1 className='font-opensans text-2xl text-neutral-800 cursor-default'>Recent Orders</h1>
+                        <div className='w-full h-fit grid auto-rows-auto grid-cols-2 gap-2 mt-2'>
+                            <div className="relative w-full h-28 flex justify-between items-start border-[1.5px] border-neutral-400 rounded-lg p-4 bg-white">
+                                <div className="w-fit flex flex-col justify-between items-start">
+                                    <h1 className="font-poppins text-2xl text-neutral-700">
+                                        Rs. 200 <span className="font-poppins line-through text-sm text-neutral-500">150</span>
+                                    </h1>
+                                    <div>
+                                        <p className="font-roboto text-md text-neutral-600">At Aayan</p>
+                                        <span className="px-2 py-1 rounded bg-emerald-100 text-emerald-700 text-xs font-semibold">COMPLETED</span>
+                                    </div>
+                                </div>
+                                <div className="flex-1 h-full flex flex-col justify-between items-end">
+                                    <span className="text-xs text-neutral-600">Jun 18, 2025</span>
+                                    <div>
+                                        <button className="px-2 py-1 rounded border-[1px] border-neutral-400 transition duration-150 hover:border-neutral-500 text-neutral-700 text-md font-semibold">View Details</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="relative w-full h-28 flex justify-between items-start border-[1.5px] border-neutral-400 rounded-lg p-4 bg-white">
+                                <div className="w-fit flex flex-col justify-between items-start">
+                                    <h1 className="font-poppins text-2xl text-neutral-700">
+                                        Rs. 200 <span className="font-poppins line-through text-sm text-neutral-500">150</span>
+                                    </h1>
+                                    <div>
+                                        <p className="font-roboto text-md text-neutral-600">At Aayan</p>
+                                        <span className="px-2 py-1 rounded bg-emerald-100 text-emerald-700 text-xs font-semibold">COMPLETED</span>
+                                    </div>
+                                </div>
+                                <div className="flex-1 h-full flex flex-col justify-between items-end">
+                                    <span className="text-xs text-neutral-600">Jun 18, 2025</span>
+                                    <div>
+                                        <button className="px-2 py-1 rounded border-[1px] border-neutral-400 transition duration-150 hover:border-neutral-500 text-neutral-700 text-md font-semibold">View Details</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="relative w-full h-28 flex justify-between items-start border-[1.5px] border-neutral-400 rounded-lg p-4 bg-white">
+                                <div className="w-fit flex flex-col justify-between items-start">
+                                    <h1 className="font-poppins text-2xl text-neutral-700">
+                                        Rs. 200 <span className="font-poppins line-through text-sm text-neutral-500">150</span>
+                                    </h1>
+                                    <div>
+                                        <p className="font-roboto text-md text-neutral-600">At Aayan</p>
+                                        <span className="px-2 py-1 rounded bg-emerald-100 text-emerald-700 text-xs font-semibold">COMPLETED</span>
+                                    </div>
+                                </div>
+                                <div className="flex-1 h-full flex flex-col justify-between items-end">
+                                    <span className="text-xs text-neutral-600">Jun 18, 2025</span>
+                                    <div>
+                                        <button className="px-2 py-1 rounded border-[1px] border-neutral-400 transition duration-150 hover:border-neutral-500 text-neutral-700 text-md font-semibold">View Details</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div className='w-full h-fit border-[1px] border-neutral-500 rounded flex flex-col justify-start items-start p-4'>
                         <h1 className='font-opensans text-2xl text-neutral-800 cursor-default'>Recent Feedback</h1>
                         <div className='w-full h-fit flex flex-col justify-start items-start gap-2 mt-2'>
                             <div className='w-full min-h-16 rounded-md border-[1px] border-neutral-400 flex flex-col justify-start items-start gap-2 p-4'>
                                 <div className='w-full h-fit flex justify-between items-center'>
                                     <div className='flex gap-2'>
-                                        <h1 className='text-lg text-neutral-700 font-poppins font-bold capitalize'>Username</h1>
+                                        <h1 className='text-lg text-neutral-700 font-poppins font-bold capitalize cursor-default'>Username</h1>
                                         <div className="flex items-center gap-1">
                                             <span className='text-2xl text-amber-400'>
                                                 <FaStar />
                                             </span>
-                                            <span className="text-xl text-neutral-700 mr-1 font-semibold">4</span>
+                                            <span className="text-xl text-neutral-700 mr-1 font-semibold cursor-default">4</span>
                                         </div>
                                     </div>
                                     <div className='w-fit h-fit flex justify-normal items-center gap-2'>
-                                        <p className='text-xs text-neutral-600'>6 June 2025</p>
-                                        <p className='text-xs text-neutral-600'>On Aayan</p>
+                                        <p className='text-xs text-neutral-600 cursor-default'>6 June 2025</p>
+                                        <p className='text-xs text-neutral-600 cursor-default'>On Aayan</p>
                                     </div>
                                 </div>
                                 <div>
-                                    <p className='text-md text-neutral-700 font-poppins font-medium text-wrap whitespace-break-spaces'>Seems like you cannot be replaced</p>
+                                    <p className='text-md text-neutral-700 font-poppins font-medium text-wrap whitespace-break-spaces cursor-default'>Seems like you cannot be replaced</p>
                                 </div>
                             </div>
                             <div className='w-full min-h-16 rounded-md border-[1px] border-neutral-400 flex flex-col justify-start items-start gap-2 p-4'>
                                 <div className='w-full h-fit flex justify-between items-center'>
                                     <div className='flex gap-2'>
-                                        <h1 className='text-lg text-neutral-700 font-poppins font-bold capitalize'>Username</h1>
+                                        <h1 className='text-lg text-neutral-700 font-poppins font-bold capitalize cursor-default'>Username</h1>
                                         <div className="flex items-center gap-1">
                                             <span className='text-2xl text-amber-400'>
                                                 <FaStar />
                                             </span>
-                                            <span className="text-xl text-neutral-700 mr-1 font-semibold">4</span>
+                                            <span className="text-xl text-neutral-700 mr-1 font-semibold cursor-default">4</span>
                                         </div>
                                     </div>
                                     <div className='w-fit h-fit flex justify-normal items-center gap-2'>
-                                        <p className='text-xs text-neutral-600'>6 June 2025</p>
-                                        <p className='text-xs text-neutral-600'>On Aayan</p>
+                                        <p className='text-xs text-neutral-600 cursor-default'>6 June 2025</p>
+                                        <p className='text-xs text-neutral-600 cursor-default'>On Aayan</p>
                                     </div>
                                 </div>
                                 <div>
-                                    <p className='text-md text-neutral-700 font-poppins font-medium text-wrap whitespace-break-spaces'>Seems like you cannot be replaced</p>
-                                </div>
-                            </div>
-                            <div className='w-full min-h-16 rounded-md border-[1px] border-neutral-400 flex flex-col justify-start items-start gap-2 p-4'>
-                                <div className='w-full h-fit flex justify-between items-center'>
-                                    <div className='flex gap-2'>
-                                        <h1 className='text-lg text-neutral-700 font-poppins font-bold capitalize'>Username</h1>
-                                        <div className="flex items-center gap-1">
-                                            <span className='text-2xl text-amber-400'>
-                                                <FaStar />
-                                            </span>
-                                            <span className="text-xl text-neutral-700 mr-1 font-semibold">4</span>
-                                        </div>
-                                    </div>
-                                    <div className='w-fit h-fit flex justify-normal items-center gap-2'>
-                                        <p className='text-xs text-neutral-600'>6 June 2025</p>
-                                        <p className='text-xs text-neutral-600'>On Aayan</p>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p className='text-md text-neutral-700 font-poppins font-medium text-wrap whitespace-break-spaces'>Seems like you cannot be replaced</p>
+                                    <p className='text-md text-neutral-700 font-poppins font-medium text-wrap whitespace-break-spaces cursor-default'>Seems like you cannot be replaced Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quos unde maiores sequi recusandae vitae earum nemo odit natus. Nihil beatae iusto nulla! Sequi repudiandae dicta illum excepturi sunt corporis ipsam.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div className='w-1 h-[1.5rem]'/>
                 </div>
                 {/* <div className='border-[1.5px] border-neutral-400 w-full h-fit rounded-md flex flex-col justify-start items-start'>
                     <div className='w-full h-fit border-b-[1.5px] border-neutral-400 px-4 py-2'>
