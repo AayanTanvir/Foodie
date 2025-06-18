@@ -10,6 +10,7 @@ import { FaStar } from "react-icons/fa";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { formatDate } from '../utils/Utils';
+import { FiPlus } from 'react-icons/fi';
 
 const RestaurantOwnerDashboard = () => {
 
@@ -249,47 +250,64 @@ const RestaurantOwnerDashboard = () => {
                     </div>
                     <div className='w-full h-fit border-[1px] border-neutral-500 rounded flex flex-col justify-start items-start p-4'>
                         <h1 className='font-opensans text-2xl text-neutral-800 cursor-default'>Recent Feedback</h1>
-                        <div className='w-full h-fit flex flex-col justify-start items-start gap-2 mt-2'>
-                            <div className='w-full min-h-16 rounded-md border-[1px] border-neutral-400 flex flex-col justify-start items-start gap-2 p-4'>
-                                <div className='w-full h-fit flex justify-between items-center'>
-                                    <div className='flex gap-2'>
-                                        <h1 className='text-lg text-neutral-700 font-poppins font-bold capitalize cursor-default'>Username</h1>
-                                        <div className="flex items-center gap-1">
-                                            <span className='text-2xl text-amber-400'>
-                                                <FaStar />
-                                            </span>
-                                            <span className="text-xl text-neutral-700 mr-1 font-semibold cursor-default">4</span>
+                        <div className='w-full h-fit flex flex-col justify-start items-start gap-4 mt-2'>
+                            {!recentOrdersReviews ? (
+                                <>
+                                    <div className='w-full min-h-16 rounded-md border-[1px] border-neutral-400 flex flex-col justify-start items-start gap-2 p-4'>
+                                        <div className='w-full h-fit flex justify-between items-center'>
+                                            <div className='flex gap-2'>
+                                                <div className='w-20 h-12 bg-neutral-300 rounded'/>
+                                            </div>
+                                            <div className='w-fit h-fit flex justify-normal items-center gap-2'>
+                                                <div className='w-20 h-8 bg-neutral-300 rounded'/>
+                                                <div className='w-20 h-8 bg-neutral-300 rounded'/>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className='w-20 h-12 bg-neutral-300 rounded'/>
                                         </div>
                                     </div>
-                                    <div className='w-fit h-fit flex justify-normal items-center gap-2'>
-                                        <p className='text-xs text-neutral-600 cursor-default'>6 June 2025</p>
-                                        <p className='text-xs text-neutral-600 cursor-default'>On Aayan</p>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p className='text-md text-neutral-700 font-poppins font-medium text-wrap whitespace-break-spaces cursor-default'>Seems like you cannot be replaced</p>
-                                </div>
-                            </div>
-                            <div className='w-full min-h-16 rounded-md border-[1px] border-neutral-400 flex flex-col justify-start items-start gap-2 p-4'>
-                                <div className='w-full h-fit flex justify-between items-center'>
-                                    <div className='flex gap-2'>
-                                        <h1 className='text-lg text-neutral-700 font-poppins font-bold capitalize cursor-default'>Username</h1>
-                                        <div className="flex items-center gap-1">
-                                            <span className='text-2xl text-amber-400'>
-                                                <FaStar />
-                                            </span>
-                                            <span className="text-xl text-neutral-700 mr-1 font-semibold cursor-default">4</span>
+                                </>
+                            ) : (
+                                recentOrdersReviews.recent_reviews.map((review) => (
+                                    <div key={review.uuid} className='w-full min-h-16 rounded-md border-[1.5px] border-neutral-500 flex flex-col justify-start items-start gap-2 p-4'>
+                                        <div className='w-full h-fit flex justify-between items-center'>
+                                            <div className='flex gap-2'>
+                                                <h1 className='text-lg text-neutral-700 font-poppins font-bold capitalize cursor-default'>{review.user_name}</h1>
+                                                <div className="flex items-center gap-2">
+                                                    <div className='flex items-center'>
+                                                        {[...Array(review.rating)].map((_, i) => (
+                                                            <span key={i} className='text-2xl text-amber-400'>
+                                                                <FaStar />
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                    <span className="text-xl text-neutral-700 mr-1 font-semibold cursor-default">{review.rating}</span>
+                                                </div>
+                                            </div>
+                                            <div className='w-fit h-fit flex justify-normal items-center gap-2'>
+                                                <p className='text-xs text-neutral-600 cursor-default'>{formatDate(review.created_at)}</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p className='text-md text-neutral-700 font-poppins font-medium text-wrap whitespace-break-spaces cursor-default'>{review.body}</p>
+                                        </div>
+                                        <div className='w-full h-fit grid auto-row-auto grid-cols-3 gap-2'>
+                                            {review.items.map((item) => (
+                                                <div key={item.uuid} className='w-full h-20 rounded-lg border-[1px] border-neutral-400 flex justify-between items-center'>
+                                                    <div className='h-full w-[40%] flex justify-center items-center overflow-hidden border-r-[1px] border-neutral-400'>
+                                                        <img src={item.image} alt="" className='w-full h-full object-cover rounded-l-lg' />
+                                                    </div>
+                                                    <div className='h-full flex-1 flex flex-col justify-between items-start p-2 relative'>
+                                                        <h1 className='text-xl text-neutral-700 cursor-default'>{item.name}</h1>
+                                                        <h1 className='text-lg text-emerald-600 font-semibold cursor-default'>Rs. {item.price}</h1>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
-                                    <div className='w-fit h-fit flex justify-normal items-center gap-2'>
-                                        <p className='text-xs text-neutral-600 cursor-default'>6 June 2025</p>
-                                        <p className='text-xs text-neutral-600 cursor-default'>On Aayan</p>
-                                    </div>
-                                </div>
-                                <div>
-                                    <p className='text-md text-neutral-700 font-poppins font-medium text-wrap whitespace-break-spaces cursor-default'>Seems like you cannot be replaced Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quos unde maiores sequi recusandae vitae earum nemo odit natus. Nihil beatae iusto nulla! Sequi repudiandae dicta illum excepturi sunt corporis ipsam.</p>
-                                </div>
-                            </div>
+                                ))
+                            )}
                         </div>
                     </div>
                     <div className='w-1 h-[1.5rem]'/>

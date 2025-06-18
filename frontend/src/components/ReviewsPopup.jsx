@@ -110,10 +110,14 @@ const ReviewsPopup = ({ mode }) => {
                                         <div className='w-full h-fit flex justify-between items-center'>
                                             <div className='flex gap-2'>
                                                 <h1 className='text-lg text-neutral-700 font-poppins font-bold cursor-default'>{CapitalizeString(review.user_name)}</h1>
-                                                <div className="flex items-center gap-1">
-                                                    <span className='text-xl text-amber-400'>
-                                                        <FaStar />
-                                                    </span>
+                                                <div className="flex items-center gap-2">
+                                                    <div className='flex items-center'>
+                                                        {[...Array(review.rating)].map((_, i) => (
+                                                            <span key={i} className='text-2xl text-amber-400'>
+                                                                <FaStar />
+                                                            </span>
+                                                        ))}
+                                                    </div>
                                                     <span className="text-md text-neutral-700 mr-1 font-semibold cursor-default">{review.rating}</span>
                                                 </div>
                                             </div>
@@ -152,7 +156,9 @@ const ReviewsPopup = ({ mode }) => {
                 <div className='w-2/4 h-fit bg-neutral-100 border-2 border-gray-200 rounded-lg overflow-y-auto py-4 px-5 relative gap-2'>
                     <div className='w-full h-fit flex justify-between items-center mb-6'>
                         <h1 className='text-xl cursor-default font-medium text-neutral-800'>Write a Review</h1>
-                        <img src={close} alt="Close" className='cursor-pointer' onClick={() => { setShowReviewsPopup(false) }} />
+                        <span className='text-neutral-800 text-xl cursor-pointer' onClick={() => { setShowReviewsPopup(false) }}>
+                            <IoMdClose />
+                        </span>
                     </div>
                     <textarea
                         className="w-full h-24 p-3 border-[1px] border-neutral-300 resize-none rounded-md transition duration-150 ease focus:outline-none focus:border-neutral-500"
@@ -186,7 +192,9 @@ const ReviewsPopup = ({ mode }) => {
                         />
                         <div className='w-fit h-fit flex justify-center items-center'>
                                 {[...Array(writeReviewRating)].map((_, i) => (
-                                    <img key={i} src={star} alt="star" />
+                                    <span key={i} className='text-2xl text-amber-400'>
+                                        <FaStar />
+                                    </span>
                                 ))}
                         </div>
                     </div>

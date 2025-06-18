@@ -298,7 +298,6 @@ class OwnerRecentOrdersReviewsAPIView(generics.GenericAPIView):
     def get(self, request):
         try:
             user = self.request.user
-            
             if not user.groups.filter(name='restaurant owner').exists():
                 return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
             
