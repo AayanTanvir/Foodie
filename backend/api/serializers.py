@@ -432,3 +432,7 @@ class OwnerTotalRevenueAndOrdersSerializer(serializers.Serializer):
     revenue = serializers.DictField(child=serializers.IntegerField())
     orders = serializers.DictField(child=serializers.IntegerField())
 
+
+class OwnerRecentOrdersReviewsSerializer(serializers.Serializer):
+    recent_orders = OrderListSerializer(many=True)
+    recent_reviews = RestaurantReviewReadSerializer(many=True)

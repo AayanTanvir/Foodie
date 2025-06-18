@@ -260,9 +260,9 @@ class UserRestaurantsAPIView(generics.ListAPIView):
 class OwnerTotalRevenueAndOrdersAPIView(generics.GenericAPIView):
     serializer_class = OwnerTotalRevenueAndOrdersSerializer
 
-    def get(self, request, uuid):
+    def get(self, request):
         try:
-            user = CustomUser.objects.get(uuid=uuid)
+            user = self.request.user
             
             if not user.groups.filter(name='restaurant owner').exists():
                 return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
@@ -288,6 +288,27 @@ class OwnerTotalRevenueAndOrdersAPIView(generics.GenericAPIView):
             serializer = self.get_serializer({"revenue": revenue, "orders": orders})
             return Response(serializer.data, status=status.HTTP_200_OK)
         
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        
+class OwnerRecentOrdersReviewsAPIView(generics.GenericAPIView):
+    serializer_class = OwnerRecentOrdersReviewsSerializer
+
+    def get(self, request):
+        try:
+            user = self.request.user
+            
+            if not user.groups.filter(name='restaurant owner').exists():
+                return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
+            
+            restaurants = Restaurant.objects.filter(owner=user)
+            recent_orders = Order.objects.filter(restaurant__in=restaurants).order_by('-created_at')[:6]
+            recent_reviews = Review.objects.filter(restaurant__in=restaurants).order_by('-created_at')[:5]
+            
+            serializer = self.get_serializer({'recent_orders': recent_orders, 'recent_reviews': recent_reviews})
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         
