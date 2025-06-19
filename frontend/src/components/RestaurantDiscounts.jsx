@@ -11,7 +11,7 @@ const RestaurantDiscounts = ({ restaurant }) => {
         return null;
     }
 
-    let discountInfo = (discount) => {
+    const discountInfo = (discount) => {
         
         let discountType = discount.discount_type;
         let discountMinOrderAmount = discount.min_order_amount
