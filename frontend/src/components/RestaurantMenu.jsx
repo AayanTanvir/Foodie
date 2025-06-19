@@ -120,7 +120,7 @@ const RestaurantMenu = ({ restaurant }) => {
                             {searchedItems.map((item) => (
                                 <div
                                 key={item.uuid}
-                                className='w-[20rem] h-32 px-4 py-2 mb-5 flex justify-between items-center border-[1px] border-neutral-200 rounded-xl transition-transform duration-200 hover:border-neutral-500 relative'
+                                className='w-[20rem] h-32 px-4 py-2 mb-5 flex justify-between items-center border-[1px] border-neutral-400 rounded-xl transition-transform duration-200 hover:border-neutral-500 relative'
                                 >
                                     <div className='w-4/5 h-full text-left overflow-hidden'>
                                         <h1 className='text-lg font-roboto font-semibold truncate text-neutral-700 cursor-default'>{item.name}</h1>
@@ -162,8 +162,8 @@ const RestaurantMenu = ({ restaurant }) => {
                             <div className='grid grid-cols-3 auto-rows-auto w-fit h-fit gap-x-6 gap-y-4'>
                                 {popularItems.map((item) => (
                                     <div
-                                    key={item.uuid}
-                                    className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-[1px] border-neutral-200 rounded-xl transition-transform duration-200 hover:border-neutral-500 relative'
+                                        key={item.uuid}
+                                        className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-[1px] border-neutral-400 rounded-xl transition-transform duration-200 hover:border-neutral-500 relative'
                                     >
                                         <div className='w-4/5 h-full text-left overflow-hidden'>
                                             <h1 className='text-lg font-roboto font-semibold truncate text-neutral-700 cursor-default'>{item.name}</h1>
@@ -207,7 +207,7 @@ const RestaurantMenu = ({ restaurant }) => {
                                     .map((item) => (
                                         <div
                                         key={item.uuid}
-                                        className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-[1px] border-neutral-200 rounded-xl transition-transform duration-200 hover:border-neutral-500 relative'
+                                        className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-[1px] border-neutral-400 rounded-xl transition-transform duration-200 hover:border-neutral-500 relative'
                                         >   
                                             <div className='w-4/5 h-full text-left overflow-hidden'>
                                                 <h1 className='text-lg font-roboto font-semibold text-neutral-700 truncate cursor-default'>{item.name}</h1>
@@ -246,7 +246,7 @@ const RestaurantMenu = ({ restaurant }) => {
                                     {sideItems.map((item) => (
                                         <div
                                             key={item.uuid}
-                                            className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-[1px] border-neutral-200 rounded-xl cursor-pointer transition-transform duration-200 hover:border-neutral-500 relative'
+                                            className='w-[20rem] h-32 px-4 py-2 flex justify-between items-center border-[1px] border-neutral-400 rounded-xl cursor-pointer transition-transform duration-200 hover:border-neutral-500 relative'
                                         >
                                             <div className='w-4/5 h-full text-left overflow-hidden'>
                                                 <h1 className='text-lg font-roboto font-semibold truncate text-neutral-700'>{item.name}</h1>

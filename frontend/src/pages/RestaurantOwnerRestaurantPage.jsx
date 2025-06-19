@@ -97,9 +97,9 @@ const RestaurantOwnerRestaurantPage = () => {
     }, []);
 
     return (
-        <div className='absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center mt-12'>
-            <div className='w-full h-full flex flex-col justify-start items-center py-4 px-8'>
-                <div className='border-[1.5px] border-neutral-500 w-full h-[92%] rounded-md flex flex-col justify-start items-start'>
+        <div className='absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center'>
+            <div className='w-full h-full flex flex-col justify-start items-center py-4 px-8 mt-12 overflow-hidden'>
+                <div className='border-[1.5px] border-neutral-500 w-full h-full rounded-md flex flex-col justify-start items-start overflow-y-auto'>
                     <div className='w-full h-fit flex justify-between items-center px-6 py-4 border-b-[1.5px] border-neutral-500'>
                         {!restaurant ? (
                             <>
@@ -145,7 +145,7 @@ const RestaurantOwnerRestaurantPage = () => {
                                 </>
                             )}
                         </div>
-                        <div className='w-full h-fit flex flex-col justify-start items-start mt-4'>
+                        <div className='w-full h-fit flex flex-col justify-start items-start mt-8'>
                             {!restaurantDiscounts ? (
                                 <div className='w-20 h-10 bg-neutral-200 rounded' />
                             ) : (
@@ -184,6 +184,48 @@ const RestaurantOwnerRestaurantPage = () => {
                                             </span>
                                             <h1 className='font-poppins text-emerald-500 text-3xl'>Create</h1>
                                         </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                        <div className='w-full h-fit flex flex-col justify-start items-start mt-8'>
+                            {!restaurant ? (
+                                <div className='w-20 h-10 bg-neutral-200 rounded' />
+                            ) : (
+                                <>
+                                    <h1 className='w-full h-fit mb-2 font-poppins text-neutral-800 text-2xl cursor-default'>Menu</h1>
+                                    <div className='w-full min-h-24 grid grid-cols-4 auto-rows-auto gap-x-4 gap-y-2'>
+                                        {restaurant.menu_items.map(item => (
+                                            <div
+                                                key={item.uuid}
+                                                className='w-full h-[162px] group px-4 py-2 flex justify-between items-center border-[1px] border-neutral-400 rounded-xl transition-transform duration-200 hover:border-neutral-500 relative'
+                                            >
+                                                <div className='flex-1 h-full flex flex-col justify-between items-start overflow-hidden'>
+                                                    <div className='flex flex-col justify-center items-start'>
+                                                        {!item.is_available && (
+                                                            <h1 className='text-xs font-roboto font-semibold cursor-default text-red-700 bg-red-400 w-fit px-2 py-1 rounded text-nowrap'>Not Available</h1>
+                                                        )}
+                                                        <h1 className='text-lg font-roboto font-semibold truncate text-neutral-700 cursor-default'>{item.name}</h1>
+                                                        <h1 className='text-xl text-nowrap font-hedwig text-neutral-700 cursor-default'>Rs. {item.price}</h1>
+                                                    </div>
+                                                    <div className='flex justify-normal items-center gap-2 opacity-0 group-hover:opacity-100'>
+                                                        <button onClick={() => {  }} className="bg-white w-8 h-8 rounded-full flex justify-center items-center border-[1px] border-neutral-400 hover:bg-neutral-100">
+                                                            <span className='text-neutral-800 text-lg'>
+                                                                <MdEdit />
+                                                            </span>
+                                                        </button>
+                                                        <button onClick={() => {  }} className="bg-rose-500 hover:bg-rose-600 w-8 h-8 rounded-full flex justify-center items-center">
+                                                            <span className='text-white text-lg'>
+                                                                <MdDeleteOutline />
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div className='w-1/2 h-full flex justify-center items-center overflow-hidden rounded-xl'>
+                                                    <img src={item.image} alt="Image not found" className='w-full object-cover' />
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </>
                             )}
