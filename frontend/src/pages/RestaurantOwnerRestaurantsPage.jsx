@@ -28,8 +28,7 @@ const RestaurantOwnerRestaurantsPage = () => {
             }
 
         } catch (err) {
-            console.error("Error while fetching owned restaurants");
-            console.error(err);
+            console.error("Error while fetching owned restaurants", err);
             setMessageAndMode("An error occurred", "failure");
             navigate('/');
         }
@@ -64,7 +63,7 @@ const RestaurantOwnerRestaurantsPage = () => {
                         ) : (
                             <>
                                 {ownedRestaurants?.map(restaurant => (
-                                    <div key={restaurant.uuid} className='group w-full h-48 border-[1px] border-neutral-400 rounded flex flex-col justify-start items-center cursor-pointer transition duration-150 ease-out relative'>
+                                    <div key={restaurant.uuid} onClick={() => { navigate(`/restaurant-owner/restaurants/${restaurant.uuid}`) }} className='group w-full h-48 border-[1px] border-neutral-400 rounded flex flex-col justify-start items-center cursor-pointer transition duration-150 ease-out relative'>
                                         <div className='w-full h-[60%] flex justify-center items-center overflow-hidden'>
                                             <img src={restaurant.image} alt="" className='w-full object-cover' />
                                         </div>
@@ -74,12 +73,12 @@ const RestaurantOwnerRestaurantsPage = () => {
                                             <div className='flex-1 h-0 border-b-[1px] border-neutral-400'></div>
                                         </div>
                                         <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button className="bg-white w-10 h-10 rounded-full flex justify-center items-center hover:bg-neutral-100">
+                                            <button onClick={() => { navigate(`/restaurant-owner/restaurants/${restaurant.uuid}/edit`) }} className="bg-white w-10 h-10 rounded-full flex justify-center items-center hover:bg-neutral-100">
                                                 <span className='text-neutral-800 text-xl'>
                                                     <MdEdit />
                                                 </span>
                                             </button>
-                                            <button className="bg-rose-500 hover:bg-rose-600 w-10 h-10 rounded-full flex justify-center items-center">
+                                            <button onClick={() => {  }} className="bg-rose-500 hover:bg-rose-600 w-10 h-10 rounded-full flex justify-center items-center">
                                                 <span className='text-white text-xl'>
                                                     <MdDeleteOutline />
                                                 </span>

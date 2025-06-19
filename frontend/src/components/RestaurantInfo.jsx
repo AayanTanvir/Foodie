@@ -6,7 +6,7 @@ import { formatTime } from '../utils/Utils';
 import { RestaurantContext } from '../context/RestaurantContext';
 
 const RestaurantInfo = ({ restaurant }) => {
-    const formattedTimings = `${formatTime(restaurant.opening_time)} - ${formatTime(restaurant.closing_time)}`;
+    const formattedTimings = `${formatTime(restaurant?.opening_time)} - ${formatTime(restaurant?.closing_time)}`;
     const { setShowReviewsPopup, setReviewsPopupMode } = useContext(RestaurantContext);
 
     return (
@@ -30,10 +30,10 @@ const RestaurantInfo = ({ restaurant }) => {
                             <span className="text-lg font-medium text-neutral-700 ml-1 cursor-default">{restaurant.rating}</span>
                         </div>
                     </div>
-                    <div className="text-sm text-neutral-600 mb-2 cursor-default">
-                        <span className="font-semibold">Timings:</span> {formattedTimings}
-                        <div><span className="font-semibold">Address:</span> {restaurant.address}</div>
-                        <div><span className="font-semibold">Phone:</span> {restaurant.phone}</div>
+                    <div className="text-sm font-roboto text-neutral-600 mb-2 cursor-default">
+                        <span className="font-semibold">Timing - </span> {formattedTimings}
+                        <div><span className="font-semibold">Address - </span> {restaurant.address}</div>
+                        <div><span className="font-semibold">Phone - </span> {restaurant.phone}</div>
                     </div>           
                 </div>
             </div>
