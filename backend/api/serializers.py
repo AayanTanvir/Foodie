@@ -375,12 +375,13 @@ class CustomUserReadSerializer(serializers.ModelSerializer):
 
 class RestaurantReviewReadSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source="user.username", read_only=True)
+    restaurant_name = serializers.CharField(source="restaurant.name", read_only=True)
     items = MenuItemSerializer(many=True, read_only=True)
     
     class Meta:
         model = Review
         fields = [
-            'uuid', 'user_name', 'body', 'rating', 'items', 'created_at'
+            'uuid', 'user_name', 'restaurant_name', 'body', 'rating', 'items', 'created_at'
         ]
         
         

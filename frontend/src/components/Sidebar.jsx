@@ -76,13 +76,13 @@ const Sidebar = () => {
                                 <span className='text-neutral-800 text-2xl'>
                                     <CiShop />
                                 </span>
-                                <SidebarLink to='/restaurant-owner/dashboard' title="Restaurants"/>
+                                <SidebarLink to='/restaurant-owner/restaurants' title="Restaurants"/>
                             </div>
                             <div className='w-full h-fit flex justify-start items-center gap-2 p-2 cursor-pointer transition'>
                                 <span className='text-neutral-800 text-2xl'>
                                     <IoIosList />
                                 </span>
-                                <SidebarLink to='/restaurant-owner/dashboard' title="Orders"/>
+                                <SidebarLink to='/restaurant-owner/orders' title="Orders"/>
                             </div>
                         </>
                     )}
