@@ -7,14 +7,39 @@ import { MdEdit } from 'react-icons/md';
 import { MdDeleteOutline } from 'react-icons/md';
 import { CiDiscount1 } from 'react-icons/ci';
 import { IoCreateOutline } from 'react-icons/io5';
+import {
+    BarChart,
+    Bar,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+    Tooltip,
+    Legend,
+    ResponsiveContainer,
+} from 'recharts';
+import { Select, MenuItem } from '@mui/material';
 
 const RestaurantOwnerRestaurantPage = () => {
     const [restaurant, setRestaurant] = useState(null);
     const [restaurantDiscounts, setRestaurantDiscounts] = useState(null);
+    const [mostOrderedItemPeriod, setMostOrderedItemPeriod] = useState("week");
     const { uuid } = useParams();
     const { setMessageAndMode } = useContext(GlobalContext);
     const navigate = useNavigate();
     const formattedTimings = `${formatTime(restaurant?.opening_time)} - ${formatTime(restaurant?.closing_time)}`;
+    const data = [
+        { name: 'Pizza', orders: 240 },
+        { name: 'Burger', orders: 139 },
+        { name: 'Pasta', orders: 980 },
+        { name: 'Salad', orders: 390 },
+    ];
+    const data2 = [
+        { name: 'Pizza', rating: 4.2 },
+        { name: 'Burger', rating: 3.8 },
+        { name: 'Pasta', rating: 4.0 },
+        { name: 'Salad', rating: 3.5 },
+    ];
+
 
     const fetchRestaurant = async () => {
         try {
@@ -130,6 +155,62 @@ const RestaurantOwnerRestaurantPage = () => {
                         )}
                     </div>
                     <div className='w-full flex-1 flex-col justify-start items-start p-6 overflow-y-auto'>
+                        <div className='w-full h-fit flex justify-between items-start mb-8'>
+                            {!restaurant ? (
+                                <div className='w-20 h-10 bg-neutral-200 rounded' />
+                            ) : (
+                                <>
+                                    <div className='w-[50%] h-fit flex flex-col justify-start items-center'>
+                                        <div className='w-full h-fit flex justify-center items-center gap-4'>
+                                            <h1 className='font-poppins text-neutral-800 text-2xl cursor-default text-center'>Most Ordered Items of</h1>
+                                            <Select
+                                                value={mostOrderedItemPeriod}
+                                                autoWidth
+                                                onChange={e => setMostOrderedItemPeriod(e.target.value)}
+                                                size='small'
+                                                sx={{
+                                                    minWidth: 120,
+                                                    paddingRight: '8px',
+                                                    '& .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: 'gray',
+                                                    },
+                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: '#262626',
+                                                    },
+                                                }}
+                                            >
+                                                <MenuItem value="week">The Week</MenuItem>
+                                                <MenuItem value="month">The Month</MenuItem>
+                                                <MenuItem value="all time">All Time</MenuItem>
+                                            </Select>
+                                        </div>
+                                        <ResponsiveContainer width="100%" height={500}>
+                                            <BarChart data={data} margin={{ top: 20, right: 30, left: 5, bottom: 5 }}>
+                                                <CartesianGrid stroke="#737373" />
+                                                <XAxis dataKey="name" />
+                                                <YAxis />
+                                                <Tooltip />
+                                                <Legend />
+                                                <Bar dataKey="orders" fill="#262626" />
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                    <div className='w-[50%] h-fit flex flex-col justify-start items-start'>
+                                        <h1 className='w-full h-fit mb-2 font-poppins text-neutral-800 text-2xl cursor-default text-center'>Highest Rated Items</h1>
+                                        <ResponsiveContainer width="100%" height={500}>
+                                            <BarChart data={data2} margin={{ top: 20, right: 30, left: 5, bottom: 5 }}>
+                                                <CartesianGrid stroke="#737373" />
+                                                <XAxis dataKey="name" />
+                                                <YAxis type="number" domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]}/>
+                                                <Tooltip />
+                                                <Legend />
+                                                <Bar dataKey="rating" fill="#262626" />
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                         <div className='w-full h-fit flex flex-col justify-start items-start'>
                             {!restaurant ? (
                                 <div className='w-20 h-10 bg-neutral-200 rounded' />
@@ -198,7 +279,7 @@ const RestaurantOwnerRestaurantPage = () => {
                                         {restaurant.menu_items.map(item => (
                                             <div
                                                 key={item.uuid}
-                                                className='w-full h-[162px] group px-4 py-2 flex justify-between items-center border-[1px] border-neutral-400 rounded-xl transition-transform duration-200 hover:border-neutral-500 relative'
+                                                className='w-full h-[162px] group px-4 py-2 flex justify-between items-center border-[1px] border-neutral-400 rounded transition-transform duration-200 hover:border-neutral-500 relative'
                                             >
                                                 <div className='flex-1 h-full flex flex-col justify-between items-start overflow-hidden'>
                                                     <div className='flex flex-col justify-center items-start'>
@@ -226,6 +307,12 @@ const RestaurantOwnerRestaurantPage = () => {
                                                 </div>
                                             </div>
                                         ))}
+                                        <div onClick={() => {  }} className='w-full h-full border-[1.5px] border-emerald-500 hover:bg-green-100 rounded flex justify-center items-center cursor-pointer gap-2'>
+                                            <span className='text-emerald-500 text-4xl'>
+                                                <IoCreateOutline />
+                                            </span>
+                                            <h1 className='font-poppins text-emerald-500 text-3xl'>Create</h1>
+                                        </div>
                                     </div>
                                 </>
                             )}
