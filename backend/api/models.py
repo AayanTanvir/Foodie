@@ -77,7 +77,7 @@ class Restaurant(models.Model):
     
     @property
     def popularity(self):
-        return self.orders.count()
+        return int(self.orders.count())
     
     @property
     def rating(self):

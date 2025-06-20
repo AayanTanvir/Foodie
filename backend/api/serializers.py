@@ -177,7 +177,28 @@ class RestaurantListSerializer(serializers.ModelSerializer):
         fields = ['uuid', 'name', 'slug', 'image',
                   'category', 'is_verified', 'is_open', 'opening_time',
                   'closing_time', 'popularity',]
+        
 
+class OwnedRestaurantsListSerializer(serializers.ModelSerializer):
+    category = serializers.SerializerMethodField()
+    total_orders = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
+    
+    def get_category(self, obj):
+        return obj.get_category_display()
+    
+    def get_total_orders(self, obj):
+        return obj.popularity
+    
+    def get_rating(self, obj):
+        return obj.rating
+    
+    class Meta:
+        model = Restaurant
+        fields = ['uuid', 'name', 'slug', 'image',
+                  'category', 'is_verified', 'total_orders', 'opening_time',
+                  'closing_time', 'rating']
+        
 
 class MenuItemModifierChoiceSerializer(serializers.ModelSerializer):
     class Meta:

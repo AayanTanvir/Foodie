@@ -3,6 +3,7 @@ from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
+from rest_framework.exceptions import NotFound
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -240,16 +241,16 @@ class ReviewCreateAPIView(generics.CreateAPIView):
     serializer_class = ReviewWriteSerializer
     
 
-class UserRestaurantsAPIView(generics.ListAPIView):
-    serializer_class = RestaurantListSerializer
+class OwnerRestaurantsAPIView(generics.ListAPIView):
+    serializer_class = OwnedRestaurantsListSerializer
 
     def get_queryset(self):
-        try:
-            user_uuid = self.kwargs['uuid']
-            user = CustomUser.objects.get(uuid=user_uuid)
+        user = self.request.user
+        if not user.groups.filter(name='restaurant owner').exists():
+            return ValidationError("User is not a restaurant owner")
+        else:
             return Restaurant.objects.filter(owner=user)
-        except CustomUser.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            
         
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
