@@ -14,6 +14,7 @@ from .models import *
 from .utils import Utils
 from .serializers import *
 import random, jwt
+from operator import attrgetter
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -149,7 +150,7 @@ class RestaurantAPIView(generics.GenericAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Restaurant.DoesNotExist:
             return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
-    
+
 
 class RestaurantDiscountsAPIView(generics.GenericAPIView):
     serializer_class = RestaurantDiscountSerializer
@@ -312,3 +313,30 @@ class OwnerRecentOrdersReviewsAPIView(generics.GenericAPIView):
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         
+        
+class OwnerMostOrderedAndHighestRatedItemsAPIView(generics.GenericAPIView):
+    serializer_class = OwnerMostOrderedAndHighestRatedItems
+
+    def get(self, request, uuid):
+        try:
+            user = self.request.user
+            if not user.groups.filter(name='restaurant owner').exists():
+                return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
+            
+            restaurant = Restaurant.objects.get(uuid=uuid)
+            menu_items = list(restaurant.menu_items.filter(is_side_item=False))
+            most_ordered_items = sorted(menu_items, key=attrgetter("popularity"), reverse=True)[:5]
+            highest_rated_items = sorted(menu_items, key=attrgetter("rating"), reverse=True)[:5]
+            
+            data = {
+                "most_ordered": [
+                    {"name": item.name, "orders": item.popularity} for item in most_ordered_items
+                ],
+                "highest_rated": [
+                    {"name": item.name, "rating": item.rating} for item in highest_rated_items
+                ]
+            }
+            serializer = self.get_serializer(data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Restaurant.DoesNotExist:
+            return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)

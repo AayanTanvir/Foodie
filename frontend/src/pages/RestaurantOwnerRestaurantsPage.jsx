@@ -56,9 +56,9 @@ const RestaurantOwnerRestaurantsPage = () => {
         <div className='absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center mt-12'>
             <div className='w-full h-full flex flex-col justify-start items-center py-8 px-8 gap-6'>
                 <div className='w-full h-fit flex flex-col justify-start items-center'>
-                    <h1 className='font-poppins text-neutral-800 text-2xl cursor-default text-center'>Restaurants' Performance</h1>
+                    <h1 className='font-poppins text-neutral-800 text-2xl cursor-default text-center'>Restaurant Performance</h1>
                     <ResponsiveContainer width="100%" height={350}>
-                        <ScatterChart margin={{ top: 20, right: 20, bottom: 60, left: 10 }}>
+                        <ScatterChart margin={{ top: 20, right: 0, bottom: 30, left: 0 }}>
                             <CartesianGrid stroke='#a3a3a3'/>
                             <XAxis type="number" dataKey="total_orders" name="Orders">
                                 <Label
@@ -71,7 +71,7 @@ const RestaurantOwnerRestaurantsPage = () => {
                             <YAxis type="number" dataKey="rating" name="Rating" domain={[0, 5]} ticks={[0,1,2,3,4,5]} label={{ value: 'Rating ->', angle: -90, position: 'insideLeft', offset: 10, style: { fill: '#262626', fontSize: 20 } }} />
                             <Tooltip cursor={{ strokeDasharray: '3 3' }} />
                             <Scatter name="Restaurants" data={ownedRestaurants} fill="#262626" >
-                                <LabelList dataKey="name" position="left" style={{ fill: '#262626', fontSize: 20 }} />
+                                <LabelList dataKey="name" position="bottom" style={{ fill: '#262626', fontSize: 20 }} />
                             </Scatter>
                         </ScatterChart>
                     </ResponsiveContainer>

@@ -157,7 +157,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
             'item_categories', 'rating',
         ]
         
-    
+        
 class RestaurantListSerializer(serializers.ModelSerializer):
     is_open = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
@@ -458,3 +458,14 @@ class OwnerTotalRevenueAndOrdersSerializer(serializers.Serializer):
 class OwnerRecentOrdersReviewsSerializer(serializers.Serializer):
     recent_orders = OrderListSerializer(many=True)
     recent_reviews = RestaurantReviewReadSerializer(many=True)
+    
+    
+class ItemStatSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    orders = serializers.IntegerField(required=False)
+    rating = serializers.FloatField(required=False)
+    
+class OwnerMostOrderedAndHighestRatedItems(serializers.Serializer):
+    most_ordered = serializers.ListField(child=ItemStatSerializer())
+    highest_rated = serializers.ListField(child=ItemStatSerializer())
+    

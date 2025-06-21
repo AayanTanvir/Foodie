@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.db.models import Avg
 from .managers import CustomUserManager
 from django_q.tasks import schedule
 from datetime import timedelta
@@ -112,7 +113,12 @@ class MenuItem(models.Model):
     
     @property
     def popularity(self):
-        return self.order_items.values("order").distinct().count()
+       return self.order_items.values("order").distinct().count()
+   
+    @property
+    def rating(self):
+        avg = self.reviews.aggregate(avg=Avg("rating"))["avg"] or 0
+        return round(avg, 1) if avg is not None else 0
 
     def __str__(self):
         return f"{self.name}"
