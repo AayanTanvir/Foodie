@@ -3,7 +3,7 @@ from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
-from rest_framework.exceptions import NotFound
+from django.db.models import Count
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -259,84 +259,105 @@ class OwnerRestaurantsAPIView(generics.ListAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     
-class OwnerTotalRevenueAndOrdersAPIView(generics.GenericAPIView):
-    serializer_class = OwnerTotalRevenueAndOrdersSerializer
-
+class OwnerDashboardAPIView(generics.GenericAPIView):
+    
     def get(self, request):
         try:
             user = self.request.user
-            
-            if not user.groups.filter(name='restaurant owner').exists():
-                return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
-            
-            today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-            week_start = today_start - timezone.timedelta(days=today_start.weekday())
-            month_start = today_start.replace(day=1)
-            
-            restaurants = Restaurant.objects.filter(owner=user)
-            orders = Order.objects.filter(restaurant__in=restaurants, order_status=Order.OrderStatus.DELIVERED)
-            
-            revenue = {
-                'today': round(sum(order.discounted_price for order in orders.filter(created_at__gte=today_start))),
-                'week': round(sum(order.discounted_price for order in orders.filter(created_at__gte=week_start))),
-                'month': round(sum(order.discounted_price for order in orders.filter(created_at__gte=month_start)))
-            }
-            orders = {
-                'today': orders.filter(created_at__gte=today_start).count(),
-                'week': orders.filter(created_at__gte=week_start).count(),
-                'month': orders.filter(created_at__gte=month_start).count()
-            }
-
-            serializer = self.get_serializer({"revenue": revenue, "orders": orders})
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         
+        if not user.groups.filter(name='restaurant owner').exists():
+            return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
         
-class OwnerRecentOrdersReviewsAPIView(generics.GenericAPIView):
-    serializer_class = OwnerRecentOrdersReviewsSerializer
-
-    def get(self, request):
-        try:
-            user = self.request.user
-            if not user.groups.filter(name='restaurant owner').exists():
-                return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
-            
-            restaurants = Restaurant.objects.filter(owner=user)
-            recent_orders = Order.objects.filter(restaurant__in=restaurants).order_by('-created_at')[:6]
-            recent_reviews = Review.objects.filter(restaurant__in=restaurants).order_by('-created_at')[:5]
-            
-            serializer = self.get_serializer({'recent_orders': recent_orders, 'recent_reviews': recent_reviews})
-
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except CustomUser.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = today_start - timezone.timedelta(days=today_start.weekday())
+        month_start = today_start.replace(day=1)
         
+        restaurants = Restaurant.objects.filter(owner=user)
+        recent_orders = Order.objects.filter(restaurant__in=restaurants).order_by('-created_at')[:6]
+        recent_reviews = Review.objects.filter(restaurant__in=restaurants).order_by('-created_at')[:5]
+        orders = Order.objects.filter(restaurant__in=restaurants, order_status=Order.OrderStatus.DELIVERED)
+        
+        revenue = {
+            'today': round(sum(order.discounted_price for order in orders.filter(created_at__gte=today_start))),
+            'week': round(sum(order.discounted_price for order in orders.filter(created_at__gte=week_start))),
+            'month': round(sum(order.discounted_price for order in orders.filter(created_at__gte=month_start)))
+        }
+        orders = {
+            'today': orders.filter(created_at__gte=today_start).count(),
+            'week': orders.filter(created_at__gte=week_start).count(),
+            'month': orders.filter(created_at__gte=month_start).count()
+        }
+        
+        data = {}
+        
+        revenue_orders_serializer = OwnerTotalRevenueAndOrdersSerializer(instance={"revenue": revenue, "orders": orders})
+        recent_orders_reviews_serializer = OwnerRecentOrdersReviewsSerializer(instance={'recent_orders': recent_orders, 'recent_reviews': recent_reviews})
+        
+        
+        data = {
+            **revenue_orders_serializer.data,
+            **recent_orders_reviews_serializer.data,
+        }
+        return Response(data, status=status.HTTP_200_OK)
+            
+    
         
 class OwnerMostOrderedAndHighestRatedItemsAPIView(generics.GenericAPIView):
-    serializer_class = OwnerMostOrderedAndHighestRatedItems
 
     def get(self, request, uuid):
+        user = self.request.user
+        if not user.groups.filter(name='restaurant owner').exists():
+            return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
+        
         try:
-            user = self.request.user
-            if not user.groups.filter(name='restaurant owner').exists():
-                return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
-            
             restaurant = Restaurant.objects.get(uuid=uuid)
-            menu_items = list(restaurant.menu_items.filter(is_side_item=False))
-            most_ordered_items = sorted(menu_items, key=attrgetter("popularity"), reverse=True)[:5]
-            highest_rated_items = sorted(menu_items, key=attrgetter("rating"), reverse=True)[:5]
-            
-            data = {
-                "most_ordered": [
-                    {"name": item.name, "orders": item.popularity} for item in most_ordered_items
-                ],
-                "highest_rated": [
-                    {"name": item.name, "rating": item.rating} for item in highest_rated_items
-                ]
-            }
-            serializer = self.get_serializer(data)
-            return Response(serializer.data, status=status.HTTP_200_OK)
         except Restaurant.DoesNotExist:
             return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        now = timezone.now()
+        week_start = now - timezone.timedelta(days=now.weekday())
+        month_start = now.replace(day=1)
+        
+        menu_items = restaurant.menu_items.filter(is_side_item=False)
+        mo_all_time = sorted(menu_items, key=attrgetter("popularity"), reverse=True)[:5]
+        mo_week = (
+            OrderItem.objects
+            .filter(menu_item__in=menu_items, order__created_at__gte=week_start)
+            .values("menu_item__name")
+            .annotate(orders=Count("order", distinct=True))
+            .order_by("-orders")[:5]
+        )
+        
+        mo_month = (
+            OrderItem.objects
+            .filter(menu_item__in=menu_items, order__created_at__gte=month_start)
+            .values("menu_item__name")
+            .annotate(orders=Count("order", distinct=True))
+            .order_by("-orders")[:5]
+        )
+        
+        highest_rated_items = sorted(menu_items, key=attrgetter("rating"), reverse=True)[:5]
+        
+        data = {
+            "most_ordered": {
+                "all_time": [
+                    {"item": item.name, "rating": item.popularity}
+                    for item in mo_all_time
+                ],
+                "week": [
+                    {"name": item["menu_item__name"], "orders": item["orders"]}
+                    for item in mo_week
+                ],
+                "month": [
+                    {"name": item["menu_item__name"], "orders": item["orders"]}
+                    for item in mo_month
+                ]
+            },
+            "highest_rated": [
+                {"item": item.name, "rating": item.rating} for item in highest_rated_items
+            ]
+        }
+
+        return Response(data, status=status.HTTP_200_OK)

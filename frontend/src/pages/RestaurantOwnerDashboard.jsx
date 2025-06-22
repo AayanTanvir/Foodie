@@ -12,18 +12,19 @@ const RestaurantOwnerDashboard = () => {
 
     const [totalRevenueAndOrders, setTotalRevenueAndOrders] = useState(null);
     const [recentOrdersReviews, setRecentOrdersReviews] = useState(null);
+    const [dashboardInfo, setDashboardInfo] = useState(null);
     const [ordersPeriod, setOrdersPeriod] = useState("today");
     const { user } = useContext(AuthContext);
     const { setMessageAndMode } = useContext(GlobalContext);
     const navigate = useNavigate();
 
 
-    const fetchRevenueEarned = async () => {
+    const fetchInfo = async () => {
         try {
-            const res = await axiosClient.get(`/owner/total_revenue_and_orders/`)
+            const res = await axiosClient.get(`/owner/dashboard/`)
 
             if (res.status === 200) {
-                setTotalRevenueAndOrders(res.data);
+                setDashboardInfo(res.data);
             } else {
                 setMessageAndMode("Unexpected response", "failure");
                 console.error("unexpected response status: ", res.status);
@@ -31,37 +32,15 @@ const RestaurantOwnerDashboard = () => {
             }
 
         } catch (err) {
-            console.error("Error while fetching revenue earned");
-            console.error(err);
+            console.error("Error while fetching revenue earned", err);
             setMessageAndMode("An error occurred while fetching revenue", "failure");
-            navigate('/');
-        }
-    }
-
-    const fetchRecentOrdersReviews = async () => {
-        try {
-            const res = await axiosClient.get(`/owner/recent_orders_and_reviews/`)
-
-            if (res.status === 200) {
-                setRecentOrdersReviews(res.data);
-            } else {
-                setMessageAndMode("Unexpected response", "failure");
-                console.error("unexpected response status: ", res.status);
-                navigate("/");
-            }
-
-        } catch (err) {
-            console.error("Error while fetching recent orders and reviews");
-            console.error(err);
-            setMessageAndMode("An error occurred while fetching recent orders and reviews", "failure");
             navigate('/');
         }
     }
 
     useEffect(() => {
         if (user && user.uuid) {
-            fetchRevenueEarned();
-            fetchRecentOrdersReviews();
+            fetchInfo();
         }
     }, [])
 
@@ -77,15 +56,15 @@ const RestaurantOwnerDashboard = () => {
                             <h1 className='font-opensans text-2xl text-neutral-800 cursor-default'>Orders Completed</h1>
                             <div className='w-full h-full flex flex-col justify-center items-center mt-2'>
                                 <div className='w-32 h-28 border-[1px] border-neutral-500 rounded mb-2 flex justify-center items-center'>
-                                    {!totalRevenueAndOrders ? (
+                                    {!dashboardInfo ? (
                                         <div className='w-16 h-16 bg-neutral-300 rounded' />
                                     ) : (
                                         ordersPeriod === "today" ? (
-                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{totalRevenueAndOrders.orders.today}</h1>
+                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{dashboardInfo.orders.today}</h1>
                                         ) : ordersPeriod === "week" ? (
-                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{totalRevenueAndOrders.orders.week}</h1>
+                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{dashboardInfo.orders.week}</h1>
                                         ) : ordersPeriod === "month" ? (
-                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{totalRevenueAndOrders.orders.month}</h1>
+                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{dashboardInfo.orders.month}</h1>
                                         ) : null
                                     )}
                                 </div>
@@ -115,30 +94,30 @@ const RestaurantOwnerDashboard = () => {
                             <div className='w-full h-fit flex justify-around items-start'>
                                 <div className='w-fit h-fit flex flex-col justify-normal items-center'>
                                     <div className='w-fit h-28 border-[1px] border-neutral-500 rounded mb-2 flex justify-center items-center px-4'>
-                                        {!totalRevenueAndOrders ? (
+                                        {!dashboardInfo ? (
                                             <div className='w-16 h-16 bg-neutral-300 rounded' />
                                         ) : (
-                                            <h1 className='font-hedwig text-4xl text-emerald-600 cursor-default'>Rs. {totalRevenueAndOrders.revenue.today}</h1>
+                                            <h1 className='font-hedwig text-4xl text-emerald-600 cursor-default'>Rs. {dashboardInfo.revenue.today}</h1>
                                         )}
                                     </div>
                                     <h1 className='font-opensans text-lg text-neutral-800 cursor-default'>Today</h1>
                                 </div>
                                 <div className='w-fit h-fit flex flex-col justify-normal items-center'>
                                     <div className='w-fit h-28 px-4 border-[1px] border-neutral-500 rounded mb-2 flex justify-center items-center'>
-                                        {!totalRevenueAndOrders ? (
+                                        {!dashboardInfo ? (
                                             <div className='w-16 h-16 bg-neutral-300 rounded' />
                                         ) : (
-                                            <h1 className='font-hedwig text-4xl text-emerald-600 cursor-default'>Rs. {totalRevenueAndOrders.revenue.week}</h1>
+                                            <h1 className='font-hedwig text-4xl text-emerald-600 cursor-default'>Rs. {dashboardInfo.revenue.week}</h1>
                                         )}
                                     </div>
                                     <h1 className='font-opensans text-lg text-neutral-800 cursor-default'>Week</h1>
                                 </div>
                                 <div className='w-fit h-fit flex flex-col justify-normal items-center'>
                                     <div className='w-fit h-28 px-4 border-[1px] border-neutral-500 rounded mb-2 flex justify-center items-center'>
-                                        {!totalRevenueAndOrders ? (
+                                        {!dashboardInfo ? (
                                             <div className='w-16 h-16 bg-neutral-300 rounded' />
                                         ) : (
-                                            <h1 className='font-hedwig text-4xl text-emerald-600 cursor-default'>Rs. {totalRevenueAndOrders.revenue.month}</h1>
+                                            <h1 className='font-hedwig text-4xl text-emerald-600 cursor-default'>Rs. {dashboardInfo.revenue.month}</h1>
                                         )}
                                     </div>
                                     <h1 className='font-opensans text-lg text-neutral-800 cursor-default'>Month</h1>
@@ -149,7 +128,7 @@ const RestaurantOwnerDashboard = () => {
                     <div className='w-full h-fit border-[1px] border-neutral-500 rounded flex flex-col justify-start items-start p-4'>
                         <h1 className='font-opensans text-2xl text-neutral-800 cursor-default'>Recent Orders</h1>
                         <div className='w-full h-fit grid auto-rows-auto grid-cols-2 gap-2 mt-2'>
-                            {!recentOrdersReviews ? (
+                            {!dashboardInfo ? (
                                 <>
                                     <div className="relative w-full h-28 flex justify-between items-start border-[1.5px] border-neutral-400 rounded-lg p-4 bg-white">
                                         <div className="w-fit flex flex-col justify-between items-start">
@@ -198,7 +177,7 @@ const RestaurantOwnerDashboard = () => {
                                     </div>
                                 </>
                             ) : (
-                                recentOrdersReviews.recent_orders.map((order) => (
+                                dashboardInfo.recent_orders.map((order) => (
                                     <div key={order.uuid} className="relative w-full h-28 flex justify-between items-start border-[1.5px] border-neutral-400 rounded-lg p-4 bg-white">
                                         <div className="w-fit flex flex-col justify-between items-start">
                                             <h1 className='font-poppins text-2xl text-neutral-700 cursor-default'>Rs. {Math.round(order?.discounted_price)} {order?.discounted_price !== order?.total_price && <span className='font-poppins line-through text-sm text-neutral-500'>{Math.round(order?.total_price)}</span>}</h1>
@@ -227,7 +206,7 @@ const RestaurantOwnerDashboard = () => {
                     <div className='w-full h-fit border-[1px] border-neutral-500 rounded flex flex-col justify-start items-start p-4'>
                         <h1 className='font-opensans text-2xl text-neutral-800 cursor-default'>Recent Feedback</h1>
                         <div className='w-full h-fit flex flex-col justify-start items-start gap-4 mt-2'>
-                            {!recentOrdersReviews ? (
+                            {!dashboardInfo ? (
                                 <>
                                     <div className='w-full min-h-16 rounded-md border-[1px] border-neutral-400 flex flex-col justify-start items-start gap-2 p-4'>
                                         <div className='w-full h-fit flex justify-between items-center'>
@@ -245,7 +224,7 @@ const RestaurantOwnerDashboard = () => {
                                     </div>
                                 </>
                             ) : (
-                                recentOrdersReviews.recent_reviews.map((review) => (
+                                dashboardInfo.recent_reviews.map((review) => (
                                     <div key={review.uuid} className='w-full min-h-16 rounded-md border-[1.5px] border-neutral-500 flex flex-col justify-start items-start gap-2 p-4'>
                                         <div className='w-full h-fit flex justify-between items-center'>
                                             <div className='flex gap-2'>
