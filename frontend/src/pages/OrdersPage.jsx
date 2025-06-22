@@ -25,6 +25,8 @@ const OrdersPage = () => {
                 return "Delivered";
             case 'cancelled':
                 return "Cancelled";
+            case 'declined':
+                return "Declined";
             default:
                 return "Unknown";
         }
@@ -101,11 +103,15 @@ const OrdersPage = () => {
                                     <div className='w-full h-fit flex flex-col justify-start items-start'>
                                         <p className='font-roboto text-md text-neutral-600 capitalize'>At {order?.restaurant_name}</p>
                                         <span className={`px-2 py-1 rounded text-xs font-roboto font-semibold capitalize
-                                        ${order?.order_status === 'delivered' ? 'bg-emerald-100 text-emerald-700' : ''}
-                                        ${order?.order_status === 'pending' ? 'bg-yellow-100 text-yellow-700' : ''}
-                                        ${order?.order_status === 'cancelled' ? 'bg-rose-100 text-rose-700' : ''}
+                                        ${
+                                            order.order_status === 'delivered'
+                                            ? 'bg-emerald-100 text-emerald-700'
+                                            : order.order_status === 'cancelled' || order.order_status === 'declined'
+                                            ? 'bg-rose-100 text-rose-700'
+                                            : 'bg-neutral-200 text-neutral-700'
+                                        }
                                         `}>
-                                            {order?.order_status}
+                                            {getOrderStatus(order?.order_status)}
                                         </span>
                                     </div>
                                 </div>

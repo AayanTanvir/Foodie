@@ -142,6 +142,7 @@ class Order(models.Model):
     
     class OrderStatus(models.TextChoices):
         PENDING = 'pending', 'Pending'
+        DECLINED = 'declined', 'Declined',
         PREPARING = 'preparing', 'Preparing'
         READY_FOR_PICKUP = 'ready_for_pickup', 'Ready for Pickup'
         OUT_FOR_DELIVERY = 'out_for_delivery', 'Out for Delivery'

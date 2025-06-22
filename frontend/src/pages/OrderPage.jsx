@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { GlobalContext } from '../context/GlobalContext'
 import { useNavigate, useParams } from 'react-router-dom';
 import { formatDate } from '../utils/Utils';
 import axiosClient from '../utils/axiosClient';
@@ -26,8 +25,6 @@ const OrderPage = () => {
     }
 
     const getStatusValue = () => {
-        if (order.order_status === "cancelled") return 'w-0';
-
         switch (order.order_status) {
             case 'preparing':
                 return "w-[14%]";
@@ -147,7 +144,7 @@ const OrderPage = () => {
                 <div className='w-full h-full flex-1 grid grid-rows-8 grid-cols-10 px-5 pb-5'>
                     <div className='border-[1.5px] rounded border-neutral-300 flex flex-col justify-start items-start row-start-1 row-end-5 col-start-1 col-end-7'>
                         <div className='w-full h-fit p-4 flex flex-col justify-start items-start border-b-[1px] border-neutral-300'>
-                            {order.order_status !== "cancelled" && order.order_status !== "delivered" && order.order_status !== "pending" ? (
+                            {order.order_status !== "cancelled" && order.order_status !== "delivered" && order.order_status !== "pending" && order.order_status !== "declined" ? (
                                 <>
                                     <h1 className='font-notoserif text-2xl cursor-default text-neutral-700'>Status</h1>
                                     <div className='w-full flex flex-col justify-center items-center'>
@@ -162,11 +159,13 @@ const OrderPage = () => {
                                     </div>
                                 </>
                             ) : order.order_status === "cancelled" ? (
-                                <h1 className='font-notoserif text-2xl cursor-default text-neutral-700'>Status: <span className='font-notoserif text-2xl cursor-default text-red-600'>Cancelled</span></h1>
+                                <h1 className='font-notoserif text-2xl cursor-default text-neutral-700'>Status: <span className='font-notoserif text-2xl cursor-default text-rose-500'>Cancelled</span></h1>
                             ) : order.order_status === "delivered" ? (
                                 <h1 className='font-notoserif text-2xl cursor-default text-neutral-700'>Status: <span className='font-notoserif text-2xl cursor-default text-neutral-800'>Delivered</span></h1>
-                            ) : order.order_status === "pending" && (
+                            ) : order.order_status === "pending" ? (
                                 <h1 className='font-notoserif text-2xl cursor-default text-neutral-700'>Status: <span className='font-notoserif text-2xl cursor-default text-neutral-600'>Pending Approval</span></h1>
+                            ) : order.order_status === "declined" && (
+                                <h1 className='font-notoserif text-2xl cursor-default text-neutral-700'>Status: <span className='font-notoserif text-2xl cursor-default text-rose-500'>Order Declined</span></h1>
                             )}
                         </div>
                         <div className='w-full flex-1 flex flex-col justify-between items-center p-4'>
