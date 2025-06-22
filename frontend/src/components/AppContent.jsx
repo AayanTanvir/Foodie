@@ -29,6 +29,7 @@ import AdminDashboard from '../pages/AdminDashboard';
 import Sidebar from '../components/Sidebar';
 import RestaurantOwnerRestaurantsPage from '../pages/RestaurantOwnerRestaurantsPage';
 import RestaurantOwnerRestaurantPage from '../pages/RestaurantOwnerRestaurantPage';
+import RestaurantOwnerOrdersPage from '../pages/RestaurantOwnerOrdersPage';
 
 const AppContent = () => {
     let { showOTPForm } = useContext(AuthContext);
@@ -61,6 +62,7 @@ const AppContent = () => {
                         <Route element={ <RestaurantOwnerDashboard/> } path='/restaurant-owner/dashboard'/>
                         <Route element={ <RestaurantOwnerRestaurantsPage/> } path='/restaurant-owner/restaurants'/>
                         <Route element={ <RestaurantOwnerRestaurantPage/> } path='/restaurant-owner/restaurants/:uuid'/>
+                        <Route element={ <RestaurantOwnerOrdersPage /> } path='/restaurant-owner/orders' />
                     </Route>
 
                     <Route element={ <AdminRoutes/> }>
