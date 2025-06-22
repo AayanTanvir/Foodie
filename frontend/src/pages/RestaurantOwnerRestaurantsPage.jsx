@@ -50,8 +50,6 @@ const RestaurantOwnerRestaurantsPage = () => {
         }
     }, []);
 
-    console.log(ownedRestaurants)
-
     return (
         <div className='absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center mt-12'>
             <div className='w-full h-full flex flex-col justify-start items-center py-8 px-8 gap-6'>

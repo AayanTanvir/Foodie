@@ -18,29 +18,18 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 import { Select, MenuItem } from '@mui/material';
+import { FaStar } from 'react-icons/fa';
 
 const RestaurantOwnerRestaurantPage = () => {
     const [restaurant, setRestaurant] = useState(null);
     const [restaurantDiscounts, setRestaurantDiscounts] = useState(null);
-    const [mostOrderedItemPeriod, setMostOrderedItemPeriod] = useState("week");
+    const [mostOrderedItemPeriod, setMostOrderedItemPeriod] = useState("all_time");
+    const [mostOrderedItems, setMostOrderedItems] = useState(null);
+    const [highestRatedItems, setHighestRatedItems] = useState(null);
     const { uuid } = useParams();
     const { setMessageAndMode } = useContext(GlobalContext);
     const navigate = useNavigate();
     const formattedTimings = `${formatTime(restaurant?.opening_time)} - ${formatTime(restaurant?.closing_time)}`;
-    
-    const data = [
-        { name: 'Pizza', orders: 240 },
-        { name: 'Burger', orders: 139 },
-        { name: 'Pasta', orders: 980 },
-        { name: 'Salad', orders: 390 },
-    ];
-    const data2 = [
-        { name: 'Pizza', rating: 4.2 },
-        { name: 'Burger', rating: 3.8 },
-        { name: 'Pasta', rating: 4.0 },
-        { name: 'Salad', rating: 3.5 },
-    ];
-
 
     const fetchRestaurant = async () => {
         try {
@@ -77,6 +66,42 @@ const RestaurantOwnerRestaurantPage = () => {
             navigate('/');
         }
 
+    }
+
+    const fetchMostOrderedItems = async () => {
+        try {
+            const res = await axiosClient.get(`owner/restaurants/${uuid}/stats/most_ordered/?period=${mostOrderedItemPeriod}`);
+
+            if (res.status === 200) {
+                setMostOrderedItems(res.data);
+            } else {
+                setMessageAndMode("Unexpected response", "failure");
+                console.error("unexpected response status: ", res.status);
+                navigate("/");
+            }
+        } catch (err) {
+            console.error("Error while fetching restaurant details", err);
+            setMessageAndMode("An error occurred", "failure");
+            navigate('/');
+        }
+    }
+
+    const fetchHighestRatedItems = async () => {
+        try {
+            const res = await axiosClient.get(`owner/restaurants/${uuid}/stats/highest_rated/`);
+
+            if (res.status === 200) {
+                setHighestRatedItems(res.data);
+            } else {
+                setMessageAndMode("Unexpected response", "failure");
+                console.error("unexpected response status: ", res.status);
+                navigate("/");
+            }
+        } catch (err) {
+            console.error("Error while fetching restaurant details", err);
+            setMessageAndMode("An error occurred", "failure");
+            navigate('/');
+        }
     }
 
     const discountInfo = (discount) => {
@@ -117,10 +142,17 @@ const RestaurantOwnerRestaurantPage = () => {
         if (uuid) {
             fetchRestaurant();
             fetchDiscounts();
+            fetchHighestRatedItems();
         } else {
             navigate('/');
         }
     }, []);
+
+    useEffect(() => {
+        if (mostOrderedItemPeriod) {
+            fetchMostOrderedItems();
+        }
+    }, [mostOrderedItemPeriod])
 
     return (
         <div className='absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center'>
@@ -137,7 +169,10 @@ const RestaurantOwnerRestaurantPage = () => {
                             </>
                         ) : (
                             <>
-                                <h1 className='cursor-default font-notoserif text-4xl text-neutral-800'>{restaurant.name}</h1>
+                                <div className='w-fit h-fit flex justify-center items-center gap-4'>
+                                    <h1 className='cursor-default font-notoserif text-4xl text-neutral-800'>{restaurant.name}</h1>
+                                    <h1 className='cursor-default font-hedwig text-2xl text-neutral-800 flex items-center gap-1'><span className='text-2xl text-amber-400'><FaStar /></span>{restaurant.rating}</h1>
+                                </div>
                                 <div className='w-fit h-full flex justify-center items-center gap-2'>
                                     <button onClick={() => { navigate(`/restaurant-owner/restaurants/${restaurant.uuid}/edit`) }} className="bg-white w-fit h-full px-2 rounded flex justify-center items-center gap-1 border-[1px] border-neutral-400 hover:bg-neutral-100">
                                         <span className='text-neutral-800 text-xl'>
@@ -182,16 +217,15 @@ const RestaurantOwnerRestaurantPage = () => {
                                             >
                                                 <MenuItem value="week">The Week</MenuItem>
                                                 <MenuItem value="month">The Month</MenuItem>
-                                                <MenuItem value="all time">All Time</MenuItem>
+                                                <MenuItem value="all_time">All Time</MenuItem>
                                             </Select>
                                         </div>
                                         <ResponsiveContainer width="100%" height={500}>
-                                            <BarChart data={data} margin={{ top: 20, right: 30, left: 5, bottom: 5 }}>
+                                            <BarChart data={mostOrderedItems} margin={{ top: 20, right: 30, left: 5, bottom: 5 }}>
                                                 <CartesianGrid stroke="#737373" />
-                                                <XAxis dataKey="name" />
+                                                <XAxis dataKey="item" />
                                                 <YAxis />
                                                 <Tooltip />
-                                                <Legend />
                                                 <Bar dataKey="orders" fill="#262626" />
                                             </BarChart>
                                         </ResponsiveContainer>
@@ -199,12 +233,11 @@ const RestaurantOwnerRestaurantPage = () => {
                                     <div className='w-[50%] h-fit flex flex-col justify-start items-start'>
                                         <h1 className='w-full h-fit mb-2 font-poppins text-neutral-800 text-2xl cursor-default text-center'>Highest Rated Items</h1>
                                         <ResponsiveContainer width="100%" height={500}>
-                                            <BarChart data={data2} margin={{ top: 20, right: 30, left: 5, bottom: 5 }}>
+                                            <BarChart data={highestRatedItems} margin={{ top: 20, right: 30, left: 5, bottom: 5 }}>
                                                 <CartesianGrid stroke="#737373" />
-                                                <XAxis dataKey="name" />
+                                                <XAxis dataKey="item" />
                                                 <YAxis type="number" domain={[0, 5]} ticks={[0, 1, 2, 3, 4, 5]}/>
                                                 <Tooltip />
-                                                <Legend />
                                                 <Bar dataKey="rating" fill="#262626" />
                                             </BarChart>
                                         </ResponsiveContainer>
