@@ -263,7 +263,7 @@ class OwnerDashboardAPIView(generics.GenericAPIView):
     
     def get(self, request):
         try:
-            user = self.request.user
+            user = request.user
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         
@@ -304,10 +304,10 @@ class OwnerDashboardAPIView(generics.GenericAPIView):
             
     
         
-class OwnerMostOrderedAndHighestRatedItemsAPIView(generics.GenericAPIView):
+class OwnerMostOrderedItemsAPIView(generics.GenericAPIView):
 
     def get(self, request, uuid):
-        user = self.request.user
+        user = request.user
         if not user.groups.filter(name='restaurant owner').exists():
             return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
         
@@ -316,48 +316,61 @@ class OwnerMostOrderedAndHighestRatedItemsAPIView(generics.GenericAPIView):
         except Restaurant.DoesNotExist:
             return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
         
+        period = request.query_params.get('period', 'all_time')
         now = timezone.now()
-        week_start = now - timezone.timedelta(days=now.weekday())
-        month_start = now.replace(day=1)
+        
+        if period == "week":
+            start = now - timezone.timedelta(days=now.weekday())
+        elif period == "month":
+            start = now.replace(day=1)
+        elif period == 'all_time':
+            start = None
         
         menu_items = restaurant.menu_items.filter(is_side_item=False)
-        mo_all_time = sorted(menu_items, key=attrgetter("popularity"), reverse=True)[:5]
-        mo_week = (
-            OrderItem.objects
-            .filter(menu_item__in=menu_items, order__created_at__gte=week_start)
-            .values("menu_item__name")
-            .annotate(orders=Count("order", distinct=True))
-            .order_by("-orders")[:5]
-        )
         
-        mo_month = (
-            OrderItem.objects
-            .filter(menu_item__in=menu_items, order__created_at__gte=month_start)
-            .values("menu_item__name")
-            .annotate(orders=Count("order", distinct=True))
-            .order_by("-orders")[:5]
-        )
+        if start:
+            items = (
+                OrderItem.objects
+                .filter(menu_item__in=menu_items, order__created_at__gte=start)
+                .values("menu_item__name")
+                .annotate(orders=Count("order", distinct=True))
+                .order_by("-orders")[:5]
+            )
+        else:
+            items = sorted(menu_items, key=attrgetter("popularity"), reverse=True)[:5]
         
-        highest_rated_items = sorted(menu_items, key=attrgetter("rating"), reverse=True)[:5]
-        
-        data = {
-            "most_ordered": {
-                "all_time": [
-                    {"item": item.name, "rating": item.popularity}
-                    for item in mo_all_time
-                ],
-                "week": [
-                    {"name": item["menu_item__name"], "orders": item["orders"]}
-                    for item in mo_week
-                ],
-                "month": [
-                    {"name": item["menu_item__name"], "orders": item["orders"]}
-                    for item in mo_month
-                ]
-            },
-            "highest_rated": [
-                {"item": item.name, "rating": item.rating} for item in highest_rated_items
+        if start:
+            data = [
+                {"item": item['menu_item__name'], "orders": item['orders']}
+                for item in items
             ]
-        }
+        else:
+            data = [
+                {"item": item.name, "orders": item.popularity}
+                for item in items
+            ]
 
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class OwnerHighestRatedItemsAPIView(generics.GenericAPIView):
+    
+    def get(self, request, uuid):
+        user = request.user
+        if not user.groups.filter(name='restaurant owner').exists():
+            return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
+        
+        try:
+            restaurant = Restaurant.objects.get(uuid=uuid)
+        except Restaurant.DoesNotExist:
+            return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        menu_items = restaurant.menu_items.filter(is_side_item=False)
+        items = sorted(menu_items, key=attrgetter("rating"), reverse=True)[:5]
+        
+        data = [
+            {"item": item.name, "rating": item.rating}
+            for item in items
+        ]
+        
         return Response(data, status=status.HTTP_200_OK)
