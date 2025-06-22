@@ -292,8 +292,8 @@ class OwnerDashboardAPIView(generics.GenericAPIView):
         
         data = {}
         
-        revenue_orders_serializer = OwnerTotalRevenueAndOrdersSerializer(instance={"revenue": revenue, "orders": orders})
-        recent_orders_reviews_serializer = OwnerRecentOrdersReviewsSerializer(instance={'recent_orders': recent_orders, 'recent_reviews': recent_reviews})
+        revenue_orders_serializer = OwnerTotalRevenueAndOrdersSerializer(instance={"revenue": revenue, "orders": orders}, context={'request': request})
+        recent_orders_reviews_serializer = OwnerRecentOrdersReviewsSerializer(instance={'recent_orders': recent_orders, 'recent_reviews': recent_reviews}, context={'request': request})
         
         
         data = {

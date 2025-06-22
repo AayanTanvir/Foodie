@@ -27,6 +27,7 @@ const RestaurantOwnerRestaurantPage = () => {
     const { setMessageAndMode } = useContext(GlobalContext);
     const navigate = useNavigate();
     const formattedTimings = `${formatTime(restaurant?.opening_time)} - ${formatTime(restaurant?.closing_time)}`;
+    
     const data = [
         { name: 'Pizza', orders: 240 },
         { name: 'Burger', orders: 139 },

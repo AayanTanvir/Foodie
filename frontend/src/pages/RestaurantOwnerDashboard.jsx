@@ -10,8 +10,6 @@ import { formatDate } from '../utils/Utils';
 
 const RestaurantOwnerDashboard = () => {
 
-    const [totalRevenueAndOrders, setTotalRevenueAndOrders] = useState(null);
-    const [recentOrdersReviews, setRecentOrdersReviews] = useState(null);
     const [dashboardInfo, setDashboardInfo] = useState(null);
     const [ordersPeriod, setOrdersPeriod] = useState("today");
     const { user } = useContext(AuthContext);
