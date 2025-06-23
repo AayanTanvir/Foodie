@@ -16,10 +16,9 @@ const RestaurantOwnerDashboard = () => {
     const { setMessageAndMode } = useContext(GlobalContext);
     const navigate = useNavigate();
 
-
     const fetchInfo = async () => {
         try {
-            const res = await axiosClient.get(`/owner/dashboard/`)
+            const res = await axiosClient.get(`/owner/dashboard/?orders_count_period=${ordersPeriod}`)
 
             if (res.status === 200) {
                 setDashboardInfo(res.data);
@@ -40,7 +39,7 @@ const RestaurantOwnerDashboard = () => {
         if (user && user.uuid) {
             fetchInfo();
         }
-    }, [])
+    }, [ordersPeriod])
 
     return (
         <div className='absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center mt-12'>
@@ -57,13 +56,7 @@ const RestaurantOwnerDashboard = () => {
                                     {!dashboardInfo ? (
                                         <div className='w-16 h-16 bg-neutral-300 rounded' />
                                     ) : (
-                                        ordersPeriod === "today" ? (
-                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{dashboardInfo.orders.today}</h1>
-                                        ) : ordersPeriod === "week" ? (
-                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{dashboardInfo.orders.week}</h1>
-                                        ) : ordersPeriod === "month" ? (
-                                            <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{dashboardInfo.orders.month}</h1>
-                                        ) : null
+                                        <h1 className='font-hedwig text-4xl text-neutral-800 cursor-default'>{dashboardInfo.orders}</h1>
                                     )}
                                 </div>
                                 <Select
@@ -84,6 +77,7 @@ const RestaurantOwnerDashboard = () => {
                                     <MenuItem value="today">Today</MenuItem>
                                     <MenuItem value="week">Week</MenuItem>
                                     <MenuItem value="month">Month</MenuItem>
+                                    <MenuItem value="all_time">All Time</MenuItem>
                                 </Select>
                             </div>
                         </div>
@@ -119,6 +113,16 @@ const RestaurantOwnerDashboard = () => {
                                         )}
                                     </div>
                                     <h1 className='font-opensans text-lg text-neutral-800 cursor-default'>Month</h1>
+                                </div>
+                                <div className='w-fit h-fit flex flex-col justify-normal items-center'>
+                                    <div className='w-fit h-28 px-4 border-[1px] border-neutral-500 rounded mb-2 flex justify-center items-center'>
+                                        {!dashboardInfo ? (
+                                            <div className='w-16 h-16 bg-neutral-300 rounded' />
+                                        ) : (
+                                            <h1 className='font-hedwig text-4xl text-emerald-600 cursor-default'>Rs. {dashboardInfo.revenue.all_time}</h1>
+                                        )}
+                                    </div>
+                                    <h1 className='font-opensans text-lg text-neutral-800 cursor-default'>All Time</h1>
                                 </div>
                             </div>
                         </div>

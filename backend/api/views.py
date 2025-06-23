@@ -10,6 +10,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import status
+from rest_framework.views import APIView
 from .models import *
 from .utils import Utils
 from .serializers import *
@@ -259,7 +260,7 @@ class OwnerRestaurantsAPIView(generics.ListAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     
-class OwnerDashboardAPIView(generics.GenericAPIView):
+class OwnerDashboardAPIView(APIView):
     
     def get(self, request):
         try:
@@ -270,9 +271,22 @@ class OwnerDashboardAPIView(generics.GenericAPIView):
         if not user.groups.filter(name='restaurant owner').exists():
             return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
         
-        today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        week_start = today_start - timezone.timedelta(days=today_start.weekday())
-        month_start = today_start.replace(day=1)
+        orders_count_period = request.query_params.get("orders_count_period", "today")
+        now = timezone.now()
+        today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        week_start = now - timezone.timedelta(days=now.weekday())
+        month_start = now.replace(day=1)
+        
+        if orders_count_period == "today":
+            start = today_start
+        elif orders_count_period == "week":
+            start = week_start
+        elif orders_count_period == "month":
+            start = month_start
+        elif orders_count_period == "all_time":
+            start = None
+            
+        
         
         restaurants = Restaurant.objects.filter(owner=user)
         recent_orders = Order.objects.filter(restaurant__in=restaurants).order_by('-created_at')[:6]
@@ -282,19 +296,16 @@ class OwnerDashboardAPIView(generics.GenericAPIView):
         revenue = {
             'today': round(sum(order.discounted_price for order in orders.filter(created_at__gte=today_start))),
             'week': round(sum(order.discounted_price for order in orders.filter(created_at__gte=week_start))),
-            'month': round(sum(order.discounted_price for order in orders.filter(created_at__gte=month_start)))
+            'month': round(sum(order.discounted_price for order in orders.filter(created_at__gte=month_start))),
+           'all_time': round(sum(order.discounted_price for order in orders.all()))
         }
-        orders = {
-            'today': orders.filter(created_at__gte=today_start).count(),
-            'week': orders.filter(created_at__gte=week_start).count(),
-            'month': orders.filter(created_at__gte=month_start).count()
-        }
+        if not start:
+            orders_count = orders.all().count()
+        else: 
+            orders_count = orders.filter(created_at__gte=start).count()
         
-        data = {}
-        
-        revenue_orders_serializer = OwnerTotalRevenueAndOrdersSerializer(instance={"revenue": revenue, "orders": orders}, context={'request': request})
+        revenue_orders_serializer = OwnerTotalRevenueAndOrdersSerializer(instance={"revenue": revenue, "orders": orders_count}, context={'request': request})
         recent_orders_reviews_serializer = OwnerRecentOrdersReviewsSerializer(instance={'recent_orders': recent_orders, 'recent_reviews': recent_reviews}, context={'request': request})
-        
         
         data = {
             **revenue_orders_serializer.data,
@@ -304,7 +315,7 @@ class OwnerDashboardAPIView(generics.GenericAPIView):
             
     
         
-class OwnerMostOrderedItemsAPIView(generics.GenericAPIView):
+class OwnerMostOrderedItemsAPIView(APIView):
 
     def get(self, request, uuid):
         user = request.user
@@ -353,7 +364,7 @@ class OwnerMostOrderedItemsAPIView(generics.GenericAPIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-class OwnerHighestRatedItemsAPIView(generics.GenericAPIView):
+class OwnerHighestRatedItemsAPIView(APIView):
     
     def get(self, request, uuid):
         user = request.user

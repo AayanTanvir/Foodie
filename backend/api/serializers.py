@@ -452,7 +452,7 @@ class ReviewWriteSerializer(serializers.ModelSerializer):
 
 class OwnerTotalRevenueAndOrdersSerializer(serializers.Serializer):
     revenue = serializers.DictField(child=serializers.IntegerField())
-    orders = serializers.DictField(child=serializers.IntegerField())
+    orders = serializers.IntegerField()
 
 
 class OwnerRecentOrdersReviewsSerializer(serializers.Serializer):
