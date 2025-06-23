@@ -3,10 +3,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { GlobalContext } from '../context/GlobalContext';
 import axiosClient from '../utils/axiosClient';
 import { formatTime } from '../utils/Utils';
-import { MdEdit } from 'react-icons/md';
-import { MdDeleteOutline } from 'react-icons/md';
+import { MdEdit, MdDeleteOutline  } from 'react-icons/md';
 import { CiDiscount1 } from 'react-icons/ci';
 import { IoCreateOutline } from 'react-icons/io5';
+import { FiInbox } from 'react-icons/fi';
 import {
     BarChart,
     Bar,
@@ -220,15 +220,22 @@ const RestaurantOwnerRestaurantPage = () => {
                                                 <MenuItem value="all_time">All Time</MenuItem>
                                             </Select>
                                         </div>
-                                        <ResponsiveContainer width="100%" height={500}>
-                                            <BarChart data={mostOrderedItems} margin={{ top: 20, right: 30, left: 5, bottom: 5 }}>
-                                                <CartesianGrid stroke="#737373" />
-                                                <XAxis dataKey="item" />
-                                                <YAxis />
-                                                <Tooltip />
-                                                <Bar dataKey="orders" fill="#262626" />
-                                            </BarChart>
-                                        </ResponsiveContainer>
+                                        {mostOrderedItems.length !== 0 ? (
+                                            <ResponsiveContainer width="100%" height={500}>
+                                                <BarChart data={mostOrderedItems} margin={{ top: 20, right: 30, left: 5, bottom: 5 }}>
+                                                    <CartesianGrid stroke="#737373" />
+                                                    <XAxis dataKey="item" />
+                                                    <YAxis />
+                                                    <Tooltip />
+                                                    <Bar dataKey="orders" fill="#262626" />
+                                                </BarChart>
+                                            </ResponsiveContainer>
+                                        ) : (
+                                            <div className='w-[95%] h-[450px] mt-4 border-2 border-neutral-400 flex flex-col justify-center items-center'>
+                                                <h1 className='text-[5rem] text-neutral-300 cursor-default'><FiInbox /></h1>
+                                                <h1 className='text-3xl font-poppins text-neutral-800 cursor-default'>No orders this week..</h1>
+                                            </div>
+                                        )}
                                     </div>
                                     <div className='w-[50%] h-fit flex flex-col justify-start items-start'>
                                         <h1 className='w-full h-fit mb-2 font-poppins text-neutral-800 text-2xl cursor-default text-center'>Highest Rated Items</h1>
