@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.core.cache import cache
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.db.models import Count
@@ -8,14 +7,37 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 from .models import *
 from .utils import Utils
 from .serializers import *
 import random, jwt
 from operator import attrgetter
+from urllib.parse import urlparse
+
+
+class MyPageNumberPagination(PageNumberPagination):
+    page_size = 5
+    max_page_size = 5
+    
+    def get_next_link(self):
+        if not self.page.has_next():
+            return None
+        url = super().get_next_link()
+        return self._strip_urlhost(url)
+    
+    def get_previous_link(self):
+        if not self.page.has_previous():
+            return None
+        url = super().get_previous_link()
+        return self._strip_urlhost(url)
+    
+    def _strip_urlhost(self, url):
+        parsed = urlparse(url)
+        return parsed.path + ('?' + parsed.query if parsed.query else '')
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -385,3 +407,19 @@ class OwnerHighestRatedItemsAPIView(APIView):
         ]
         
         return Response(data, status=status.HTTP_200_OK)
+    
+    
+class OwnerPendingOrdersAPIView(generics.ListAPIView):
+    serializer_class = OrderReadSerializer
+    pagination_class = MyPageNumberPagination
+    # permission_classes = [AllowAny]
+    
+    def get_queryset(self):
+        user = self.request.user
+        if not user.groups.filter(name='restaurant owner').exists():
+            return ValidationError("User is not a restaurant owner")
+        else:
+            restaurants = Restaurant.objects.filter(owner=user)
+            return Order.objects.filter(restaurant__in=restaurants, order_status=Order.OrderStatus.PENDING)
+        # restaurant = Restaurant.objects.get(name="Aayan")
+        # return Order.objects.filter(restaurant=restaurant, order_status=Order.OrderStatus.PENDING)
