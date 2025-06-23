@@ -233,7 +233,7 @@ const RestaurantOwnerRestaurantPage = () => {
                                         ) : (
                                             <div className='w-[95%] h-[450px] mt-4 border-2 border-neutral-400 flex flex-col justify-center items-center'>
                                                 <h1 className='text-[5rem] text-neutral-300 cursor-default'><FiInbox /></h1>
-                                                <h1 className='text-3xl font-poppins text-neutral-800 cursor-default'>No orders this week..</h1>
+                                                <h1 className='text-3xl font-poppins text-neutral-700 cursor-default'>No orders yet..</h1>
                                             </div>
                                         )}
                                     </div>
