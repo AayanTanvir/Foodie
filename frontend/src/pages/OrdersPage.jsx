@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import axiosClient from '../utils/axiosClient';
-import { formatDate } from '../utils/Utils';
+import { formatDate, getOrderStatus } from '../utils/Utils';
 
 const OrdersPage = () => {
 
@@ -9,28 +9,6 @@ const OrdersPage = () => {
     const [orders, setOrders] = useState(null);
     let navigate = useNavigate();
     const [sortedOrders, setSortedOrders] = useState([]);
-
-    const getOrderStatus = (status) => {
-        if (!status) return "Unknown";
-        switch (status) {
-            case 'pending':
-                return "Pending Approval";
-            case 'preparing':
-                return "Preparing";
-            case 'ready_for_pickup':
-                return "Ready for Pickup";
-            case 'out_for_delivery':
-                return "Out for Delivery";
-            case 'delivered':
-                return "Delivered";
-            case 'cancelled':
-                return "Cancelled";
-            case 'declined':
-                return "Declined";
-            default:
-                return "Unknown";
-        }
-    }
 
     const fetchOrders = async () => {
         try {

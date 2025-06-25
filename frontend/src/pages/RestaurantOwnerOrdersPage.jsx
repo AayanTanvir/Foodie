@@ -4,6 +4,7 @@ import AuthContext from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axiosClient from '../utils/axiosClient';
 import { GlobalContext } from '../context/GlobalContext';
+import { formatDateTime, getOrderStatus } from '../utils/Utils';
 
 const RestaurantOwnerOrdersPage = () => {
     const [pendingOrders, setPendingOrders] = useState(null);
@@ -49,11 +50,40 @@ const RestaurantOwnerOrdersPage = () => {
                     </div>
                     {pendingOrders ? (
                         Array.isArray(pendingOrders.results) && pendingOrders.results.length !== 0 ? (
-                            <div className='w-full min-h-24 flex flex-col justify-start items-start'>
-                                {pendingOrders.results.map((order, index) => (
-                                    <div key={order.uuid} className={`w-full h-12 ${index === pendingOrders.results.length - 1 ? '' : 'border-b-[1px]'} border-neutral-400`} />
-                                ))}
-                            </div>
+                            <table className='w-full h-40 table-auto border-collapse'>
+                                <thead className='border-b-[1.5px] border-neutral-400'>
+                                    <tr className='text-neutral-700 font-opensans text-md cursor-default'>
+                                        <th className='w-12 h-10 px-4'><div className='w-6 h-6 rounded-md border-[1px] border-neutral-400 cursor-pointer hover:border-neutral-600'/></th>
+                                        <th>Restaurant</th>
+                                        <th>Total Price / Discounted Price</th>
+                                        <th>Payment Method</th>
+                                        <th>Status</th>
+                                        <th>Ordered At</th>
+                                        <th className='w-[20rem] h-10'></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {pendingOrders.results.map((order, index) => (
+                                        <tr key={order.uuid} className={`text-neutral-700 relative h-16 ${index === pendingOrders.results.length - 1 ? '' : 'border-b-2 border-gray-200'}`}>
+                                            <td className='w-12 h-10 px-4'>
+                                                <div className='w-6 h-6 rounded-full border-[1px] border-neutral-400 cursor-pointer hover:border-neutral-600' />
+                                            </td>
+                                            <td className='text-center'>{order.restaurant_name}</td>
+                                            <td className='text-center'>{order.total_price} / {order.discounted_price}</td>
+                                            <td className='text-center'>{order.payment_method === "cash_on_delivery" ? "Cash" : order.payment_method === "card" && "Card"}</td>
+                                            <td className='text-center'>{getOrderStatus(order.order_status)}</td>
+                                            <td className='text-center'>{formatDateTime(order.created_at)}</td>
+                                            <td>
+                                                <div className='flex justify-center items-center w-full h-full gap-2'>
+                                                    <button className='text-neutral-700 font-opensans border-neutral-400 border-[1px] rounded px-2 py-1 text-md transition duration-200 ease-in-out hover:text-neutral-100 hover:bg-neutral-800'>Show Items</button>
+                                                    <button className='text-emerald-500 border-emerald-400 border-[1px] font-opensans rounded px-2 py-1 text-md transition duration-200 ease-in-out hover:text-neutral-100 hover:bg-emerald-500'>Accept</button>
+                                                    <button className='text-rose-500 border-rose-400 border-[1px] font-opensans rounded px-2 py-1 text-md transition duration-200 ease-in-out hover:text-neutral-100 hover:bg-rose-500'>Decline</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         ) : (
                             <div className='w-full min-h-40 flex flex-col justify-center items-center'>
                                 <h1 className='text-[5rem] text-neutral-300 cursor-default'><FiInbox /></h1>

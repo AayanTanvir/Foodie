@@ -19,6 +19,17 @@ export const formatDate = (dateTimeStr) => {
     });
 }
 
+export const formatDateTime = (dateTimeStr) => {
+    if (!dateTimeStr) return "Unknown";
+    const date = new Date(dateTimeStr);
+    return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
+    });
+}
 export const logout = () => {
     localStorage.clear();
     window.location.href = '/login';
@@ -36,4 +47,26 @@ export const isExpiredSeconds = (exp) => {
 
 export const CapitalizeString = (str) => {
     return str ? str.charAt(0).toUpperCase() + str.slice(1) : ""
+}
+
+export const getOrderStatus = (status) => {
+    if (!status) return "Unknown";
+    switch (status) {
+        case 'pending':
+            return "Pending Approval";
+        case 'preparing':
+            return "Preparing";
+        case 'ready_for_pickup':
+            return "Ready for Pickup";
+        case 'out_for_delivery':
+            return "Out for Delivery";
+        case 'delivered':
+            return "Delivered";
+        case 'cancelled':
+            return "Cancelled";
+        case 'declined':
+            return "Declined";
+        default:
+            return "Unknown";
+    }
 }

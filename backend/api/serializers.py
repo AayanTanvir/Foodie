@@ -343,12 +343,6 @@ class OrderReadSerializer(serializers.ModelSerializer):
     def get_total_price(self, obj):
         return obj.total_price
     
-    def validate_order_uuid(self, value):
-        if not Order.objects.filter(uuid=value).exists():
-            raise serializers.ValidationError("Invalid UUID")
-        return value
-    
-    
     class Meta:
         model = Order
         fields = [
