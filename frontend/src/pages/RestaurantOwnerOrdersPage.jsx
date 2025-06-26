@@ -5,9 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import axiosClient from '../utils/axiosClient';
 import { GlobalContext } from '../context/GlobalContext';
 import { formatDateTime, getOrderStatus } from '../utils/Utils';
+import { MdFirstPage } from "react-icons/md";
+import { MdLastPage } from "react-icons/md";
+import { MdNavigateNext } from "react-icons/md";
+import { MdNavigateBefore } from "react-icons/md";
 
 const RestaurantOwnerOrdersPage = () => {
     const [pendingOrders, setPendingOrders] = useState(null);
+    const [selectedPendingOrders, setSelectedPendingOrders] = useState([]);
     const { user } = useContext(AuthContext);
     const { setMessageAndMode } = useContext(GlobalContext);
     const navigate = useNavigate();
@@ -33,55 +38,135 @@ const RestaurantOwnerOrdersPage = () => {
             setMessageAndMode("An error occurred", "failure");
             navigate('/');
         }
-    } 
+    }
+
+    const handleSelect = (uuid=null, all=false) => {
+        if ((!uuid && all === false) || (all === true && !pendingOrders)) return;
+        if (all) {
+            const allSelected = pendingOrders.results.length === selectedPendingOrders.length;
+            if (allSelected) {
+                setSelectedPendingOrders([]);
+            } else {
+                let allOrders = [];
+                pendingOrders.results.forEach(order => {
+                    allOrders.push(order.uuid);
+                });
+                setSelectedPendingOrders(allOrders);
+            }
+        } else {
+            setSelectedPendingOrders((prev) => {
+                const selected = selectedPendingOrders.includes(uuid);
+                if (selected) {
+                    return selectedPendingOrders.filter(item => item !== uuid);
+                } else {
+                    return [...prev, uuid];
+                }
+            });
+        }
+    }
 
     useEffect(() => {
         if (user) {
             fetchPendingOrders();
         }
     }, [])
-
+    console.log(pendingOrders);
     return (
         <div className='absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center mt-12'>
             <div className='w-full h-full flex flex-col justify-start items-center py-8 px-8 gap-6'>
                 <div className='border-[1.5px] border-neutral-400 w-full h-fit rounded-md flex flex-col justify-start items-start'>
-                    <div className='w-full h-fit border-b-[1.5px] border-neutral-400 px-4 py-2'>
+                    <div className='w-full h-fit border-b-[1.5px] border-neutral-400 px-4 py-2 flex justify-between items-center'>
                         <h1 className='cursor-default font-notoserif text-2xl text-neutral-800'>Pending Approvals</h1>
+                        <div className='w-fit h-full flex justify-center items-center gap-2'>
+                            {pendingOrders?.total_pages > 1 && (
+                                <>
+                                    <button className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
+                                        <span className='text-neutral-700 text-2xl'>
+                                            <MdFirstPage />
+                                        </span>
+                                    </button>
+                                    <button className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
+                                        <span className='text-neutral-700 text-2xl'>
+                                            <MdNavigateBefore />
+                                        </span>
+                                    </button>
+                                    <p className='text-neutral-700 text-xl font-hedwig cursor-default'>
+                                        {pendingOrders.current_page} / {pendingOrders.total_pages}
+                                    </p>
+                                    <button className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
+                                        <span className='text-neutral-700 text-2xl'>
+                                            <MdNavigateNext />
+                                        </span>
+                                    </button>
+                                    <button className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
+                                        <span className='text-neutral-700 text-2xl'>
+                                            <MdLastPage />
+                                        </span>
+                                    </button>
+                                </>
+                            )}
+                        </div>
                     </div>
                     {pendingOrders ? (
                         Array.isArray(pendingOrders.results) && pendingOrders.results.length !== 0 ? (
                             <table className='w-full h-40 table-auto border-collapse'>
                                 <thead className='border-b-[1.5px] border-neutral-400'>
                                     <tr className='text-neutral-700 font-opensans text-md cursor-default'>
-                                        <th className='w-12 h-10 px-4'><div className='w-6 h-6 rounded-md border-[1px] border-neutral-400 cursor-pointer hover:border-neutral-600'/></th>
+                                        <th className='w-12 h-10 px-4'>
+                                            <div onClick={() => { handleSelect(null, true) }} className={`w-6 h-6 rounded border-[1px] flex justify-center items-center cursor-pointer hover:border-neutral-600 ${pendingOrders.results.length === selectedPendingOrders.length ? 'border-neutral-600' : 'border-neutral-400'}`}>
+                                                {pendingOrders.results.length === selectedPendingOrders.length && (
+                                                    <div className='w-4 h-4 rounded-sm bg-neutral-600' />
+                                                )}
+                                            </div>
+                                        </th>
                                         <th>Restaurant</th>
                                         <th>Total Price / Discounted Price</th>
                                         <th>Payment Method</th>
                                         <th>Status</th>
                                         <th>Ordered At</th>
-                                        <th className='w-[20rem] h-10'></th>
+                                        <th className='w-[20rem] h-10'>
+                                            {selectedPendingOrders.length > 1 && (
+                                                <div className='flex justify-end items-center w-full h-full gap-2 px-7'>
+                                                    <button className='text-emerald-500 border-emerald-400 border-[1px] font-opensans rounded px-2 py-1 text-sm transition duration-200 ease-in-out hover:text-neutral-100 hover:bg-emerald-500'>Accept</button>
+                                                    <button className='text-rose-500 border-rose-400 border-[1px] font-opensans rounded px-2 py-1 text-sm transition duration-200 ease-in-out hover:text-neutral-100 hover:bg-rose-500'>Decline</button>
+                                                </div>
+                                            )}
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {pendingOrders.results.map((order, index) => (
-                                        <tr key={order.uuid} className={`text-neutral-700 relative h-16 ${index === pendingOrders.results.length - 1 ? '' : 'border-b-2 border-gray-200'}`}>
-                                            <td className='w-12 h-10 px-4'>
-                                                <div className='w-6 h-6 rounded-full border-[1px] border-neutral-400 cursor-pointer hover:border-neutral-600' />
-                                            </td>
-                                            <td className='text-center'>{order.restaurant_name}</td>
-                                            <td className='text-center'>{order.total_price} / {order.discounted_price}</td>
-                                            <td className='text-center'>{order.payment_method === "cash_on_delivery" ? "Cash" : order.payment_method === "card" && "Card"}</td>
-                                            <td className='text-center'>{getOrderStatus(order.order_status)}</td>
-                                            <td className='text-center'>{formatDateTime(order.created_at)}</td>
-                                            <td>
-                                                <div className='flex justify-center items-center w-full h-full gap-2'>
-                                                    <button className='text-neutral-700 font-opensans border-neutral-400 border-[1px] rounded px-2 py-1 text-md transition duration-200 ease-in-out hover:text-neutral-100 hover:bg-neutral-800'>Show Items</button>
-                                                    <button className='text-emerald-500 border-emerald-400 border-[1px] font-opensans rounded px-2 py-1 text-md transition duration-200 ease-in-out hover:text-neutral-100 hover:bg-emerald-500'>Accept</button>
-                                                    <button className='text-rose-500 border-rose-400 border-[1px] font-opensans rounded px-2 py-1 text-md transition duration-200 ease-in-out hover:text-neutral-100 hover:bg-rose-500'>Decline</button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                    {pendingOrders.results.map((order, index) => {
+                                        const selected = selectedPendingOrders.includes(order.uuid);
+                                        return (
+                                            <tr 
+                                                key={order.uuid}
+                                                className={`text-neutral-700 relative h-16 ${index === pendingOrders.results.length - 1 ? '' : 'border-b-[1px] border-gray-400'} cursor-pointer ${selected && 'bg-neutral-100'}`}
+                                                onClick={() => { handleSelect(order.uuid) }}
+                                            >
+                                                <td className='w-12 h-10 px-4'>
+                                                    <div 
+                                                        className={`w-6 h-6 rounded-full border-[1px] cursor-pointer ${selected ? 'border-neutral-600' : 'border-neutral-400'} hover:border-neutral-600 flex justify-center items-center`} 
+                                                    >
+                                                        {selected && (
+                                                            <div className='w-4 h-4 rounded-full bg-neutral-600' />
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td className='text-center'>{order.restaurant_name}</td>
+                                                <td className='text-center'>{order.total_price} / {order.discounted_price}</td>
+                                                <td className='text-center'>{order.payment_method === "cash_on_delivery" ? "Cash" : order.payment_method === "card" && "Card"}</td>
+                                                <td className='text-center'>{getOrderStatus(order.order_status)}</td>
+                                                <td className='text-center'>{formatDateTime(order.created_at)}</td>
+                                                <td>
+                                                    <div className='flex justify-center items-center w-full h-full gap-2'>
+                                                        <button className='text-neutral-700 font-opensans border-neutral-400 border-[1px] rounded px-2 py-1 text-md transition duration-200 ease-in-out hover:text-neutral-100 hover:bg-neutral-800'>Show Items</button>
+                                                        <button className='text-emerald-500 border-emerald-400 border-[1px] font-opensans rounded px-2 py-1 text-md transition duration-200 ease-in-out hover:text-neutral-100 hover:bg-emerald-500'>Accept</button>
+                                                        <button className='text-rose-500 border-rose-400 border-[1px] font-opensans rounded px-2 py-1 text-md transition duration-200 ease-in-out hover:text-neutral-100 hover:bg-rose-500'>Decline</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
                                 </tbody>
                             </table>
                         ) : (

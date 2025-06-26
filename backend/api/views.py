@@ -38,6 +38,15 @@ class MyPageNumberPagination(PageNumberPagination):
     def _strip_urlhost(self, url):
         parsed = urlparse(url)
         return parsed.path + ('?' + parsed.query if parsed.query else '')
+    
+    def get_paginated_response(self, data):
+        return Response({
+            'current_page': self.page.number,
+            'total_pages': self.page.paginator.num_pages,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data,
+        })  
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
