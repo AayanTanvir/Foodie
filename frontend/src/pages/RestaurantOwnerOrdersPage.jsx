@@ -17,7 +17,7 @@ const RestaurantOwnerOrdersPage = () => {
     const { setMessageAndMode } = useContext(GlobalContext);
     const navigate = useNavigate();
 
-    const fetchPendingOrders = async (next=null) => {
+    const fetchPendingOrders = async (next=null, first=false, last=false) => {
         try {
             let res = null;
             if (!next) {
@@ -80,20 +80,37 @@ const RestaurantOwnerOrdersPage = () => {
                         <div className='w-fit h-full flex justify-center items-center gap-2'>
                             {pendingOrders?.total_pages > 1 && (
                                 <>
-                                    <button className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
-                                        <span className='text-neutral-700 text-2xl'>
-                                            <MdFirstPage />
-                                        </span>
-                                    </button>
-                                    <button className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
-                                        <span className='text-neutral-700 text-2xl'>
-                                            <MdNavigateBefore />
-                                        </span>
-                                    </button>
+                                    {pendingOrders.previous ? (
+                                        <>
+                                            <button onClick={() => { fetchPendingOrders }} className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
+                                                <span className='text-neutral-700 text-2xl'>
+                                                    <MdFirstPage />
+                                                </span>
+                                            </button>
+                                            <button onClick={() => { fetchPendingOrders(pendingOrders.previous) }} className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
+                                                <span className='text-neutral-700 text-2xl'>
+                                                    <MdNavigateBefore />
+                                                </span>
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button className='w-8 h-8 border-[1px] cursor-not-allowed border-neutral-300 rounded-full flex justify-center items-center'>
+                                                <span className='text-neutral-400 text-2xl'>
+                                                    <MdFirstPage />
+                                                </span>
+                                            </button>
+                                            <button className='w-8 h-8 border-[1px] cursor-not-allowed border-neutral-300 rounded-full flex justify-center items-center'>
+                                                <span className='text-neutral-400 text-2xl'>
+                                                    <MdNavigateBefore />
+                                                </span>
+                                            </button>
+                                        </>
+                                    )}
                                     <p className='text-neutral-700 text-xl font-hedwig cursor-default'>
                                         {pendingOrders.current_page} / {pendingOrders.total_pages}
                                     </p>
-                                    <button className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
+                                    <button onClick={() => { fetchPendingOrders(pendingOrders.next); }} className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
                                         <span className='text-neutral-700 text-2xl'>
                                             <MdNavigateNext />
                                         </span>
