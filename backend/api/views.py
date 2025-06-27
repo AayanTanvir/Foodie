@@ -439,7 +439,7 @@ class OwnerPendingOrdersAPIView(generics.ListAPIView):
             return ValidationError("User is not a restaurant owner")
         else:
             restaurants = Restaurant.objects.filter(owner=user);
-            qs = Order.objects.filter(restaurant__in=restaurants, order_status=Order.OrderStatus.PENDING);
+            qs = Order.objects.filter(restaurant__in=restaurants, order_status=Order.OrderStatus.PENDING).order_by('-created_at');
             
             restaurant_uuid = self.request.query_params.get('restaurant');
             payment_method = self.request.query_params.get('payment_method');
