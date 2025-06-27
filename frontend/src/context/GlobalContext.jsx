@@ -17,7 +17,7 @@ export const GlobalContextProvider = ({ children }) => {
         const timeout = setTimeout(() => { setMessage("") }, 5000);
         return () => clearTimeout(timeout);
     }, [message]);
-
+    
     let context = {
         message, 
         messageMode, setMessageAndMode,

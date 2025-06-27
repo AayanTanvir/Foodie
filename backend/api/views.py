@@ -286,9 +286,18 @@ class OwnerRestaurantsAPIView(generics.ListAPIView):
             
         
     def get(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        compact = request.query_params.get('compact');
+        
+        if compact is None:
+            queryset = self.get_queryset()
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        elif compact == 'true':
+            restaurants = Restaurant.objects.filter(owner=request.user)
+            data = [
+                {'restaurant': restaurant.name, 'uuid': restaurant.uuid} for restaurant in restaurants
+            ]
+            return Response(data, status=status.HTTP_200_OK)
     
     
 class OwnerDashboardAPIView(APIView):
@@ -424,11 +433,24 @@ class OwnerPendingOrdersAPIView(generics.ListAPIView):
     # permission_classes = [AllowAny]
     
     def get_queryset(self):
-        user = self.request.user
+        user = self.request.user;
+        
         if not user.groups.filter(name='restaurant owner').exists():
             return ValidationError("User is not a restaurant owner")
         else:
-            restaurants = Restaurant.objects.filter(owner=user)
-            return Order.objects.filter(restaurant__in=restaurants, order_status=Order.OrderStatus.PENDING)
-        # restaurant = Restaurant.objects.get(name="Aayan")
-        # return Order.objects.filter(restaurant=restaurant, order_status=Order.OrderStatus.PENDING)
+            restaurants = Restaurant.objects.filter(owner=user);
+            qs = Order.objects.filter(restaurant__in=restaurants, order_status=Order.OrderStatus.PENDING);
+            
+            restaurant_uuid = self.request.query_params.get('restaurant');
+            payment_method = self.request.query_params.get('payment_method');
+            
+            if restaurant_uuid is not None:
+                qs = qs.filter(restaurant__uuid=restaurant_uuid)
+            
+            if payment_method is not None:
+                qs = qs.filter(payment_method=payment_method)
+                
+            return qs
+
+                
+                

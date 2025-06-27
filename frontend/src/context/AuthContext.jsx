@@ -9,16 +9,16 @@ let AuthContext = createContext()
 
 export const AuthProvider = ({children}) => {
 
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
-    let [authTokens, setAuthTokens] = useState(localStorage.getItem("authTokens") ? JSON.parse(localStorage.getItem("authTokens")) : null);
-    let [user, setUser] = useState(localStorage.getItem("authTokens") ? jwtDecode(localStorage.getItem("authTokens")) : null);
-    let [authError, setAuthError] = useState("");
-    let [showOTPForm, setShowOTPForm] = useState(false);
-    let [canResendOTP, setCanResendOTP] = useState(false);
-    let { setMessageAndMode } = useContext(GlobalContext);
+    const [authTokens, setAuthTokens] = useState(localStorage.getItem("authTokens") ? JSON.parse(localStorage.getItem("authTokens")) : null);
+    const [user, setUser] = useState(localStorage.getItem("authTokens") ? jwtDecode(localStorage.getItem("authTokens")) : null);
+    const [authError, setAuthError] = useState("");
+    const [showOTPForm, setShowOTPForm] = useState(false);
+    const [canResendOTP, setCanResendOTP] = useState(false);
+    const { setMessageAndMode } = useContext(GlobalContext);
 
-    let loginUser = async (event) => {
+    const loginUser = async (event) => {
         event.preventDefault();
 
         
@@ -57,13 +57,13 @@ export const AuthProvider = ({children}) => {
         }
     }
     
-    let logoutUser = () => {
+    const logoutUser = () => {
         setAuthTokens(null);
         setUser(null);
         logout();
     }
 
-    let signupUser = async (event) => {
+    const signupUser = async (event) => {
         event.preventDefault();
 
         if (
@@ -127,7 +127,7 @@ export const AuthProvider = ({children}) => {
         }
     }
 
-    let validateCredentials = (password1, password2, username) => {
+    const validateCredentials = (password1, password2, username) => {
         let regex_lowercase = /[a-z]/;
         let regex_uppercase = /[A-Z]/;
         let regex_digit = /\d/;
@@ -174,7 +174,7 @@ export const AuthProvider = ({children}) => {
         return true;
     }
 
-    let verifyEmail = async (mode) => {
+    const verifyEmail = async (mode) => {
         if (showOTPForm == false) setShowOTPForm(true);
         
         try {
@@ -210,7 +210,7 @@ export const AuthProvider = ({children}) => {
         }
     }
 
-    let submitVerifyEmailOTP = async (event) => {
+    const submitVerifyEmailOTP = async (event) => {
         event.preventDefault();
 
         if (!event.target.otp.value) {
@@ -235,7 +235,7 @@ export const AuthProvider = ({children}) => {
 
     }
 
-    let context = {
+    const context = {
         user,
         authTokens,
         authError,
