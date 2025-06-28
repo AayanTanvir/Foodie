@@ -430,7 +430,6 @@ class OwnerHighestRatedItemsAPIView(APIView):
 class OwnerPendingOrdersAPIView(generics.ListAPIView):
     serializer_class = OrderReadSerializer
     pagination_class = MyPageNumberPagination
-    # permission_classes = [AllowAny]
     
     def get_queryset(self):
         user = self.request.user;

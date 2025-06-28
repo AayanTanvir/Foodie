@@ -183,7 +183,8 @@ class Order(models.Model):
         return total_price if total_price > 0 else 0
     
     def update_order_status(self):
-        schedule('api.tasks.complete_order', order_uuid=str(self.uuid), next_run=timezone.now() + timedelta(seconds=10))
+        print("updated")
+        # schedule('api.tasks.complete_order', order_uuid=str(self.uuid), next_run=timezone.now() + timedelta(seconds=10))
                 
     def clean(self):
         if self.user == self.restaurant.owner:
