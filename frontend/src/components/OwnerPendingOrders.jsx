@@ -160,7 +160,7 @@ const OwnerPendingOrders = () => {
         
         websocket.current.onerror = (error) => {
             console.error("Websocket connection error: ", error);
-            setMessageAndMode("Failed WS connection, try again later.");
+            setMessageAndMode("Failed WS connection, try again later.", "failure");
             navigate('/');
         }
 
@@ -175,7 +175,7 @@ const OwnerPendingOrders = () => {
         <div className='border-[1.5px] border-neutral-400 w-full h-fit rounded-md flex flex-col justify-start items-start'>
             <div className='w-full h-fit border-b-[1.5px] border-neutral-400 px-4 py-2 flex justify-between items-center'>
                 <div className='w-fit h-full flex justify-between items-center gap-4'>
-                    <h1 className='cursor-default font-notoserif text-2xl text-neutral-800'>Pending Approvals</h1>
+                    <h1 className='font-notoserif text-2xl text-neutral-800 select-none'>Pending Approvals</h1>
                     <div className='w-fit h-full flex justify-center items-center gap-4'>
                         {(Array.isArray(pendingOrders?.results) && pendingOrders?.results.length !== 0) && (
                             <span onClick={() => { setIsFilteringPendingOrders(!isFilteringPendingOrders); }} className={`text-2xl cursor-pointer border-[1.5px] rounded-md p-1 ${isFilteringPendingOrders ? 'text-neutral-100 bg-neutral-700' : 'text-neutral-700 border-neutral-400'}`}>

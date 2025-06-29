@@ -31,6 +31,7 @@ urlpatterns = [
     path('owner/restaurants/<uuid:uuid>/stats/most_ordered/', OwnerMostOrderedItemsAPIView.as_view()),
     path('owner/restaurants/<uuid:uuid>/stats/highest_rated/', OwnerHighestRatedItemsAPIView.as_view()),
     path('owner/orders/pending/', OwnerPendingOrdersAPIView.as_view()),
+    # path('owner/orders/all/', ),
 
     path('reviews/create/', ReviewCreateAPIView.as_view()),
     
