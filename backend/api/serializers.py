@@ -454,3 +454,10 @@ class OwnerRecentOrdersReviewsSerializer(serializers.Serializer):
     recent_reviews = RestaurantReviewReadSerializer(many=True)
 
     
+class OwnerOrdersSerializer(serializers.Serializer):
+    delivered_orders = serializers.IntegerField()
+    cancelled_orders = serializers.IntegerField()
+    declined_orders = serializers.IntegerField()
+    delivered_percentage = serializers.IntegerField()
+    cancelled_percentage = serializers.IntegerField()
+    declined_percentage = serializers.IntegerField()

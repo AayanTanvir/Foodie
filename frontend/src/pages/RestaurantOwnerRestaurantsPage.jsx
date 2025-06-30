@@ -56,7 +56,7 @@ const RestaurantOwnerRestaurantsPage = () => {
                 <div className='w-full h-fit flex flex-col justify-start items-center'>
                     <h1 className='font-poppins text-neutral-800 text-2xl cursor-default text-center'>Restaurant Performance</h1>
                     <ResponsiveContainer width="100%" height={350}>
-                        <ScatterChart margin={{ top: 20, right: 0, bottom: 30, left: 0 }}>
+                        <ScatterChart margin={{ top: 20, right: 40, bottom: 30, left: 40 }}>
                             <CartesianGrid stroke='#a3a3a3'/>
                             <XAxis type="number" dataKey="total_orders" name="Orders">
                                 <Label

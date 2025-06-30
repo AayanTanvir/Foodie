@@ -435,7 +435,7 @@ class OwnerPendingOrdersAPIView(generics.ListAPIView):
         user = self.request.user;
         
         if not user.groups.filter(name='restaurant owner').exists():
-            return ValidationError("User is not a restaurant owner")
+            return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
         else:
             restaurants = Restaurant.objects.filter(owner=user);
             qs = Order.objects.filter(restaurant__in=restaurants, order_status=Order.OrderStatus.PENDING).order_by('-created_at');
@@ -452,4 +452,39 @@ class OwnerPendingOrdersAPIView(generics.ListAPIView):
             return qs
 
                 
-                
+class OwnerOrdersAPIView(generics.GenericAPIView):
+    serializer_class = OwnerOrdersSerializer
+    
+    def get(self, request):
+        user = request.user
+        if not user.groups.filter(name='restaurant owner').exists():
+            return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
+        
+        restaurants = Restaurant.objects.filter(owner=user)
+        orders = Order.objects.filter(restaurant__in=restaurants)
+        delivered = orders.filter(order_status=Order.OrderStatus.DELIVERED).count()
+        cancelled = orders.filter(order_status=Order.OrderStatus.CANCELLED).count()
+        declined = orders.filter(order_status=Order.OrderStatus.DECLINED).count()
+        
+        total_orders = delivered + cancelled + declined
+
+        if total_orders > 0:
+            delivered_percentage = round((delivered / total_orders) * 100)
+            cancelled_percentage = round((cancelled / total_orders) * 100)
+            declined_percentage = round((declined / total_orders) * 100)
+        else:
+            delivered_percentage = cancelled_percentage = declined_percentage = 0
+        
+        data = {
+            'delivered_orders': delivered,
+            'cancelled_orders': cancelled,
+            'declined_orders': declined,
+            'delivered_percentage': delivered_percentage,
+            'cancelled_percentage': cancelled_percentage,
+            'declined_percentage': declined_percentage,
+        }
+        
+        serializer = self.get_serializer(instance=data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        
