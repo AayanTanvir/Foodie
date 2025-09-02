@@ -31,6 +31,9 @@ urlpatterns = [
     path('owner/restaurants/<uuid:uuid>/stats/most_ordered/', OwnerMostOrderedItemsAPIView.as_view()),
     path('owner/restaurants/<uuid:uuid>/stats/highest_rated/', OwnerHighestRatedItemsAPIView.as_view()),
     path('owner/orders/pending/', OwnerPendingOrdersAPIView.as_view()),
+    path('owner/orders/pending/accept-decline/', OwnerPendingOrdersAcceptDeclineAPIView.as_view()),
+    path('owner/orders/active/', OwnerActiveOrdersAPIView.as_view()),
+    path('owner/orders/active/ready-decline/', OwnerActiveOrdersReadyDeclineAPIView.as_view()),
     path('owner/orders/all/', OwnerOrdersAPIView.as_view()),
 
     path('reviews/create/', ReviewCreateAPIView.as_view()),

@@ -8,17 +8,17 @@ import { MdNavigateNext } from "react-icons/md";
 import { MdNavigateBefore } from "react-icons/md";
 import { MdFilterList } from "react-icons/md";
 import { GlobalContext } from '../context/GlobalContext';
-import axiosClient from '../utils/axiosClient';
+import axiosClient from '../utils/axiosClient'; 
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import AuthContext from '../context/AuthContext';
 
-const OwnerPendingOrders = () => {
+const OwnerActiveOrders = () => {
 
-    const [selectedPendingOrders, setSelectedPendingOrders] = useState([]);
-    const [isFilteringPendingOrders, setIsFilteringPendingOrders] = useState(false);
-    const [filters, setFilters] = useState({restaurant: '', payment_method: ''});
-    const [pendingOrders, setPendingOrders] = useState(null);
+    const [selectedActiveOrder, setSelectedActiveOrder] = useState("");
+    const [isFilteringActiveOrders, setIsFilteringActiveOrders] = useState(false);
+    const [filters, setFilters] = useState({restaurant: '', payment_method: '', status: ''});
+    const [activeOrders, setActiveOrders] = useState(null);
     const [ownedRestaurants, setOwnedRestaurants] = useState(null);
 	const [selectedOrderOrderItems, setSelectedOrderOrderItems] = useState([]);
     const { user } = useContext(AuthContext);
@@ -26,18 +26,18 @@ const OwnerPendingOrders = () => {
     const navigate = useNavigate();
     const websocket = useRef(null);
 
-    const fetchPendingOrders = async (next=null, last=false, filters={}) => {
+    const fetchActiveOrders = async (next=null, last=false, filters={}) => {
         try {
             let url;
 
             if (next) {
                 url = next;
             } else {
-                const baseUrl = `/owner/orders/pending/`;
+                const baseUrl = `/owner/orders/active/`;
                 const params = new URLSearchParams();
 
-                if (last && pendingOrders) {
-                    params.append('page', pendingOrders.total_pages);
+                if (last && activeOrders) {
+                    params.append('page', activeOrders.total_pages);
                 }
 
                 if (filters?.restaurant) {
@@ -48,13 +48,18 @@ const OwnerPendingOrders = () => {
                     params.append('payment_method', filters.payment_method);
                 }
 
+                if (filters?.status) {
+                    params.append('status', filters.status);
+                }
+
                 url = baseUrl + (params.toString() ? `?${params.toString()}` : '');
             }
 
             const res = await axiosClient.get(url);
 
             if (res.status === 200) {
-                setPendingOrders(res.data);
+                setActiveOrders(res.data);
+				setSelectedActiveOrder("");
             } else {
                 setMessageAndMode("Unexpected response", "failure");
                 console.error("unexpected response status: ", res.status);
@@ -86,55 +91,44 @@ const OwnerPendingOrders = () => {
         }
     }
 
-    const handleSelect = (uuid=null, all=false) => {
-        if ((!uuid && all === false) || (all === true && !pendingOrders)) return;
-        if (all) {
-            const allSelected = pendingOrders.results.length === selectedPendingOrders.length;
-            if (allSelected) {
-                setSelectedPendingOrders([]);
-            } else {
-                let allOrders = [];
-                pendingOrders.results.forEach(order => {
-                    allOrders.push(order.uuid);
-                });
-                setSelectedPendingOrders(allOrders);
-            }
-        } else {
-            setSelectedPendingOrders((prev) => {
-                const selected = selectedPendingOrders.includes(uuid);
-                if (selected) {
-                    return selectedPendingOrders.filter(item => item !== uuid);
-                } else {
-                    return [...prev, uuid];
-                }
-            });
-        }
+    const handleSelect = (uuid=null) => {
+        if (!uuid) return;
+
+		setSelectedActiveOrder((prev) => {
+			const selected = selectedActiveOrder == uuid;
+			if (selected) {
+				return "";
+			} else {
+				return uuid;
+			}
+		});
     }
 
 	const getOrderItems = () => {
-		const order = pendingOrders.results.find(order => order.uuid === selectedPendingOrders.at(0));
+		const order = activeOrders.results.find(order => order.uuid === selectedActiveOrder);
 		setSelectedOrderOrderItems(order.order_items);
 	}
 
-	const handleAcceptDecline = async (accept=true) => {
-		try {
-            let requestURL = '/owner/orders/pending/accept-decline/';
+    const handleReadyDecline = async (action="ready") => {
+        try {
+            let requestURL = '/owner/orders/active/ready-decline/';
             const params = new URLSearchParams();
             
-            if (accept) {
-                params.append("accept", "True");
-            } else {
-                params.append("accept", "False");
+            if (action === "ready") {
+                params.append("action", "ready");
+            } 
+            else if (action === "decline") {
+                params.append("action", "decline");
             }
+
             requestURL = requestURL + (params.toString() ? `?${params.toString()}` : '');
             
             const res = await axiosClient.post(requestURL, {
-				orders: selectedPendingOrders
-			});
+                order: selectedActiveOrder
+            });
 
             if (res.status === 200) {
-                setMessageAndMode("Order(s) Accepted", "success");
-                fetchPendingOrders();
+                fetchActiveOrders();
             } else {
                 setMessageAndMode("Unexpected response", "failure");
                 console.error("unexpected response status: ", res.status);
@@ -144,56 +138,48 @@ const OwnerPendingOrders = () => {
             console.error("Error while accepting orders", err);
             setMessageAndMode("An error occurred", "failure");
         }
-	}
+    }
 
     useEffect(() => {
         if (user) {
-            fetchPendingOrders();
+            fetchActiveOrders();
             fetchOwnedRestaurants();
         }
     }, [])
 
     useEffect(() => {
-        if (pendingOrders) {
-            setSelectedPendingOrders([]);
-        }
-    }, [pendingOrders])
-
-    useEffect(() => {
-        if ((filters.restaurant !== "" || filters.payment_method !== "") && isFilteringPendingOrders && pendingOrders.results.length !== 0) {
-            fetchPendingOrders(null, false, filters);
+        if ((filters.restaurant !== "" || filters.payment_method !== "" || filters.status !== "") && isFilteringActiveOrders && activeOrders.results.length !== 0) {
+            fetchActiveOrders(null, false, filters);
         }
     }, [filters])
 
     useEffect(() => {
-        if (!isFilteringPendingOrders && (filters.restaurant !== '' || filters.payment_method !== '') && user) {
-            setFilters({restaurant: '', payment_method: ''});
-            fetchPendingOrders();
+        if (!isFilteringActiveOrders && (filters.restaurant !== "" || filters.payment_method !== "" || filters.status !== "") && user) {
+            setFilters({restaurant: "", payment_method: "", status: ""});
+            fetchActiveOrders();
         }
-    }, [isFilteringPendingOrders])
+    }, [isFilteringActiveOrders])
 
 	useEffect(() => {
-		if (selectedPendingOrders.length === 1) {
-			getOrderItems()
-		} else {
-			setSelectedOrderOrderItems([]);
+		if (selectedActiveOrder !== "") {
+			getOrderItems();
 		}
-	}, [selectedPendingOrders])
+	}, [selectedActiveOrder])
 
     useEffect(() => {
         if (!user) {
             navigate('/');
         }
 
-        const wsUrl = `ws://127.0.0.1:8000/ws/orders/${user.uuid}/incoming/pending/`;
+        const wsUrl = `ws://127.0.0.1:8000/ws/orders/${user.uuid}/incoming/active/`;
         websocket.current = new WebSocket(wsUrl);
 
         websocket.current.onmessage = (event) => {
             const incomingOrder = JSON.parse(event.data);
             if (incomingOrder) {
-                setPendingOrders(prev => {
-                    if (!pendingOrders || pendingOrders?.results.length === 0) {
-                        fetchPendingOrders();
+                setActiveOrders(prev => {
+                    if (!activeOrders || activeOrders?.results.length === 0) {
+                        fetchActiveOrders();
                         return prev;
                     }
                     
@@ -222,20 +208,20 @@ const OwnerPendingOrders = () => {
         <div className='border-[1.5px] border-neutral-400 w-full h-fit rounded-md flex flex-col justify-start items-start'>
             <div className='w-full h-fit border-b-[1.5px] border-neutral-400 px-4 py-2 flex justify-between items-center'>
                 <div className='w-fit h-full flex justify-between items-center gap-4'>
-                    <h1 className='font-notoserif text-2xl text-neutral-700 select-none'>Pending Approvals</h1>
+                    <h1 className='font-notoserif text-2xl text-neutral-700 select-none'>Active Orders</h1>
                     <div className='w-fit h-full flex justify-center items-center gap-4'>
-                        {(Array.isArray(pendingOrders?.results)) && (
+                        {(Array.isArray(activeOrders?.results)) && (
                             <span 
-                                onClick={() => { 
-                                    if (pendingOrders.results.length !== 0) {
-                                        setIsFilteringPendingOrders(!isFilteringPendingOrders);
+                                onClick={() => {
+                                    if (activeOrders.results.length !== 0) {
+                                        setIsFilteringActiveOrders(!isFilteringActiveOrders); 
                                     }
-                                }} 
-                                className={`text-2xl cursor-pointer border-[1.5px] rounded-md p-1 ${isFilteringPendingOrders ? 'text-neutral-100 bg-neutral-700' : 'text-neutral-700 border-neutral-400'}`}>
+                                }}
+                                className={`text-2xl cursor-pointer border-[1.5px] rounded-md p-1 ${isFilteringActiveOrders ? 'text-neutral-100 bg-neutral-700' : 'text-neutral-700 border-neutral-400'}`}>
                                 <MdFilterList />
                             </span>
                         )}
-                        {isFilteringPendingOrders && (
+                        {isFilteringActiveOrders && (
                             <>
                                 <div className='w-fit h-full flex justify-between items-center gap-2'>
                                     <span className='text-md text-neutral-700 cursor-default '>Restaurant: </span>
@@ -282,29 +268,52 @@ const OwnerPendingOrders = () => {
                                         <MenuItem value="card">Card</MenuItem>
                                     </Select>
                                 </div>
+                                <div className='w-fit h-full flex justify-between items-center gap-2'>
+                                    <span className='text-md text-neutral-700 cursor-default '>Status: </span>
+                                    <Select
+                                        value={filters.status}
+                                        autoWidth
+                                        onChange={e => setFilters({...filters, status: e.target.value })}
+                                        
+                                        sx={{
+                                            minWidth: 120,
+                                            height: 35,
+                                            '& .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: 'gray',
+                                            },
+                                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: '#262626',
+                                            },
+                                        }}
+                                    >   
+                                        <MenuItem value="preparing">Preparing</MenuItem>
+                                        <MenuItem value="ready_for_pickup">Ready For Pickup</MenuItem>
+                                        <MenuItem value="out_for_delivery">Out For Delivery</MenuItem>
+                                    </Select>
+                                </div>
                             </>
                         )}
                     </div>
                 </div>
 				<div className='w-fit h-full flex justify-center items-center gap-2'>
-					{selectedPendingOrders.length !== 0 && (
+					{selectedActiveOrder !== "" && (
 						<>
-							<button onClick={() => { handleAcceptDecline(true) }} className='text-emerald-500 border-emerald-400 border-2 font-roboto font-semibold px-2 py-1 text-md transition-all duration-200 ease-in-out hover:text-neutral-100 hover:bg-emerald-500 hover:scale-x-[120%] text-nowrap'>Accept</button>
-							<button onClick={() => { handleAcceptDecline(false) }} className='text-rose-500 border-rose-400 border-2 font-roboto font-semibold px-2 py-1 text-md transition-all duration-200 ease-in-out hover:text-neutral-100 hover:bg-rose-500 hover:scale-x-[120%] text-nowrap'>Decline</button>
+							<button onClick={() => { handleReadyDecline("ready") }} className='text-emerald-500 border-emerald-400 border-2 font-roboto font-semibold px-2 py-1 text-md transition-all duration-200 ease-in-out hover:text-neutral-100 hover:bg-emerald-500 hover:scale-x-[120%] text-nowrap'>Ready</button>
+							<button onClick={() => { handleReadyDecline("decline") }} className='text-rose-500 border-rose-400 border-2 font-roboto font-semibold px-2 py-1 text-md transition-all duration-200 ease-in-out hover:text-neutral-100 hover:bg-rose-500 hover:scale-x-[120%] text-nowrap'>Decline</button>
 						</>
 					)}
 				</div>
                 <div className='w-fit h-full flex justify-center items-center gap-2'>
-                    {pendingOrders?.total_pages > 1 && (
+                    {activeOrders?.total_pages > 1 && (
                         <>
-                            {pendingOrders.previous ? (
+                            {activeOrders.previous ? (
                                 <>
-                                    <button onClick={() => { fetchPendingOrders(null, false, filters) }} className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
+                                    <button onClick={() => { fetchActiveOrders(null, false, filters) }} className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
                                         <span className='text-neutral-700 text-2xl'>
                                             <MdFirstPage />
                                         </span>
                                     </button>
-                                    <button onClick={() => { fetchPendingOrders(pendingOrders.previous) }} className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
+                                    <button onClick={() => { fetchActiveOrders(activeOrders.previous) }} className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
                                         <span className='text-neutral-700 text-2xl'>
                                             <MdNavigateBefore />
                                         </span>
@@ -325,16 +334,16 @@ const OwnerPendingOrders = () => {
                                 </>
                             )}
                             <p className='text-neutral-700 text-xl font-hedwig cursor-default'>
-                                {pendingOrders.current_page} / {pendingOrders.total_pages}
+                                {activeOrders.current_page} / {activeOrders.total_pages}
                             </p>
-                            {pendingOrders.next ? (
+                            {activeOrders.next ? (
                                 <>
-                                    <button onClick={() => { fetchPendingOrders(pendingOrders.next); }} className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
+                                    <button onClick={() => { fetchActiveOrders(activeOrders.next); }} className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
                                         <span className='text-neutral-700 text-2xl'>
                                             <MdNavigateNext />
                                         </span>
                                     </button>
-                                    <button onClick={() => { fetchPendingOrders(null, true, filters); }} className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
+                                    <button onClick={() => { fetchActiveOrders(null, true, filters); }} className='w-8 h-8 border-[1px] border-neutral-500 rounded-full flex justify-center items-center'>
                                         <span className='text-neutral-700 text-2xl'>
                                             <MdLastPage />
                                         </span>
@@ -358,56 +367,74 @@ const OwnerPendingOrders = () => {
                     )}
                 </div>
             </div>
-            {pendingOrders ? (
-                Array.isArray(pendingOrders.results) && pendingOrders.results.length !== 0 ? (
+            {activeOrders ? (
+                Array.isArray(activeOrders.results) && activeOrders.results.length !== 0 ? (
 					<div className='w-full h-fit flex justify-start items-start'>
 						<table className='w-[80%] h-40 table-auto border-collapse'>
 							<thead className='border-b-[1.5px] border-neutral-400'>
 								<tr className='text-neutral-700 font-opensans text-md cursor-default h-12'>
 									<th className='w-12 h-10 px-4'>
-										<div onClick={() => { handleSelect(null, true) }} className={`w-6 h-6 rounded border-[1px] flex justify-center items-center cursor-pointer hover:border-neutral-600 ${pendingOrders.results.length === selectedPendingOrders.length ? 'border-neutral-600' : 'border-neutral-400'}`}>
-											{pendingOrders.results.length === selectedPendingOrders.length && (
+										{/* <div onClick={() => { handleSelect(null, true) }} className={`w-6 h-6 rounded border-[1px] flex justify-center items-center cursor-pointer hover:border-neutral-600 ${activeOrders.results.length === selectedActiveOrder.length ? 'border-neutral-600' : 'border-neutral-400'}`}>
+											{activeOrders.results.length === selectedActiveOrder.length && (
 												<div className='w-4 h-4 rounded-sm bg-neutral-600' />
 											)}
-										</div>
+										</div> */}
 									</th>
 									<th>Restaurant</th>
 									<th>Total Price / Discounted Price</th>
 									<th>Payment Method</th>
-									{/* <th>Status</th> */}
+									<th>Status</th>
 									<th>Ordered At</th>
 								</tr>
 							</thead>
 							<tbody>
-								{pendingOrders.results.map((order, index) => {
-									const selected = selectedPendingOrders.includes(order.uuid);
-									return (
-										<tr 
-											key={order.uuid}
-											className={`text-neutral-700 relative h-16 ${index === pendingOrders.results.length - 1 ? '' : 'border-b-[1px] border-gray-400'} cursor-pointer ${selected && 'bg-neutral-100'}`}
-											onClick={() => { handleSelect(order.uuid) }}
-										>
-											<td className='w-12 h-10 px-4'>
-												<div 
-													className={`w-6 h-6 rounded-full border-[1px] cursor-pointer ${selected ? 'border-neutral-600' : 'border-neutral-400'} hover:border-neutral-600 flex justify-center items-center`} 
-												>
-													{selected && (
-														<div className='w-3 h-3 rounded-full bg-neutral-600' />
-													)}
-												</div>
-											</td>
-											<td className='text-center'>{order.restaurant_name}</td>
-											<td className='text-center'>Rs. {order.total_price} / Rs. {order.discounted_price}</td>
-											<td className='text-center'>{order.payment_method === "cash_on_delivery" ? "Cash" : order.payment_method === "card" && "Card"}</td>
-											{/* <td className='text-center'>{getOrderStatus(order.order_status)}</td> */}
-											<td className='text-center'>{formatDateTime(order.created_at)}</td>
-										</tr>
-									)
+								{activeOrders.results.map((order, index) => {
+									const selected = selectedActiveOrder === order.uuid;
+                                    if (order.order_status === "out_for_delivery") {
+                                        return (
+                                            <tr
+                                                key={order.uuid}
+                                                className={`text-neutral-700 bg-gray-100 relative h-16 ${index === activeOrders.results.length - 1 ? '' : 'border-b-[1px] border-gray-400'} cursor-default ${selected && 'bg-neutral-100'}`}
+                                            >
+                                                <td className='w-12 h-10 px-4'>
+                                                    <div className={`w-6 h-6 rounded-sm border-[1px] border-gray-300 flex justify-center items-center cursor-not-allowed`} />
+                                                </td>
+                                                <td className='text-center'>{order.restaurant_name}</td>
+                                                <td className='text-center'>Rs. {order.total_price} / Rs. {order.discounted_price}</td>
+                                                <td className='text-center'>{order.payment_method === "cash_on_delivery" ? "Cash" : order.payment_method === "card" && "Card"}</td>
+                                                <td className='text-center'>{getOrderStatus(order.order_status)}</td>
+                                                <td className='text-center'>{formatDateTime(order.created_at)}</td>
+                                            </tr>
+                                        )
+                                    } else {
+                                        return (
+                                            <tr 
+                                                key={order.uuid}
+                                                className={`text-neutral-700 relative h-16 ${index === activeOrders.results.length - 1 ? '' : 'border-b-[1px] border-gray-400'} cursor-pointer ${selected && 'bg-neutral-100'}`}
+                                                onClick={() => { handleSelect(order.uuid) }}
+                                            >
+                                                <td className='w-12 h-10 px-4'>
+                                                    <div 
+                                                        className={`w-6 h-6 rounded-sm border-[1px] cursor-pointer ${selected ? 'border-neutral-600' : 'border-neutral-400'} hover:border-neutral-600 flex justify-center items-center`} 
+                                                    >
+                                                        {selected && (
+                                                            <div className='w-3 h-3 rounded-sm bg-neutral-600' />
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td className='text-center'>{order.restaurant_name}</td>
+                                                <td className='text-center'>Rs. {order.total_price} / Rs. {order.discounted_price}</td>
+                                                <td className='text-center'>{order.payment_method === "cash_on_delivery" ? "Cash" : order.payment_method === "card" && "Card"}</td>
+                                                <td className='text-center'>{getOrderStatus(order.order_status)}</td>
+                                                <td className='text-center'>{formatDateTime(order.created_at)}</td>
+                                            </tr>
+                                        )
+                                    }
 								})}
 							</tbody>
 						</table>
 						<div className='w-[20%] h-[460px] flex flex-col justify-start items-center p-4 gap-4 overflow-y-scroll border-l-[1px] border-gray-400'>
-							{selectedPendingOrders.length === 1 ? (
+							{selectedActiveOrder !== "" ? (
 								selectedOrderOrderItems.map((item) => (
 									<div key={item.menu_item.uuid} className='w-full min-h-32 max-h-32 border-[1px] border-gray-500 rounded flex flex-col justify-start items-center'>
 										<div className='w-full h-[70%] flex justify-center items-center'>
@@ -429,7 +456,7 @@ const OwnerPendingOrders = () => {
                 ) : (
                     <div className='w-full min-h-40 flex flex-col justify-center items-center'>
                         <h1 className='text-[5rem] text-neutral-300 cursor-default'><FiInbox /></h1>
-                        <h1 className='text-3xl text-neutral-700 cursor-default font-poppins'>No incoming orders yet..</h1>
+                        <h1 className='text-3xl text-neutral-700 cursor-default font-poppins'>No active orders yet..</h1>
                     </div>
                 )
             ) : (
@@ -443,4 +470,4 @@ const OwnerPendingOrders = () => {
     )
 }
 
-export default OwnerPendingOrders
+export default OwnerActiveOrders

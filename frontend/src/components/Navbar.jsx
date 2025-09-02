@@ -46,7 +46,7 @@ const Navbar = () => {
                             </NavLink>
                         )}
                     </div>
-                    <NavLink to='/' className='font-poppins text-xl font-extrabold tracking-tight h-full w-fit transition flex justify-center items-center px-3 cursor-pointer text-neutral-800'>Food<span className='text-neutral-500'>ie</span></NavLink>
+                    <NavLink to='/' className='font-poppins text-xl font-extrabold tracking-tight h-full w-fit transition flex justify-center items-center px-3 cursor-pointer text-neutral-800 select-none'>Food<span className='text-neutral-500'>ie</span></NavLink>
                 </div>
             ) : (
                 <div className='w-full h-12 border-b-[1px] border-neutral-800 bg-white flex justify-between items-center fixed top-0 left-0 px-8 text-neutral-100 z-50'>

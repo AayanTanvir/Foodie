@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
-from django.db.models import Count
+from django.db.models import Count, Q
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -438,10 +438,10 @@ class OwnerPendingOrdersAPIView(generics.ListAPIView):
             return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
         else:
             restaurants = Restaurant.objects.filter(owner=user);
-            qs = Order.objects.filter(restaurant__in=restaurants, order_status=Order.OrderStatus.PENDING).order_by('-created_at');
+            qs = Order.objects.filter(restaurant__in=restaurants, order_status=Order.OrderStatus.PENDING).order_by('-created_at')
             
-            restaurant_uuid = self.request.query_params.get('restaurant');
-            payment_method = self.request.query_params.get('payment_method');
+            restaurant_uuid = self.request.query_params.get('restaurant')
+            payment_method = self.request.query_params.get('payment_method')
             
             if restaurant_uuid is not None:
                 qs = qs.filter(restaurant__uuid=restaurant_uuid)
@@ -451,7 +451,40 @@ class OwnerPendingOrdersAPIView(generics.ListAPIView):
                 
             return qs
 
-                
+
+class OwnerActiveOrdersAPIView(generics.ListAPIView):
+    serializer_class = OrderReadSerializer
+    pagination_class = MyPageNumberPagination
+    
+    def get_queryset(self):
+        user = self.request.user;
+        
+        if not user.groups.filter(name='restaurant owner').exists():
+            return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
+        else:
+            restaurants = Restaurant.objects.filter(owner=user);
+            qs = Order.objects.filter(Q(order_status=Order.OrderStatus.PREPARING) |
+                                      Q(order_status=Order.OrderStatus.OUT_FOR_DELIVERY), restaurant__in=restaurants).order_by('-created_at')
+            
+            restaurant_uuid = self.request.query_params.get('restaurant')
+            payment_method = self.request.query_params.get('payment_method')
+            status = self.request.query_params.get('status')
+            
+            if restaurant_uuid is not None:
+                qs = qs.filter(restaurant__uuid=restaurant_uuid)
+            
+            if payment_method is not None:
+                qs = qs.filter(payment_method=payment_method)
+            
+            if status is not None:
+                if status in Order.OrderStatus.values:
+                    qs = qs.filter(order_status=status)
+                else:
+                    raise ValueError(f"Invalid status: '{status}'")
+            
+            return qs
+
+        
 class OwnerOrdersAPIView(generics.GenericAPIView):
     serializer_class = OwnerOrdersSerializer
     
@@ -486,5 +519,57 @@ class OwnerOrdersAPIView(generics.GenericAPIView):
         
         serializer = self.get_serializer(instance=data)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class OwnerPendingOrdersAcceptDeclineAPIView(generics.GenericAPIView):
+    #serializer_class = OrdersUUIDSerializer
+    
+    def post(self, request):
+        user = request.user
+        if not user.groups.filter(name='restaurant owner').exists():
+            return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
         
         
+        # Add serializer to this, removed for temporary fix.
+        order_uuids = request.data.get('orders')
+        accept = request.query_params.get('accept')
+        #serializer = self.get_serializer(data=request.data)
+        #serializer.is_valid(raise_exception=True)
+        orders = Order.objects.filter(uuid__in=order_uuids)
+        
+        for order in orders:
+            
+            if accept == "True":
+                order.change_order_status("accept")
+            elif accept == "False":
+                order.change_order_status("decline")
+                
+            order.save()
+        
+        return Response(status=status.HTTP_200_OK)
+
+
+class OwnerActiveOrdersReadyDeclineAPIView(generics.GenericAPIView):
+    #serializer_class = OrdersUUIDSerializer
+    
+    def post(self, request):
+        user = request.user
+        if not user.groups.filter(name='restaurant owner').exists():
+            return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
+        
+        
+        # Add serializer to this, removed for temporary fix.
+        order_uuid = request.data.get('order')
+        action = request.query_params.get('action')
+        #serializer = self.get_serializer(data=request.data)
+        #serializer.is_valid(raise_exception=True)
+        order = Order.objects.get(uuid=order_uuid)
+            
+        if action == "ready":
+            order.change_order_status("ready")
+        elif action == "decline":
+            order.change_order_status("decline")
+                
+        order.save()
+        
+        return Response(status=status.HTTP_200_OK)

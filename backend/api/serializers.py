@@ -461,3 +461,7 @@ class OwnerOrdersSerializer(serializers.Serializer):
     delivered_percentage = serializers.IntegerField()
     cancelled_percentage = serializers.IntegerField()
     declined_percentage = serializers.IntegerField()
+
+
+class OrdersUUIDSerializer(serializers.Serializer):
+    orders = serializers.ListField(child=serializers.UUIDField(), write_only=True, required=True)

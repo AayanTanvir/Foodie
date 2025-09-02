@@ -38,11 +38,34 @@ class OrderStatusConsumer(AsyncWebsocketConsumer):
         }))
         
         
-class IncomingOrdersConsumer(AsyncWebsocketConsumer):
+class IncomingPendingOrderConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         owner_uuid = self.scope['url_route']['kwargs']['owner_uuid']
         
-        self.group_name = f'incoming_{owner_uuid}'
+        self.group_name = f'incoming_pending_{owner_uuid}'
+        await self.channel_layer.group_add(
+            self.group_name, self.channel_name
+        )
+        
+        if await get_owner_and_check_group(owner_uuid):
+            await self.accept()
+        else:
+            await self.close()
+            
+    async def disconnect(self, code):
+        await self.channel_layer.group_discard(
+            self.group_name, self.channel_name
+        )
+        
+    async def send_incoming(self, event):
+        await self.send(text_data=json.dumps(event['order']))
+
+
+class IncomingActiveOrderConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        owner_uuid = self.scope['url_route']['kwargs']['owner_uuid']
+        
+        self.group_name = f'incoming_active_{owner_uuid}'
         await self.channel_layer.group_add(
             self.group_name, self.channel_name
         )

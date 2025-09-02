@@ -41,6 +41,7 @@ const Sidebar = () => {
         let timeout = setTimeout(() => {
             setShowSidebar(false);
         }, 600);
+
     }
 
     return (

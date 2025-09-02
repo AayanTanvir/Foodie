@@ -220,7 +220,7 @@ const RestaurantOwnerRestaurantPage = () => {
                                                 <MenuItem value="all_time">All Time</MenuItem>
                                             </Select>
                                         </div>
-                                        {mostOrderedItems.length !== 0 ? (
+                                        {mostOrderedItems?.length !== 0 ? (
                                             <ResponsiveContainer width="100%" height={500}>
                                                 <BarChart data={mostOrderedItems} margin={{ top: 20, right: 30, left: 5, bottom: 5 }}>
                                                     <CartesianGrid stroke="#737373" />

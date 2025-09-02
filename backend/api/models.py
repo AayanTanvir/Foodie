@@ -144,7 +144,6 @@ class Order(models.Model):
         PENDING = 'pending', 'Pending'
         DECLINED = 'declined', 'Declined',
         PREPARING = 'preparing', 'Preparing'
-        READY_FOR_PICKUP = 'ready_for_pickup', 'Ready for Pickup'
         OUT_FOR_DELIVERY = 'out_for_delivery', 'Out for Delivery'
         DELIVERED = 'delivered', 'Delivered'
         CANCELLED = 'cancelled', 'Cancelled'
@@ -182,10 +181,32 @@ class Order(models.Model):
             
         return total_price if total_price > 0 else 0
     
-    def update_order_status(self):
-        print("updated")
-        # schedule('api.tasks.complete_order', order_uuid=str(self.uuid), next_run=timezone.now() + timedelta(seconds=10))
-                
+    
+    def change_order_status(self, status):
+        if not status:
+            return
+
+        match status:
+            case "accept":
+                self.order_status = Order.OrderStatus.PREPARING
+            case "decline":
+                self.order_status = Order.OrderStatus.DECLINED
+            case "ready":
+                self.order_status = Order.OrderStatus.OUT_FOR_DELIVERY
+            case "delivered":
+                self.order_status = Order.OrderStatus.DELIVERED
+            case "cancelled":
+                self.order_status = Order.OrderStatus.CANCELLED
+            case default:
+                return
+    
+    def complete_order_status_scheduled(self, seconds=10, schedule_randomly=False):
+        if not schedule_randomly:
+            schedule('api.tasks.complete_order', order_uuid=str(self.uuid), next_run=timezone.now() + timedelta(seconds=seconds), save=False)
+        else:
+            schedule_time = random.randint(10, 60)
+            schedule('api.tasks.complete_order', order_uuid=str(self.uuid), next_run=timezone.now() + timedelta(seconds=schedule_time), save=False)
+
     def clean(self):
         if self.user == self.restaurant.owner:
             raise ValidationError("Restaurant owner cannot place an order at their own restaurant.")

@@ -28,9 +28,9 @@ const OrderPage = () => {
         switch (order.order_status) {
             case 'preparing':
                 return "w-[14%]";
-            case 'ready_for_pickup':
-                return "w-[47%]";
             case 'out_for_delivery':
+                return "w-[47%]";
+            case 'delivered':
                 return "w-[82%]";
             default:
                 return "w-0";
@@ -153,8 +153,8 @@ const OrderPage = () => {
                                         </div>
                                         <div className='w-full h-fit flex justify-around items-center'>
                                             <h1 className='font-poppins text-sm cursor-default text-neutral-600'>Preparing</h1>
-                                            <h1 className='font-poppins text-sm cursor-default text-neutral-600'>Ready for Pickup</h1>
                                             <h1 className='font-poppins text-sm cursor-default text-neutral-600'>Out for Delivery</h1>
+                                            <h1 className='font-poppins text-sm cursor-default text-neutral-600'>Delivered</h1>
                                         </div>
                                     </div>
                                 </>
