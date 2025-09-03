@@ -19,7 +19,7 @@ const OwnerOrderStats = () => {
 
     const fetchOrders = async () => {
         try {
-            const res = await axiosClient.get('/owner/orders/all/');
+            const res = await axiosClient.get('/owner/orders/stats/');
 
             if (res.status === 200) {
                 setOrders(res.data);

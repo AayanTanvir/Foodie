@@ -34,6 +34,7 @@ urlpatterns = [
     path('owner/orders/pending/accept-decline/', OwnerPendingOrdersAcceptDeclineAPIView.as_view()),
     path('owner/orders/active/', OwnerActiveOrdersAPIView.as_view()),
     path('owner/orders/active/ready-decline/', OwnerActiveOrdersReadyDeclineAPIView.as_view()),
+    path('owner/orders/stats/', OwnerOrdersStatsAPIView.as_view()),
     path('owner/orders/all/', OwnerOrdersAPIView.as_view()),
 
     path('reviews/create/', ReviewCreateAPIView.as_view()),

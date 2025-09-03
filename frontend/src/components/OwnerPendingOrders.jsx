@@ -13,13 +13,12 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import AuthContext from '../context/AuthContext';
 
-const OwnerPendingOrders = () => {
+const OwnerPendingOrders = ({ ownedRestaurants }) => {
 
     const [selectedPendingOrders, setSelectedPendingOrders] = useState([]);
     const [isFilteringPendingOrders, setIsFilteringPendingOrders] = useState(false);
     const [filters, setFilters] = useState({restaurant: '', payment_method: ''});
     const [pendingOrders, setPendingOrders] = useState(null);
-    const [ownedRestaurants, setOwnedRestaurants] = useState(null);
 	const [selectedOrderOrderItems, setSelectedOrderOrderItems] = useState([]);
     const { user } = useContext(AuthContext);
     const { setMessageAndMode } = useContext(GlobalContext);
@@ -67,24 +66,6 @@ const OwnerPendingOrders = () => {
         }
     }
 
-    const fetchOwnedRestaurants = async () => {
-        try {
-            const res = await axiosClient.get(`/owner/restaurants/?compact=true`);
-
-            if (res.status === 200) {
-                setOwnedRestaurants(res.data);
-            } else {
-                setMessageAndMode("Unexpected response", "failure");
-                console.error("unexpected response status: ", res.status);
-                navigate("/");
-            }
-
-        } catch (err) {
-            console.error("Error while fetching owned restaurants", err);
-            setMessageAndMode("An error occurred", "failure");
-            navigate('/');
-        }
-    }
 
     const handleSelect = (uuid=null, all=false) => {
         if ((!uuid && all === false) || (all === true && !pendingOrders)) return;
@@ -149,7 +130,6 @@ const OwnerPendingOrders = () => {
     useEffect(() => {
         if (user) {
             fetchPendingOrders();
-            fetchOwnedRestaurants();
         }
     }, [])
 

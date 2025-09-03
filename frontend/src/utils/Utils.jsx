@@ -70,3 +70,15 @@ export const getOrderStatus = (status) => {
             return "Unknown";
     }
 }
+
+export const getOrderPaymentMethod = (method) => {
+    if (!method) return "Unknown";
+    switch (method) {
+        case 'card':
+            return "Card";
+        case 'cash_on_delivery':
+            return "Cash on Delivery";
+        default:
+            return "Unknown";
+    }
+}

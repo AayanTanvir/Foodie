@@ -19,7 +19,7 @@ from operator import attrgetter
 from urllib.parse import urlparse
 
 
-class MyPageNumberPagination(PageNumberPagination):
+class TablePageNumberPagination(PageNumberPagination):
     page_size = 5
     max_page_size = 5
     
@@ -46,7 +46,37 @@ class MyPageNumberPagination(PageNumberPagination):
             'next': self.get_next_link(),
             'previous': self.get_previous_link(),
             'results': data,
-        })  
+        })
+
+
+class GridPageNumberPagination(PageNumberPagination):
+    page_size = 9
+    max_page_size = 9
+    
+    def get_next_link(self):
+        if not self.page.has_next():
+            return None
+        url = super().get_next_link()
+        return self._strip_urlhost(url)
+    
+    def get_previous_link(self):
+        if not self.page.has_previous():
+            return None
+        url = super().get_previous_link()
+        return self._strip_urlhost(url)
+    
+    def _strip_urlhost(self, url):
+        parsed = urlparse(url)
+        return parsed.path + ('?' + parsed.query if parsed.query else '')
+    
+    def get_paginated_response(self, data):
+        return Response({
+            'current_page': self.page.number,
+            'total_pages': self.page.paginator.num_pages,
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data,
+        })
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -429,7 +459,7 @@ class OwnerHighestRatedItemsAPIView(APIView):
     
 class OwnerPendingOrdersAPIView(generics.ListAPIView):
     serializer_class = OrderReadSerializer
-    pagination_class = MyPageNumberPagination
+    pagination_class = TablePageNumberPagination
     
     def get_queryset(self):
         user = self.request.user;
@@ -454,7 +484,7 @@ class OwnerPendingOrdersAPIView(generics.ListAPIView):
 
 class OwnerActiveOrdersAPIView(generics.ListAPIView):
     serializer_class = OrderReadSerializer
-    pagination_class = MyPageNumberPagination
+    pagination_class = TablePageNumberPagination
     
     def get_queryset(self):
         user = self.request.user;
@@ -484,8 +514,39 @@ class OwnerActiveOrdersAPIView(generics.ListAPIView):
             
             return qs
 
+
+class OwnerOrdersAPIView(generics.ListAPIView):
+    serializer_class = OrderReadSerializer
+    pagination_class = GridPageNumberPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.groups.filter(name='restaurant owner').exists():
+            return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
         
-class OwnerOrdersAPIView(generics.GenericAPIView):
+        restaurant_uuid = self.request.query_params.get('restaurant')
+        payment_method = self.request.query_params.get('payment_method')
+        status = self.request.query_params.get('status')
+        
+        restaurants = Restaurant.objects.filter(owner=user)
+        qs = Order.objects.filter(restaurant__in=restaurants).order_by('-created_at')
+        
+        if restaurant_uuid is not None:
+                qs = qs.filter(restaurant__uuid=restaurant_uuid)
+            
+        if payment_method is not None:
+            qs = qs.filter(payment_method=payment_method)
+        
+        if status is not None:
+            if status in Order.OrderStatus.values:
+                    qs = qs.filter(order_status=status)
+            else:
+                raise ValueError(f"Invalid status: '{status}'")
+
+        return qs
+
+
+class OwnerOrdersStatsAPIView(generics.GenericAPIView):
     serializer_class = OwnerOrdersSerializer
     
     def get(self, request):
