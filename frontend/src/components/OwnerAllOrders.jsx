@@ -10,7 +10,6 @@ import { MenuItem, Select } from "@mui/material";
 
 
 const OwnerAllOrders = ({ ownedRestaurants }) => {
-	// Need to add ownedRestaurants in global context or in parent component
 	const [orders, setOrders] = useState(null);
 	const [isFilteringOrders, setIsFilteringOrders] = useState(false);
 	const [filters, setFilters] = useState({restaurant: '', payment_method: '', status: ''});

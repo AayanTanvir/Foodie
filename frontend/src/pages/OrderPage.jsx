@@ -3,14 +3,17 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { formatDate } from '../utils/Utils';
 import axiosClient from '../utils/axiosClient';
 import { RestaurantContext } from '../context/RestaurantContext';
+import { GlobalContext } from '../context/GlobalContext';
 
 const OrderPage = () => {
     const [order, setOrder] = useState({});
-    let { order_uuid } = useParams();
+    const { order_uuid } = useParams();
     const [cancelConfirmPopup, setCancelConfirmPopup] = useState(null);
     const [showingCancelConfirm, setShowingCancelConfirm] = useState(false);
     const [isCancellingOrder, setIsCancellingOrder] = useState(false);
-    let { setShowReviewsPopup, setReviewsPopupMode, setReviewItems } = useContext(RestaurantContext);
+    const [reviewed, setReviewed] = useState(false);
+    const { setShowReviewsPopup, setReviewsPopupMode, setReviewItems } = useContext(RestaurantContext);
+    const { setMessageAndMode } = useContext(GlobalContext);
     const websocket = useRef(null);
     const navigate = useNavigate();
 
@@ -51,14 +54,14 @@ const OrderPage = () => {
                 setIsCancellingOrder(false);
             } else {
                 console.error("Unexpected response:", res);
-                setFailureMessage("Unexpected response. Please try again later.");
+                setMessageAndMode("Unexpected response. Please try again later.", "failure");
                 setShowingCancelConfirm(false);
                 setCancelConfirmPopup(null);
                 setIsCancellingOrder(false);
             }
         } catch (err) {
             console.error("An error occurred while placing the order.", err);
-            setFailureMessage("An error occurred. Please try again later.");
+            setMessageAndMode("An error occurred. Please try again later.", "failure");
             setShowingCancelConfirm(false);
             setCancelConfirmPopup(null);
             setIsCancellingOrder(false);
@@ -91,13 +94,32 @@ const OrderPage = () => {
                 setOrder(res.data);
             } else {
                 console.error("Unexpected response:", res);
-                setFailureMessage("Unexpected response. Please try again later.");
+                setMessageAndMode("Unexpected response. Please try again later.", "failure");
                 navigate("/");
             }
 
         } catch (err) {
             console.error("An error occurred while placing the order.", err);
-            setFailureMessage("An error occurred. Please try again later.");
+            setMessageAndMode("An error occurred. Please try again later.", "failure");
+            navigate("/");
+        }
+    }
+
+    const checkReviewed = async () => {
+        try {
+            const res = await axiosClient.get(`/orders/${order_uuid}/has-reviewed/`);
+
+            if (res.status === 200) {
+                const hasReviewed = res.data.has_reviewed;
+                setReviewed(hasReviewed);
+            } else {
+                console.error("Unexpected response:", res);
+                return false;
+            }
+
+        } catch (err) {
+            console.error("An error occurred while checking review status.", err);
+            setMessageAndMode("An error occurred. Please try again later.", "failure");
             navigate("/");
         }
     }
@@ -105,6 +127,7 @@ const OrderPage = () => {
     useEffect(() => {
         if (Object.keys(order).length === 0) {
             fetchOrder();
+            checkReviewed();
         }
     }, [order_uuid])
 
@@ -213,7 +236,7 @@ const OrderPage = () => {
                             </div>
                         ) : (
                             <>
-                                {order?.order_status === "delivered" ? (
+                                {order?.order_status === "delivered" && !reviewed ? (
                                     <button onClick={() => { setReviewsPopupMode("write"); setShowReviewsPopup(true); setReviewItems(order?.order_items) }} className='w-full h-5 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
                                         Write a Review
                                     </button>

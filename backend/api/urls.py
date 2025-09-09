@@ -21,7 +21,8 @@ urlpatterns = [
     path('orders/create/', OrderCreateAPIView.as_view()),
     path('orders/<uuid:uuid>/update/', OrderUpdateAPIView.as_view()),
     path('orders/<uuid:uuid>/', OrderRetrieveAPIView.as_view()),
-    
+    path('orders/<uuid:uuid>/has-reviewed/', OrderHasReviewedAPIView.as_view()),
+
     path('users/create/', UserCreateApiView.as_view()),
     path('users/<uuid:uuid>/', UserInfoReadAPIView.as_view()),
     path('users/<uuid:uuid>/orders/', UserOrdersAPIView.as_view()),

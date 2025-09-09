@@ -3,6 +3,7 @@ from django.core.cache import cache
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.db.models import Count, Q
+from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -206,26 +207,19 @@ class RestaurantAPIView(generics.GenericAPIView):
     serializer_class = RestaurantSerializer
 
     def get(self, request, uuid):
-        try:
-            restaurant = Restaurant.objects.get(uuid=uuid)
-            serializer = self.get_serializer(restaurant)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Restaurant.DoesNotExist:
-            return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
+        restaurant = get_object_or_404(Restaurant, uuid=uuid)
+        serializer = self.get_serializer(restaurant)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class RestaurantDiscountsAPIView(generics.GenericAPIView):
     serializer_class = RestaurantDiscountSerializer
     
     def get(self, request, uuid):
-        try:
-            restaurant = Restaurant.objects.get(uuid=uuid)
-            discounts = restaurant.discounts.all()
-            serializer = self.get_serializer(discounts, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        except Restaurant.DoesNotExist:
-            return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
+        restaurant = get_object_or_404(Restaurant, uuid=uuid)
+        discounts = restaurant.discounts.all()
+        serializer = self.get_serializer(discounts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
         
         
         
@@ -233,13 +227,10 @@ class MenuItemModifierAPIView(generics.GenericAPIView):
     serializer_class = MenuItemModifierSerializer
     
     def get(self, request, uuid):
-        try:
-            restaurant = Restaurant.objects.get(uuid=uuid)
-            modifiers = restaurant.menu_item_modifiers.all()
-            serializer = self.get_serializer(modifiers, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Restaurant.DoesNotExist:
-            return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
+        restaurant = get_object_or_404(Restaurant, uuid=uuid)
+        modifiers = restaurant.menu_item_modifiers.all()
+        serializer = self.get_serializer(modifiers, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
         
         
 class OrderCreateAPIView(generics.CreateAPIView):
@@ -263,12 +254,9 @@ class UserOrdersAPIView(generics.ListAPIView):
     serializer_class = OrderListSerializer
     
     def get_queryset(self):
-        try:
-            user_uuid = self.kwargs['uuid']
-            user = CustomUser.objects.get(uuid=user_uuid)
-            return Order.objects.filter(user=user)
-        except CustomUser.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        user_uuid = self.kwargs['uuid']
+        user = get_object_or_404(CustomUser, uuid=user_uuid)
+        return Order.objects.filter(user=user)
 
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -286,12 +274,9 @@ class RestaurantReviewsAPIView(generics.ListAPIView):
     serializer_class = RestaurantReviewReadSerializer
     
     def get_queryset(self):
-        try:
-            restaurant_uuid = self.kwargs['uuid']
-            restaurant = Restaurant.objects.get(uuid=restaurant_uuid)
-            return Review.objects.filter(restaurant=restaurant)
-        except Restaurant.DoesNotExist:
-            return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
+        restaurant_uuid = self.kwargs['uuid']
+        restaurant = get_object_or_404(Restaurant, uuid=restaurant_uuid)
+        return Review.objects.filter(restaurant=restaurant)
 
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -333,10 +318,7 @@ class OwnerRestaurantsAPIView(generics.ListAPIView):
 class OwnerDashboardAPIView(APIView):
     
     def get(self, request):
-        try:
-            user = request.user
-        except CustomUser.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        user = request.user
         
         if not user.groups.filter(name='restaurant owner').exists():
             return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
@@ -392,11 +374,7 @@ class OwnerMostOrderedItemsAPIView(APIView):
         if not user.groups.filter(name='restaurant owner').exists():
             return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
         
-        try:
-            restaurant = Restaurant.objects.get(uuid=uuid)
-        except Restaurant.DoesNotExist:
-            return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
-        
+        restaurant = get_object_or_404(Restaurant, uuid=uuid)
         period = request.query_params.get('period', 'all_time')
         now = timezone.now()
         
@@ -441,11 +419,7 @@ class OwnerHighestRatedItemsAPIView(APIView):
         if not user.groups.filter(name='restaurant owner').exists():
             return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
         
-        try:
-            restaurant = Restaurant.objects.get(uuid=uuid)
-        except Restaurant.DoesNotExist:
-            return Response({'error': 'Restaurant not found'}, status=status.HTTP_404_NOT_FOUND)
-        
+        restaurant = get_object_or_404(Restaurant, uuid=uuid)
         menu_items = restaurant.menu_items.filter(is_side_item=False)
         items = sorted(menu_items, key=attrgetter("rating"), reverse=True)[:5]
         
@@ -583,7 +557,6 @@ class OwnerOrdersStatsAPIView(generics.GenericAPIView):
 
 
 class OwnerPendingOrdersAcceptDeclineAPIView(generics.GenericAPIView):
-    #serializer_class = OrdersUUIDSerializer
     
     def post(self, request):
         user = request.user
@@ -591,11 +564,8 @@ class OwnerPendingOrdersAcceptDeclineAPIView(generics.GenericAPIView):
             return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
         
         
-        # Add serializer to this, removed for temporary fix.
         order_uuids = request.data.get('orders')
         accept = request.query_params.get('accept')
-        #serializer = self.get_serializer(data=request.data)
-        #serializer.is_valid(raise_exception=True)
         orders = Order.objects.filter(uuid__in=order_uuids)
         
         for order in orders:
@@ -611,7 +581,6 @@ class OwnerPendingOrdersAcceptDeclineAPIView(generics.GenericAPIView):
 
 
 class OwnerActiveOrdersReadyDeclineAPIView(generics.GenericAPIView):
-    #serializer_class = OrdersUUIDSerializer
     
     def post(self, request):
         user = request.user
@@ -619,11 +588,8 @@ class OwnerActiveOrdersReadyDeclineAPIView(generics.GenericAPIView):
             return Response({'error': 'User is not a restaurant owner'}, status=status.HTTP_403_FORBIDDEN)
         
         
-        # Add serializer to this, removed for temporary fix.
         order_uuid = request.data.get('order')
         action = request.query_params.get('action')
-        #serializer = self.get_serializer(data=request.data)
-        #serializer.is_valid(raise_exception=True)
         order = Order.objects.get(uuid=order_uuid)
             
         if action == "ready":
@@ -634,3 +600,16 @@ class OwnerActiveOrdersReadyDeclineAPIView(generics.GenericAPIView):
         order.save()
         
         return Response(status=status.HTTP_200_OK)
+
+
+class OrderHasReviewedAPIView(generics.GenericAPIView):
+    def get(self, request, uuid):
+        user = request.user
+        if not user.groups.filter(name='customer').exists():
+            return Response({'error': 'User is not a customer'}, status=status.HTTP_403_FORBIDDEN)
+
+        order = get_object_or_404(Order, uuid=uuid)
+        restaurant = get_object_or_404(Restaurant, uuid=order.restaurant.uuid)
+        has_reviewed = restaurant.reviews.filter(user=user).exists()
+
+        return Response({'has_reviewed': has_reviewed}, status=status.HTTP_200_OK)

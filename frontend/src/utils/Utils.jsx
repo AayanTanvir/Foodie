@@ -79,6 +79,6 @@ export const getOrderPaymentMethod = (method) => {
         case 'cash_on_delivery':
             return "Cash on Delivery";
         default:
-            return "Unknown";
+            return "Unknown: " + method;
     }
 }

@@ -185,11 +185,13 @@ const RestaurantOwnerDashboard = () => {
                                             <h1 className='font-poppins text-2xl text-neutral-700 cursor-default'>Rs. {Math.round(order?.discounted_price)} {order?.discounted_price !== order?.total_price && <span className='font-poppins line-through text-sm text-neutral-500'>{Math.round(order?.total_price)}</span>}</h1>
                                             <div>
                                                 <p className="font-roboto text-md text-neutral-600 capitalize cursor-default">At {order?.restaurant_name}</p>
-                                                <span className={`px-2 py-1 rounded text-xs font-roboto font-semibold capitalize cursor-default
-                                                ${order?.order_status === 'delivered' ? 'bg-emerald-100 text-emerald-700' : ''}
-                                                ${order?.order_status === 'pending' ? 'bg-yellow-100 text-yellow-700' : ''}
-                                                ${order?.order_status === 'cancelled' ? 'bg-rose-100 text-rose-700' : ''}
-                                                `}>
+                                                <span className={`px-2 py-1 rounded text-xs font-roboto font-semibold capitalize cursor-default ${
+                                                    order.order_status === 'delivered'
+                                                        ? 'bg-emerald-100 text-emerald-500'
+                                                        : order.order_status === 'cancelled' || order.order_status === 'declined'
+                                                        ? 'bg-rose-100 text-rose-700'
+                                                        : 'bg-neutral-200 text-neutral-700'
+                                                }`}>
                                                     {order?.order_status}
                                                 </span>
                                             </div>

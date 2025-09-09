@@ -375,7 +375,7 @@ class OrderListSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             'uuid', 'user_uuid', 'restaurant_uuid', 'restaurant_name',
-            'total_price', 'discounted_price', 'order_status', 'created_at'
+            'total_price', 'discounted_price', 'order_status', 'payment_method', 'created_at'
         ]
         
 
