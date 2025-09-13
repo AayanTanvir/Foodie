@@ -40,4 +40,8 @@ urlpatterns = [
 
     path('reviews/create/', ReviewCreateAPIView.as_view()),
     
+    path('notifications/<uuid:uuid>/', UserNotificationsAPIView.as_view()),
+    path('notifications/<uuid:uuid>/mark-all-read/', MarkAllUserNotificationsAsRead.as_view()),
+    path('notifications/<uuid:uuid>/clear/', ClearUserNotifications.as_view())
+    
 ]

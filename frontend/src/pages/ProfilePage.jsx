@@ -1,33 +1,32 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import axiosClient from '../utils/axiosClient';
-import { formatDate } from '../utils/Utils';
+import { formatDate, sendRequest } from '../utils/Utils';
 import AuthContext from '../context/AuthContext';
 import { CapitalizeString } from '../utils/Utils';
 import { IoMdClose } from 'react-icons/io';
 import { FaCheckCircle } from 'react-icons/fa';
+import { GlobalContext } from '../context/GlobalContext';
 
 const ProfilePage = () => {
 
-    let { user_uuid } = useParams();
+    const { user_uuid } = useParams();
     const [userInfo, setUserInfo] = useState({});
-    let { verifyEmail } = useContext(AuthContext);
+    const { verifyEmail } = useContext(AuthContext);
+    const { setMessageAndMode } = useContext(GlobalContext);
     const navigate = useNavigate();
 
     const fetchUserInfo = async () => {
-        try {
-            const res = await axiosClient(`/users/${user_uuid}/`);
-            
-            if (res.status === 200) {
-                setUserInfo(res.data);
-            } else {
-                navigate('/');
-                setUserInfo(null);
-            }
+        const res = await sendRequest({
+            method: 'get',
+            to: `/users/${user_uuid}/`
+        });
 
-        } catch (error) {
+        if (res) {
+            setUserInfo(res.data);
+        } else {
             setUserInfo(null);
-            console.error(error);
+            setMessageAndMode("AN error occurred.");
             navigate('/');
         }
     }

@@ -328,4 +328,22 @@ class Review(models.Model):
     
     def __str__(self):
         return f"{self.rating} star(s) review on {self.restaurant} by {self.user}"
+
+
+class Notification(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="notifications")
+    content = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
     
+    def serialize(self):
+        return {
+            "uuid": str(self.uuid),
+            "content": self.content,
+            "is_read": self.is_read,
+            "created_at": self.created_at.isoformat(),
+        }
+    
+    def __str__(self):
+        return f"Notification for {self.user.username} - {'Read' if self.is_read else 'Unread'}"

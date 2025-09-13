@@ -465,3 +465,11 @@ class OwnerOrdersSerializer(serializers.Serializer):
 
 class OrdersUUIDSerializer(serializers.Serializer):
     orders = serializers.ListField(child=serializers.UUIDField(), write_only=True, required=True)
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    user = serializers.UUIDField(source='user.uuid', read_only=True)
+    
+    class Meta:
+        model = Notification
+        fields = ['uuid', 'content', 'is_read', 'created_at', 'user']

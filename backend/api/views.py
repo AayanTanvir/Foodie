@@ -248,7 +248,7 @@ class OrderUpdateAPIView(generics.UpdateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderStatusUpdateSerializer
     lookup_field = 'uuid'
-    
+
     
 class UserOrdersAPIView(generics.ListAPIView):
     serializer_class = OrderListSerializer
@@ -613,3 +613,36 @@ class OrderHasReviewedAPIView(generics.GenericAPIView):
         has_reviewed = restaurant.reviews.filter(user=user).exists()
 
         return Response({'has_reviewed': has_reviewed}, status=status.HTTP_200_OK)
+
+
+class UserNotificationsAPIView(generics.GenericAPIView):
+    serializer_class = NotificationSerializer
+    
+    def get(self, request, uuid):
+        user = get_object_or_404(CustomUser, uuid=uuid)
+        if request.user != user:
+            return Response({'error': 'You do not have permission to view these notifications'}, status=status.HTTP_403_FORBIDDEN)
+        
+        notifications = Notification.objects.filter(user=user).order_by('is_read', '-created_at')[:5]
+        serializer = self.get_serializer(notifications, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class MarkAllUserNotificationsAsRead(generics.GenericAPIView):
+    def patch(self, request, uuid):
+        user = get_object_or_404(CustomUser, uuid=uuid)
+        if request.user != user:
+            return Response({'error': 'You do not have permission to mark these notifications as read'}, status=status.HTTP_403_FORBIDDEN)
+
+        Notification.objects.filter(user=user, is_read=False).update(is_read=True)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ClearUserNotifications(generics.GenericAPIView):
+    def delete(self, request, uuid):
+        user = get_object_or_404(CustomUser, uuid=uuid)
+        if request.user != user:
+            return Response({'error': 'You do not have permission to mark these notifications as read'}, status=status.HTTP_403_FORBIDDEN)
+
+        Notification.objects.filter(user=user).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

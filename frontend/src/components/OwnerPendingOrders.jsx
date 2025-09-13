@@ -165,8 +165,8 @@ const OwnerPendingOrders = ({ ownedRestaurants }) => {
             navigate('/');
         }
 
-        const wsUrl = `ws://127.0.0.1:8000/ws/orders/${user.uuid}/incoming/pending/`;
-        websocket.current = new WebSocket(wsUrl);
+        const baseWsUrl = import.meta.env.VITE_WS_URL;
+        websocket.current = new WebSocket(`${baseWsUrl}/orders/${user.uuid}/incoming/pending/`);
 
         websocket.current.onmessage = (event) => {
             const incomingOrder = JSON.parse(event.data);

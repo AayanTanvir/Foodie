@@ -3,6 +3,8 @@ import axiosClient from '../utils/axiosClient';
 import AuthContext from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from './GlobalContext';
+import { sendRequest } from '../utils/Utils';
+import { MdDesignServices } from 'react-icons/md';
 
 
 export const RestaurantContext = createContext();
@@ -23,23 +25,17 @@ export const RestaurantContextProvider = ({ children }) => {
     const navigate = useNavigate();
 
     const fetchRestaurant = async (uuid) => {
-        try {
-            const response = await axiosClient.get(`/restaurants/${uuid}/`);
-            
-            if (response.status === 200) {
-                setRestaurant(response.data || null);
-                setRestaurantUUID(uuid);
-                localStorage.setItem("restaurantUUID", uuid);
-            } else {
-                setMessageAndMode("Unexpected response please try again.", "failure");
-                console.error("Unexpected response:", response);
-                setRestaurant(null);
-                setRestaurantUUID("");
-            }
+        const res = await sendRequest({
+            method: 'get',
+            to: `/restaurants/${uuid}/`,
+        });
 
-        } catch (error) {
-            setMessageAndMode("An error occurred.", "failure");
-            console.error("Error fetching restaurant:", error);
+        if (res) {
+            setRestaurant(res.data);
+            setRestaurantUUID(uuid);
+            localStorage.setItem("restaurantUUID", uuid);
+        } else {
+            setMessageAndMode("An error occurred");
             setRestaurant(null);
             setRestaurantUUID("");
             navigate('/');
@@ -47,21 +43,16 @@ export const RestaurantContextProvider = ({ children }) => {
     }
 
     const fetchRestaurants = async () => {
-        try {
-            const response = await axiosClient.get("/restaurants/");
+        const res = await sendRequest({
+            method: 'get',
+            to: '/restaurants/'
+        })
 
-            if (response.status === 200) {
-                setRestaurants(response.data || null);
-            } else {
-                setMessageAndMode("Unexpected response.", "failure");
-                console.error("Unexpected response:", response);
-                setRestaurants(null);
-            }
-
-        } catch (error) {
-            setMessageAndMode("An error occurred.", "failure");
-            console.error("Error fetching restaurants:", error);
+        if (res) {
+            setRestaurants(res.data);
+        } else {
             setRestaurants(null);
+            setMessageAndMode("An error occurred");
         }
     };
 

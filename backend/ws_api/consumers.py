@@ -82,3 +82,29 @@ class IncomingActiveOrderConsumer(AsyncWebsocketConsumer):
         
     async def send_incoming(self, event):
         await self.send(text_data=json.dumps(event['order']))
+
+
+class NotificationConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        user_uuid = self.scope['url_route']['kwargs']['user_uuid']
+        
+        self.group_name = f'notifications_{user_uuid}'
+        await self.channel_layer.group_add(
+            self.group_name, self.channel_name
+        )
+        
+        try:
+            self.user = await CustomUser.objects.aget(uuid=user_uuid)
+            await self.accept()
+        except CustomUser.DoesNotExist:
+            print("User does not exist")
+            await self.close()
+            
+    async def disconnect(self, code):
+        await self.channel_layer.group_discard(
+            self.group_name, self.channel_name
+        )
+        
+    async def send_notification(self, event):
+        #print("sending through websocket: ", event['notification'])
+        await self.send(text_data=json.dumps(event['notification']))

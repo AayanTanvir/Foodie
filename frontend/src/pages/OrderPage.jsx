@@ -46,6 +46,7 @@ const OrderPage = () => {
             const res = await axiosClient.patch(`/orders/${order_uuid}/update/`, {
                 order_status: "cancelled"
             });
+            
             if (res.status === 200) {
                 let newOrder = {...order, order_status: "cancelled"};
                 setOrder(newOrder);
@@ -132,8 +133,8 @@ const OrderPage = () => {
     }, [order_uuid])
 
     useEffect(() => {
-        const wsUrl = `ws://127.0.0.1:8000/ws/orders/${order_uuid}/status/`;
-        websocket.current = new WebSocket(wsUrl);
+        const wsBaseUrl = import.meta.env.VITE_WS_URL;
+        websocket.current = new WebSocket(`${wsBaseUrl}/orders/${order_uuid}/status/`);
 
         websocket.current.onmessage = (event) => {
             const data = JSON.parse(event.data);

@@ -9,6 +9,7 @@ import { IoIosList } from "react-icons/io";
 import { RxPerson } from "react-icons/rx";
 import { CiShop } from "react-icons/ci";
 import { GlobalContext } from '../context/GlobalContext';
+import NotificationBell from './NotificationBell';
 
 const Navbar = () => {
 
@@ -45,6 +46,7 @@ const Navbar = () => {
                                 )}
                             </NavLink>
                         )}
+                        <NotificationBell />
                     </div>
                     <NavLink to='/' className='font-poppins text-xl font-extrabold tracking-tight h-full w-fit transition flex justify-center items-center px-3 cursor-pointer text-neutral-800 select-none'>Food<span className='text-neutral-500'>ie</span></NavLink>
                 </div>

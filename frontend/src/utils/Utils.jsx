@@ -1,3 +1,5 @@
+import axiosClient from "./axiosClient";
+
 export const formatTime = (timeStr) => {
     if (!timeStr) return "Unknown";
     const [hours, minutes] = timeStr.split(':');
@@ -80,5 +82,72 @@ export const getOrderPaymentMethod = (method) => {
             return "Cash on Delivery";
         default:
             return "Unknown: " + method;
+    }
+}
+
+export const sendRequest = async ({ method="get", to, desiredStatus=200, postData={} }) => {
+    switch (method) {
+        case "get":
+            try {
+                const res = await axiosClient.get(to);
+
+                if (res.status === desiredStatus) {
+                    return res
+                } else {
+                    console.warn("Unknown response status: ", res.status);
+                    return null
+                }
+
+            } catch (err) {
+                console.error(err);
+                return null
+            }
+        
+        case "post":
+            try {
+                const res = await axiosClient.post(to, postData);
+
+                if (res.status === desiredStatus) {
+                    return res
+                } else {
+                    console.warn("Unknown response status: ", res.status);
+                    return null
+                }
+
+            } catch (err) {
+                console.error(err);
+                return null
+            }
+
+        case "patch":
+            try {
+                const res = await axiosClient.patch(to, postData);
+
+                if (res.status === desiredStatus) {
+                    return true
+                } else {
+                    console.warn("Unknown response status: ", res.status);
+                    return false
+                }
+
+            } catch (err) {
+                console.error(err);
+                return false
+            }
+        case "delete":
+            try {
+                const res = await axiosClient.delete(to);
+
+                if (res.status === desiredStatus) {
+                    return true
+                } else {
+                    console.warn("Unknown response status: ", res.status);
+                    return false
+                }
+
+            } catch (err) {
+                console.error(err);
+                return false
+            }
     }
 }
