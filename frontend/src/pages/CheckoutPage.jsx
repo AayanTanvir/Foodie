@@ -8,6 +8,7 @@ import { RestaurantContext } from "../context/RestaurantContext";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../context/GlobalContext";
 import { PiMoneyWavyThin } from "react-icons/pi";
+import { sendRequest } from "../utils/Utils";
 
 
 const CheckoutPage = () => {
@@ -97,23 +98,39 @@ const CheckoutPage = () => {
             payload.discount_uuid = selectedDiscount.uuid
         }
 
-        try {
-            const res = await axiosClient.post("/orders/create/", payload);
-            if (res.status === 201) {
-                clearCart();
-                navigate(`/orders/${res.data?.uuid}`);
-            } else {
-                console.error("Unexpected response:", res);
-                setMessageAndMode("Unexpected response. Please try again later.", "failure");
-                navigate("/");
-                clearCart();
-            }
-        } catch (error) {
-            console.error("An error occurred while placing the order.", error);
-            setMessageAndMode("An error occurred. Please try again later.", "failure");
+        const res = await sendRequest({
+            method: "post",
+            to: "/orders/create/",
+            postData: payload,
+            desiredStatus: 201,
+        });
+
+        if (res.status === 201) {
             clearCart();
+            navigate(`/orders/${res.data?.uuid}`);
+        } else {
+            setMessageAndMode("An error occurred.", "failure");
             navigate("/");
+            clearCart();
         }
+
+        // try {
+        //     const res = await axiosClient.post("/orders/create/", payload);
+        //     if (res.status === 201) {
+        //         clearCart();
+        //         navigate(`/orders/${res.data?.uuid}`);
+        //     } else {
+        //         console.error("Unexpected response:", res);
+        //         setMessageAndMode("Unexpected response. Please try again later.", "failure");
+        //         navigate("/");
+        //         clearCart();
+        //     }
+        // } catch (error) {
+        //     console.error("An error occurred while placing the order.", error);
+        //     setMessageAndMode("An error occurred. Please try again later.", "failure");
+        //     clearCart();
+        //     navigate("/");
+        // }
     }
 
     return (

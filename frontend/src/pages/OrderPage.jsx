@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
-import { formatDate } from '../utils/Utils';
+import { formatDate, sendRequest } from '../utils/Utils';
 import axiosClient from '../utils/axiosClient';
 import { RestaurantContext } from '../context/RestaurantContext';
 import { GlobalContext } from '../context/GlobalContext';
@@ -41,32 +41,54 @@ const OrderPage = () => {
     }
 
     const handleCancelOrder = async () => {
-        try {
-            setIsCancellingOrder(true);
-            const res = await axiosClient.patch(`/orders/${order_uuid}/update/`, {
+
+        const res = await sendRequest({
+            method: "patch",
+            to: `/orders/${order_uuid}/update/`,
+            postData: {
                 order_status: "cancelled"
-            });
-            
-            if (res.status === 200) {
-                let newOrder = {...order, order_status: "cancelled"};
-                setOrder(newOrder);
-                setShowingCancelConfirm(false);
-                setCancelConfirmPopup(null);
-                setIsCancellingOrder(false);
-            } else {
-                console.error("Unexpected response:", res);
-                setMessageAndMode("Unexpected response. Please try again later.", "failure");
-                setShowingCancelConfirm(false);
-                setCancelConfirmPopup(null);
-                setIsCancellingOrder(false);
             }
-        } catch (err) {
-            console.error("An error occurred while placing the order.", err);
-            setMessageAndMode("An error occurred. Please try again later.", "failure");
+        });
+
+        if (res) {
+            let newOrder = {...order, order_status: "cancelled"};
+            setOrder(newOrder);
+            setShowingCancelConfirm(false);
+            setCancelConfirmPopup(null);
+            setIsCancellingOrder(false);
+        } else {
+            setMessageAndMode("An error occurred.", "failure");
             setShowingCancelConfirm(false);
             setCancelConfirmPopup(null);
             setIsCancellingOrder(false);
         }
+
+        // try {
+        //     setIsCancellingOrder(true);
+        //     const res = await axiosClient.patch(`/orders/${order_uuid}/update/`, {
+        //         order_status: "cancelled"
+        //     });
+            
+        //     if (res.status === 200) {
+        //         let newOrder = {...order, order_status: "cancelled"};
+        //         setOrder(newOrder);
+        //         setShowingCancelConfirm(false);
+        //         setCancelConfirmPopup(null);
+        //         setIsCancellingOrder(false);
+        //     } else {
+        //         console.error("Unexpected response:", res);
+        //         setMessageAndMode("Unexpected response. Please try again later.", "failure");
+        //         setShowingCancelConfirm(false);
+        //         setCancelConfirmPopup(null);
+        //         setIsCancellingOrder(false);
+        //     }
+        // } catch (err) {
+        //     console.error("An error occurred while placing the order.", err);
+        //     setMessageAndMode("An error occurred. Please try again later.", "failure");
+        //     setShowingCancelConfirm(false);
+        //     setCancelConfirmPopup(null);
+        //     setIsCancellingOrder(false);
+        // }
     }
 
     const showCancelConfirmPopup = () => {
@@ -89,40 +111,64 @@ const OrderPage = () => {
     }
 
     const fetchOrder = async () => {
-        try {
-            const res = await axiosClient.get(`/orders/${order_uuid}/`);
-            if (res.status === 200) {
-                setOrder(res.data);
-            } else {
-                console.error("Unexpected response:", res);
-                setMessageAndMode("Unexpected response. Please try again later.", "failure");
-                navigate("/");
-            }
+        
+        const res = await sendRequest({
+            method: "get",
+            to: `/orders/${order_uuid}/`
+        });
 
-        } catch (err) {
-            console.error("An error occurred while placing the order.", err);
-            setMessageAndMode("An error occurred. Please try again later.", "failure");
+        if (res) {
+            setOrder(res.data);
+        } else {
+            setMessageAndMode("An error occurred.", "failure");
             navigate("/");
         }
+
+        // try {
+        //     const res = await axiosClient.get(`/orders/${order_uuid}/`);
+        //     if (res.status === 200) {
+        //         setOrder(res.data);
+        //     } else {
+        //         console.error("Unexpected response:", res);
+        //         setMessageAndMode("Unexpected response. Please try again later.", "failure");
+        //         navigate("/");
+        //     }
+
+        // } catch (err) {
+        //     console.error("An error occurred while placing the order.", err);
+        //     setMessageAndMode("An error occurred. Please try again later.", "failure");
+        //     navigate("/");
+        // }
     }
 
     const checkReviewed = async () => {
-        try {
-            const res = await axiosClient.get(`/orders/${order_uuid}/has-reviewed/`);
+        const res = await sendRequest({
+            method: "get",
+            to: `/orders/${order_uuid}/has-reviewed/`,
+        });
 
-            if (res.status === 200) {
-                const hasReviewed = res.data.has_reviewed;
-                setReviewed(hasReviewed);
-            } else {
-                console.error("Unexpected response:", res);
-                return false;
-            }
-
-        } catch (err) {
-            console.error("An error occurred while checking review status.", err);
-            setMessageAndMode("An error occurred. Please try again later.", "failure");
-            navigate("/");
+        if (res) {
+            setReviewed(res.data?.has_reviewed);
+        } else {
+            return setReviewed(false);
         }
+
+        // try {
+        //     const res = await axiosClient.get(`/orders/${order_uuid}/has-reviewed/`);
+
+        //     if (res.status === 200) {
+        //         const hasReviewed = res.data.has_reviewed;
+        //         setReviewed(hasReviewed);
+        //     } else {
+        //         console.error("Unexpected response:", res);
+        //         return false;
+        //     }
+
+        // } catch (err) {
+        //     console.error("An error occurred while checking review status.", err);
+        //     setMessageAndMode("An error occurred. Please try again later.", "failure");
+        //     navigate("/");
+        // }
     }
 
     useEffect(() => {

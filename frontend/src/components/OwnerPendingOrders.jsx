@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiInbox } from 'react-icons/fi';
-import { formatDateTime, getOrderStatus } from '../utils/Utils';
+import { formatDateTime, getOrderStatus, sendRequest } from '../utils/Utils';
 import { MdFirstPage } from "react-icons/md";
 import { MdLastPage } from "react-icons/md";
 import { MdNavigateNext } from "react-icons/md";
@@ -26,42 +26,44 @@ const OwnerPendingOrders = ({ ownedRestaurants }) => {
     const websocket = useRef(null);
 
     const fetchPendingOrders = async (next=null, last=false, filters={}) => {
-        try {
-            let url;
+        let url;
 
-            if (next) {
-                url = next;
-            } else {
-                const baseUrl = `/owner/orders/pending/`;
-                const params = new URLSearchParams();
+        if (next) {
+            url = next;
+        } else {
+            const baseUrl = `/owner/orders/pending/`;
+            const params = new URLSearchParams();
 
-                if (last && pendingOrders) {
-                    params.append('page', pendingOrders.total_pages);
-                }
-
-                if (filters?.restaurant) {
-                    params.append('restaurant', filters.restaurant);
-                }
-
-                if (filters?.payment_method) {
-                    params.append('payment_method', filters.payment_method);
-                }
-
-                url = baseUrl + (params.toString() ? `?${params.toString()}` : '');
+            if (last && activeOrders) {
+                params.append('page', activeOrders.total_pages);
             }
 
-            const res = await axiosClient.get(url);
-
-            if (res.status === 200) {
-                setPendingOrders(res.data);
-            } else {
-                setMessageAndMode("Unexpected response", "failure");
-                console.error("unexpected response status: ", res.status);
-                navigate("/");
+            if (filters?.restaurant) {
+                params.append('restaurant', filters.restaurant);
             }
-        } catch (err) {
-            console.error("Error while fetching orders", err);
-            setMessageAndMode("An error occurred", "failure");
+
+            if (filters?.payment_method) {
+                params.append('payment_method', filters.payment_method);
+            }
+
+            if (filters?.status) {
+                params.append('status', filters.status);
+            }
+
+            url = baseUrl + (params.toString() ? `?${params.toString()}` : '');
+        }
+
+        
+        const res = await sendRequest({
+            method: "get",
+            to: url
+        });
+
+        if (res) {
+            setPendingOrders(res.data);
+            setSelectedOrderOrderItems([]);
+        } else {
+            setMessageAndMode("An error occurred.", "failure");
             navigate('/');
         }
     }

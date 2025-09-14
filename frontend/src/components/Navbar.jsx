@@ -1,13 +1,9 @@
-import React, { useContext, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { NavLink } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 import { PiShoppingCartSimpleThin } from "react-icons/pi";
 import { IoIosMenu } from "react-icons/io";
-import { IoIosLogOut } from "react-icons/io";
-import { IoIosList } from "react-icons/io";
-import { RxPerson } from "react-icons/rx";
-import { CiShop } from "react-icons/ci";
 import { GlobalContext } from '../context/GlobalContext';
 import NotificationBell from './NotificationBell';
 

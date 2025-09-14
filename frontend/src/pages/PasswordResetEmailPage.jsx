@@ -3,6 +3,7 @@ import AuthContext from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axiosClient from '../utils/axiosClient';
 import { GlobalContext } from '../context/GlobalContext';
+import { sendRequest } from '../utils/Utils';
 
 const PasswordResetEmailPage = () => {
 
@@ -21,25 +22,42 @@ const PasswordResetEmailPage = () => {
 
         if (!event.target.email.value) {
             setAuthError("Please enter your Email");
-        } else {
-            try {
-                const response = await axiosClient.post("/password-reset/", {
-                    email:event.target.email.value
-                });
-
-                if (response.status === 200) {
-                    navigate('/login');
-                    setMessageAndMode("Password reset link sent to email. You can close this page", "notice");
-                } else {
-                    navigate('/login');
-                    setMessageAndMode("Unexpected response from server.", "failure");
-                }
-            } catch (error) {
-                console.error(error)
-                setMessageAndMode("Something went wrong. Try again", "failure");
-                navigate('/login');
-            }
+            return
         }
+
+        const res = await sendRequest({
+            method: "post",
+            to: "/password-reset/",
+            postData: {
+                email: event.target.email.value
+            }
+        });
+
+        if (res.status === 200) {
+            setMessageAndMode("Password reset link sent to email. You can close this page", "notice");
+            navigate('/login');
+        } else {
+            setMessageAndMode("An error occurred.", "failure");
+            navigate("/login");
+        }
+
+        // try {
+        //     const response = await axiosClient.post("/password-reset/", {
+        //         email:event.target.email.value
+        //     });
+
+        //     if (response.status === 200) {
+        //         navigate('/login');
+        //         setMessageAndMode("Password reset link sent to email. You can close this page", "notice");
+        //     } else {
+        //         navigate('/login');
+        //         setMessageAndMode("Unexpected response from server.", "failure");
+        //     }
+        // } catch (error) {
+        //     console.error(error)
+        //     setMessageAndMode("Something went wrong. Try again", "failure");
+        //     navigate('/login');
+        // }
 
     }
 

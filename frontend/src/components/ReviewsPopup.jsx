@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { RestaurantContext } from '../context/RestaurantContext';
 import axiosClient from '../utils/axiosClient';
-import { CapitalizeString, formatDate } from '../utils/Utils';
+import { CapitalizeString, formatDate, sendRequest } from '../utils/Utils';
 import { FaStar } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
@@ -20,19 +20,17 @@ const ReviewsPopup = ({ mode }) => {
     const [writeReviewBody, setWriteReviewBody] = useState("");
 
     const fetchReviews = async () => {
-        try {
-            const res = await axiosClient.get(`/restaurants/${restaurantUUID}/reviews/`);
-            if (res.status === 200) {
-                setReviews(res.data);
-            } else {
-                console.error("Unexpected response from server: ", res.status);
-                setReviews(null);
-                setShowReviewsPopup(false);
-            }
-        } catch (err) {
-            console.error("An error occurred while fetching reviews");
-            console.error(err);
+        const res = await sendRequest({
+            method: "get",
+            to: `/restaurants/${restaurantUUID}/reviews/`
+        });
+
+        if (res) {
+            setReviews(res.data);
+        } else {
+            setReviews(null);
             setShowReviewsPopup(false);
+            setMessageAndMode("An error occurred.", "failure");
         }
     }
 
@@ -46,25 +44,23 @@ const ReviewsPopup = ({ mode }) => {
                return item.menu_item.uuid
             })
         }
-        try {
-            const res = await axiosClient.post("/reviews/create/", writeReview);
-            if (res.status === 201) {
-                setMessageAndMode("Review submitted!", "success");
-                setShowReviewsPopup(false);
-                setWriteReviewBody("");
-                setWriteReviewRating(1);
-            } else {
-                console.error("Unexpected response from server: ", res.status);
-                setMessageAndMode("Unexpected response from server", "failure");
-                setShowReviewsPopup(false);
-                setWriteReviewBody("");
-                setWriteReviewRating(1);
-            }
-        } catch (err) {
-            console.error("An error occurred while fetching reviews");
-            console.error(err);
+        const res = await sendRequest({
+            method: "post",
+            to: "/reviews/create/",
+            postData: writeReview,
+            desiredStatus: 201
+        });
+
+        if (res.status === 201) {
+            setMessageAndMode("Review Submitted!", "success");
             setShowReviewsPopup(false);
-            setMessageAndMode("An error occurred please try again.", "failure")
+            setWriteReviewBody("");
+            setWriteReviewRating(1);
+        } else {
+            setMessageAndMode("An error occurred.", "failure");
+            setShowReviewsPopup(false);
+            setWriteReviewBody("");
+            setWriteReviewRating(1);
         }
     }
     

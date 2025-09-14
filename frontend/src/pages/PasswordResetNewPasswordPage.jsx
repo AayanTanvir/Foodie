@@ -3,12 +3,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
 import axiosClient from '../utils/axiosClient';
 import { GlobalContext } from '../context/GlobalContext';
+import { sendRequest, validateCredentials } from '../utils/Utils';
 
 
 const PasswordResetNewPasswordPage = () => {
 
     const [searchParams, setSearchParams] = useSearchParams();
-    const { authError, setAuthError, validateCredentials } = useContext(AuthContext);
+    const { authError, setAuthError } = useContext(AuthContext);
     let { setMessageAndMode } = useContext(GlobalContext);
     let token = searchParams.get('token');
     let navigate = useNavigate();
@@ -18,29 +19,48 @@ const PasswordResetNewPasswordPage = () => {
 
         if (!event.target.password1.value || !event.target.password2.value) {
             setAuthError("Please fill all fields");
-        } 
-        else if (validateCredentials(event.target.password1.value, event.target.password2.value)) {
-            try {
-                const response = await axiosClient.post('/password-reset/confirm/', {
-                    token: token,
-                    password: event.target.password1.value,
-                });
-
-                if (response.status === 200) {
-                    navigate('/login');
-                    setMessageAndMode("Password reset successfully", "success");
-                } else {
-                    navigate('/login');
-                    setNoticeMessage("Unexpected response from server.", response.status);
-                }
-
-            } catch (error) {
-                const data = error.response?.data;
-                const status = error.response?.status;
-                setFailureMessage(data || "Something went wrong. Try again", status);
-                navigate('/login');
-            }
+            return
+        } else if (!validateCredentials(event.target.password1.value, event.target.password2.value)) {
+            return
         }
+
+        const res = await sendRequest({
+            method: "post",
+            to: "/password-reset/confirm/",
+            postData: {
+                token: token,
+                password: event.target.password.value
+            }
+        });
+
+        if (res.status === 200) {
+            setMessageAndMode("Password reset successfully", "success");
+            navigate("/login");
+        } else {
+            setMessageAndMode("An error occurred.", "failure");
+            navigate("/login");
+        }
+
+        // try {
+        //     const response = await axiosClient.post('/password-reset/confirm/', {
+        //         token: token,
+        //         password: event.target.password1.value,
+        //     });
+
+        //     if (response.status === 200) {
+        //         navigate('/login');
+        //         setMessageAndMode("Password reset successfully", "success");
+        //     } else {
+        //         navigate('/login');
+        //         setNoticeMessage("Unexpected response from server.", response.status);
+        //     }
+
+        // } catch (error) {
+        //     const data = error.response?.data;
+        //     const status = error.response?.status;
+        //     setFailureMessage(data || "Something went wrong. Try again", status);
+        //     navigate('/login');
+        // }
             
 
     } 

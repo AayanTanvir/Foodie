@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import axiosClient from '../utils/axiosClient';
-import { formatDate, getOrderPaymentMethod, getOrderStatus } from '../utils/Utils';
+import { formatDate, getOrderPaymentMethod, getOrderStatus, sendRequest } from '../utils/Utils';
 
 const OrdersPage = () => {
 
@@ -11,20 +11,32 @@ const OrdersPage = () => {
     const [sortedOrders, setSortedOrders] = useState([]);
 
     const fetchOrders = async () => {
-        try {
-            const res = await axiosClient.get(`/users/${user_uuid}/orders/`);
-            if (res.status === 200) {
-                setOrders(res.data);
-            } else {
-                console.error('Unexpected response status:', res.status);
-                setOrders(null);
-                navigate('/');
-            }
-        } catch (error) {
-            console.error('There was a problem with the fetch operation:', error);
+        const res = await sendRequest({
+            method: "get",
+            to: `/users/${user_uuid}/orders/`,
+        });
+
+        if (res) {
+            setOrders(res.data);
+        } else {
             setOrders(null);
             navigate('/');
         }
+
+        // try {
+        //     const res = await axiosClient.get(`/users/${user_uuid}/orders/`);
+        //     if (res.status === 200) {
+        //         setOrders(res.data);
+        //     } else {
+        //         console.error('Unexpected response status:', res.status);
+        //         setOrders(null);
+        //         navigate('/');
+        //     }
+        // } catch (error) {
+        //     console.error('There was a problem with the fetch operation:', error);
+        //     setOrders(null);
+        //     navigate('/');
+        // }
     }
 
     useEffect(() => {

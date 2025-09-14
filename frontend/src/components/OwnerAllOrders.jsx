@@ -3,7 +3,7 @@ import { GlobalContext } from "../context/GlobalContext";
 import axiosClient from "../utils/axiosClient";
 import AuthContext from "../context/AuthContext";
 import { FiInbox } from "react-icons/fi";
-import { formatDate, getOrderPaymentMethod, getOrderStatus } from "../utils/Utils";
+import { formatDate, getOrderPaymentMethod, getOrderStatus, sendRequest } from "../utils/Utils";
 import { useNavigate } from "react-router-dom";
 import { MdFilterList, MdFirstPage, MdLastPage, MdNavigateBefore, MdNavigateNext } from "react-icons/md";
 import { MenuItem, Select } from "@mui/material";
@@ -18,49 +18,46 @@ const OwnerAllOrders = ({ ownedRestaurants }) => {
 	const navigate = useNavigate();
 
 	const fetchOrders = async (next=null, last=false, filters={}) => {
-        try {
-            let url;
+		let url;
 
-            if (next) {
-                url = next;
-            } else {
-                const baseUrl = `/owner/orders/all/`;
-                const params = new URLSearchParams();
+		if (next) {
+			url = next;
+		} else {
+			const baseUrl = `/owner/orders/all/`;
+			const params = new URLSearchParams();
 
-                if (last && orders) {
-                    params.append('page', orders.total_pages);
-                }
+			if (last && activeOrders) {
+				params.append('page', activeOrders.total_pages);
+			}
 
-                if (filters?.restaurant) {
-                    params.append('restaurant', filters.restaurant);
-                }
+			if (filters?.restaurant) {
+				params.append('restaurant', filters.restaurant);
+			}
 
-                if (filters?.payment_method) {
-                    params.append('payment_method', filters.payment_method);
-                }
+			if (filters?.payment_method) {
+				params.append('payment_method', filters.payment_method);
+			}
 
-                if (filters?.status) {
-                    params.append('status', filters.status);
-                }
+			if (filters?.status) {
+				params.append('status', filters.status);
+			}
 
-                url = baseUrl + (params.toString() ? `?${params.toString()}` : '');
-            }
+			url = baseUrl + (params.toString() ? `?${params.toString()}` : '');
+		}
 
-            const res = await axiosClient.get(url);
+		
+		const res = await sendRequest({
+			method: "get",
+			to: url
+		});
 
-            if (res.status === 200) {
-                setOrders(res.data);
-            } else {
-                setMessageAndMode("Unexpected response", "failure");
-                console.error("unexpected response status: ", res.status);
-                navigate("/");
-            }
-        } catch (err) {
-            console.error("Error while fetching orders", err);
-            setMessageAndMode("An error occurred", "failure");
-            navigate('/');
-        }
-    }
+		if (res) {
+			setOrders(res.data);
+		} else {
+			setMessageAndMode("An error occurred.", "failure");
+			navigate('/');
+		}
+	}
 	
 	useEffect(() => {
 		if (user) {

@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
 import AuthContext from '../context/AuthContext';
-import axiosClient from '../utils/axiosClient';
 import { useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../context/GlobalContext';
 import { FaStar } from "react-icons/fa";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { formatDate } from '../utils/Utils';
+import { formatDate, sendRequest } from '../utils/Utils';
 
 const RestaurantOwnerDashboard = () => {
 
@@ -17,22 +16,34 @@ const RestaurantOwnerDashboard = () => {
     const navigate = useNavigate();
 
     const fetchInfo = async () => {
-        try {
-            const res = await axiosClient.get(`/owner/dashboard/?orders_count_period=${ordersPeriod}`)
+        const res = await sendRequest({
+            method: "get",
+            to: `/owner/dashboard/?orders_count_period=${ordersPeriod}`,
+        });
 
-            if (res.status === 200) {
-                setDashboardInfo(res.data);
-            } else {
-                setMessageAndMode("Unexpected response", "failure");
-                console.error("unexpected response status: ", res.status);
-                navigate("/");
-            }
-
-        } catch (err) {
-            console.error("Error while fetching revenue earned", err);
-            setMessageAndMode("An error occurred while fetching revenue", "failure");
-            navigate('/');
+        if (res) {
+            setDashboardInfo(res.data);
+        } else {
+            setMessageAndMode("An error occurred.", "failure");
+            navigate("/");
         }
+
+        // try {
+        //     const res = await axiosClient.get(`/owner/dashboard/?orders_count_period=${ordersPeriod}`)
+
+        //     if (res.status === 200) {
+        //         setDashboardInfo(res.data);
+        //     } else {
+        //         setMessageAndMode("Unexpected response", "failure");
+        //         console.error("unexpected response status: ", res.status);
+        //         navigate("/");
+        //     }
+
+        // } catch (err) {
+        //     console.error("Error while fetching revenue earned", err);
+        //     setMessageAndMode("An error occurred while fetching revenue", "failure");
+        //     navigate('/');
+        // }
     }
 
     useEffect(() => {

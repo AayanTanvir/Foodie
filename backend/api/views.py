@@ -140,7 +140,6 @@ class PasswordResetConfirmAPIView(generics.GenericAPIView):
 class EmailVerificationAPIView(generics.GenericAPIView):
     serializer_class = EmailVerificationSerializer
     
-    
     def post(self, request):
         
         serializer = self.get_serializer(data=request.data)

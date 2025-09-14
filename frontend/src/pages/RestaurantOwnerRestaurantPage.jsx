@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { GlobalContext } from '../context/GlobalContext';
-import axiosClient from '../utils/axiosClient';
-import { formatTime } from '../utils/Utils';
+import { formatTime, sendRequest } from '../utils/Utils';
 import { MdEdit, MdDeleteOutline  } from 'react-icons/md';
 import { CiDiscount1 } from 'react-icons/ci';
 import { IoCreateOutline } from 'react-icons/io5';
@@ -32,76 +31,124 @@ const RestaurantOwnerRestaurantPage = () => {
     const formattedTimings = `${formatTime(restaurant?.opening_time)} - ${formatTime(restaurant?.closing_time)}`;
 
     const fetchRestaurant = async () => {
-        try {
-            const res = await axiosClient.get(`/restaurants/${uuid}/`);
+        const res = await sendRequest({
+            method: "get",
+            to: `/restaurants/${uuid}/`,
+        });
 
-            if (res.status === 200) {
-                setRestaurant(res.data);
-            } else {
-                setMessageAndMode("Unexpected response", "failure");
-                console.error("unexpected response status: ", res.status);
-                navigate("/");
-            }
-        } catch (err) {
-            console.error("Error while fetching restaurant details", err);
-            setMessageAndMode("An error occurred", "failure");
-            navigate('/');
+        if (res) {
+            setRestaurant(res.data);
+        } else {
+            setMessageAndMode("An error occurred.", "failure");
+            navigate("/");
         }
+
+        // try {
+        //     const res = await axiosClient.get(`/restaurants/${uuid}/`);
+
+        //     if (res.status === 200) {
+        //         setRestaurant(res.data);
+        //     } else {
+        //         setMessageAndMode("Unexpected response", "failure");
+        //         console.error("unexpected response status: ", res.status);
+        //         navigate("/");
+        //     }
+        // } catch (err) {
+        //     console.error("Error while fetching restaurant details", err);
+        //     setMessageAndMode("An error occurred", "failure");
+        //     navigate('/');
+        // }
     }
 
     const fetchDiscounts = async () => {
-        try {
-            const res = await axiosClient.get(`/restaurants/${uuid}/discounts/`);
+        const res = await sendRequest({
+            method: "get",
+            to: `/restaurants/${uuid}/discounts/`,
+        });
 
-            if (res.status === 200) {
-                setRestaurantDiscounts(res.data);
-            } else {
-                setMessageAndMode("Unexpected response", "failure");
-                console.error("unexpected response status: ", res.status);
-                navigate("/");
-            }
-        } catch (err) {
-            console.error("Error while fetching restaurant details", err);
-            setMessageAndMode("An error occurred", "failure");
-            navigate('/');
+        if (res) {
+            setRestaurantDiscounts(res.data);
+        } else {
+            setMessageAndMode("An error occurred.", "failure");
+            navigate("/");
         }
+
+        // try {
+        //     const res = await axiosClient.get(`/restaurants/${uuid}/discounts/`);
+
+        //     if (res.status === 200) {
+        //         setRestaurantDiscounts(res.data);
+        //     } else {
+        //         setMessageAndMode("Unexpected response", "failure");
+        //         console.error("unexpected response status: ", res.status);
+        //         navigate("/");
+        //     }
+        // } catch (err) {
+        //     console.error("Error while fetching restaurant details", err);
+        //     setMessageAndMode("An error occurred", "failure");
+        //     navigate('/');
+        // }
 
     }
 
     const fetchMostOrderedItems = async () => {
-        try {
-            const res = await axiosClient.get(`owner/restaurants/${uuid}/stats/most_ordered/?period=${mostOrderedItemPeriod}`);
+        const res = await sendRequest({
+            method: "get",
+            to: `owner/restaurants/${uuid}/stats/most_ordered/?period=${mostOrderedItemPeriod}`
+        });
 
-            if (res.status === 200) {
-                setMostOrderedItems(res.data);
-            } else {
-                setMessageAndMode("Unexpected response", "failure");
-                console.error("unexpected response status: ", res.status);
-                navigate("/");
-            }
-        } catch (err) {
-            console.error("Error while fetching restaurant details", err);
-            setMessageAndMode("An error occurred", "failure");
-            navigate('/');
+        if (res) {
+            setMostOrderedItems(res.data);
+        } else {
+            setMessageAndMode("An error occurred.", "failure");
+            navigate("/");
         }
+
+        // try {
+        //     const res = await axiosClient.get(`owner/restaurants/${uuid}/stats/most_ordered/?period=${mostOrderedItemPeriod}`);
+
+        //     if (res.status === 200) {
+        //         setMostOrderedItems(res.data);
+        //     } else {
+        //         setMessageAndMode("Unexpected response", "failure");
+        //         console.error("unexpected response status: ", res.status);
+        //         navigate("/");
+        //     }
+        // } catch (err) {
+        //     console.error("Error while fetching restaurant details", err);
+        //     setMessageAndMode("An error occurred", "failure");
+        //     navigate('/');
+        // }
     }
 
     const fetchHighestRatedItems = async () => {
-        try {
-            const res = await axiosClient.get(`owner/restaurants/${uuid}/stats/highest_rated/`);
+        const res = await sendRequest({
+            method: "get",
+            to: `owner/restaurants/${uuid}/stats/highest_rated/`
+        });
 
-            if (res.status === 200) {
-                setHighestRatedItems(res.data);
-            } else {
-                setMessageAndMode("Unexpected response", "failure");
-                console.error("unexpected response status: ", res.status);
-                navigate("/");
-            }
-        } catch (err) {
-            console.error("Error while fetching restaurant details", err);
-            setMessageAndMode("An error occurred", "failure");
-            navigate('/');
+        if (res) {
+            setHighestRatedItems(res.data);
+        } else {
+            setMessageAndMode("An error occurred.", "failure");
+            navigate("/");
         }
+        
+        // try {
+        //     const res = await axiosClient.get(`owner/restaurants/${uuid}/stats/highest_rated/`);
+
+        //     if (res.status === 200) {
+        //         setHighestRatedItems(res.data);
+        //     } else {
+        //         setMessageAndMode("Unexpected response", "failure");
+        //         console.error("unexpected response status: ", res.status);
+        //         navigate("/");
+        //     }
+        // } catch (err) {
+        //     console.error("Error while fetching restaurant details", err);
+        //     setMessageAndMode("An error occurred", "failure");
+        //     navigate('/');
+        // }
     }
 
     const discountInfo = (discount) => {

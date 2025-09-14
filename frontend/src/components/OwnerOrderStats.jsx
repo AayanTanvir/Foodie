@@ -4,6 +4,7 @@ import AuthContext from '../context/AuthContext';
 import { GlobalContext } from '../context/GlobalContext';
 import { useNavigate } from 'react-router-dom';
 import axiosClient from '../utils/axiosClient';
+import { sendRequest } from '../utils/Utils';
 
 const OwnerOrderStats = () => {
     const [orders, setOrders] = useState(null);
@@ -18,20 +19,16 @@ const OwnerOrderStats = () => {
     ];
 
     const fetchOrders = async () => {
-        try {
-            const res = await axiosClient.get('/owner/orders/stats/');
+        const res = await sendRequest({
+            method: "get",
+            to: '/owner/orders/stats/'
+        });
 
-            if (res.status === 200) {
-                setOrders(res.data);
-            } else {
-                setMessageAndMode("Unexpected response", "failure");
-                console.error("unexpected response status: ", res.status);
-                navigate("/");
-            }
-        } catch (err) {
-            console.error("Error while fetching orders", err);
-            setMessageAndMode("An error occurred", "failure");
-            navigate('/');
+        if (res) {
+            setOrders(res.data);
+        } else {
+            setMessageAndMode("An error occurred.", "failure");
+            navigate("/");
         }
     }
 

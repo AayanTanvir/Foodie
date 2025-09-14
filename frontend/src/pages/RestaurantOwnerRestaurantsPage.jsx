@@ -5,7 +5,6 @@ import { IoCreateOutline } from "react-icons/io5";
 import AuthContext from '../context/AuthContext';
 import { GlobalContext } from '../context/GlobalContext';
 import { useNavigate } from 'react-router-dom';
-import axiosClient from '../utils/axiosClient';
 import {
     ScatterChart,
     Scatter,
@@ -17,6 +16,7 @@ import {
     Label,
     ResponsiveContainer,
 } from 'recharts';
+import { sendRequest } from '../utils/Utils';
 
 const RestaurantOwnerRestaurantsPage = () => {
 
@@ -26,22 +26,34 @@ const RestaurantOwnerRestaurantsPage = () => {
     const navigate = useNavigate();
 
     const fetchOwnedRestaurants = async () => {
-        try {
-            const res = await axiosClient.get(`/owner/restaurants/`);
+        const res = await sendRequest({
+            method: "get",
+            to: "/owner/restaurants/"
+        });
 
-            if (res.status === 200) {
-                setOwnedRestaurants(res.data);
-            } else {
-                setMessageAndMode("Unexpected response", "failure");
-                console.error("unexpected response status: ", res.status);
-                navigate("/");
-            }
-
-        } catch (err) {
-            console.error("Error while fetching owned restaurants", err);
-            setMessageAndMode("An error occurred", "failure");
-            navigate('/');
+        if (res) {
+            setOwnedRestaurants(res.data);
+        } else {
+            setMessageAndMode("An error occurred.", "failure");
+            navigate("/");
         }
+
+        // try {
+        //     const res = await axiosClient.get(`/owner/restaurants/`);
+
+        //     if (res.status === 200) {
+        //         setOwnedRestaurants(res.data);
+        //     } else {
+        //         setMessageAndMode("Unexpected response", "failure");
+        //         console.error("unexpected response status: ", res.status);
+        //         navigate("/");
+        //     }
+
+        // } catch (err) {
+        //     console.error("Error while fetching owned restaurants", err);
+        //     setMessageAndMode("An error occurred", "failure");
+        //     navigate('/');
+        // }
     }
 
     useEffect(() => {

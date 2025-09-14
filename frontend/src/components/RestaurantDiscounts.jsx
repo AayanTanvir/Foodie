@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { RestaurantContext } from '../context/RestaurantContext';
 import { CiDiscount1 } from "react-icons/ci";
 

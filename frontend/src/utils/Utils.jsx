@@ -111,12 +111,12 @@ export const sendRequest = async ({ method="get", to, desiredStatus=200, postDat
                     return res
                 } else {
                     console.warn("Unknown response status: ", res.status);
-                    return null
+                    return res
                 }
 
             } catch (err) {
                 console.error(err);
-                return null
+                return { status: err.response.status }
             }
 
         case "patch":
@@ -150,4 +150,51 @@ export const sendRequest = async ({ method="get", to, desiredStatus=200, postDat
                 return false
             }
     }
+}
+
+export const validateCredentials = (password1, password2, username) => {
+    let regex_lowercase = /[a-z]/;
+    let regex_uppercase = /[A-Z]/;
+    let regex_digit = /\d/;
+    let regex_special = /[!@#$%^&*]/;
+    let regex_whitespace = /\s/;
+    
+
+    if (password1.length < 8) {
+        setAuthError("Password must be at least 8 characters long");
+        return false;
+    }
+    if (password1 !== password2) {
+        setAuthError("Passwords don't match");
+        return false;
+    }
+    if (!regex_lowercase.test(password1)) {
+        setAuthError("Password must contain atleast one lowercase letter");
+        return false;
+    }
+    if (!regex_uppercase.test(password1)) {
+        setAuthError("Password must contain atleast one uppercase letter");
+        return false;
+    }
+    if(regex_whitespace.test(password1)) {
+        setAuthError("Password must not contain whitespace");
+        return false;
+    }
+    if (!regex_digit.test(password1)) {
+        setAuthError("Password must contain atleast one digit");
+        return false;
+    }
+    if (!regex_special.test(password1)) {
+        setAuthError("Password must contain atleast one special character");
+        return false;
+    }
+    if (username?.length < 4) {
+        setAuthError("Username must be at least 4 characters long");
+        return false;
+    }
+    if (username && regex_whitespace.test(username)) {
+        setAuthError("Username must not contain whitespace");
+        return false;
+    }
+    return true;
 }
