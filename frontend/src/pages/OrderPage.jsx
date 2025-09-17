@@ -62,33 +62,6 @@ const OrderPage = () => {
             setCancelConfirmPopup(null);
             setIsCancellingOrder(false);
         }
-
-        // try {
-        //     setIsCancellingOrder(true);
-        //     const res = await axiosClient.patch(`/orders/${order_uuid}/update/`, {
-        //         order_status: "cancelled"
-        //     });
-            
-        //     if (res.status === 200) {
-        //         let newOrder = {...order, order_status: "cancelled"};
-        //         setOrder(newOrder);
-        //         setShowingCancelConfirm(false);
-        //         setCancelConfirmPopup(null);
-        //         setIsCancellingOrder(false);
-        //     } else {
-        //         console.error("Unexpected response:", res);
-        //         setMessageAndMode("Unexpected response. Please try again later.", "failure");
-        //         setShowingCancelConfirm(false);
-        //         setCancelConfirmPopup(null);
-        //         setIsCancellingOrder(false);
-        //     }
-        // } catch (err) {
-        //     console.error("An error occurred while placing the order.", err);
-        //     setMessageAndMode("An error occurred. Please try again later.", "failure");
-        //     setShowingCancelConfirm(false);
-        //     setCancelConfirmPopup(null);
-        //     setIsCancellingOrder(false);
-        // }
     }
 
     const showCancelConfirmPopup = () => {
@@ -123,22 +96,6 @@ const OrderPage = () => {
             setMessageAndMode("An error occurred.", "failure");
             navigate("/");
         }
-
-        // try {
-        //     const res = await axiosClient.get(`/orders/${order_uuid}/`);
-        //     if (res.status === 200) {
-        //         setOrder(res.data);
-        //     } else {
-        //         console.error("Unexpected response:", res);
-        //         setMessageAndMode("Unexpected response. Please try again later.", "failure");
-        //         navigate("/");
-        //     }
-
-        // } catch (err) {
-        //     console.error("An error occurred while placing the order.", err);
-        //     setMessageAndMode("An error occurred. Please try again later.", "failure");
-        //     navigate("/");
-        // }
     }
 
     const checkReviewed = async () => {
@@ -152,23 +109,6 @@ const OrderPage = () => {
         } else {
             return setReviewed(false);
         }
-
-        // try {
-        //     const res = await axiosClient.get(`/orders/${order_uuid}/has-reviewed/`);
-
-        //     if (res.status === 200) {
-        //         const hasReviewed = res.data.has_reviewed;
-        //         setReviewed(hasReviewed);
-        //     } else {
-        //         console.error("Unexpected response:", res);
-        //         return false;
-        //     }
-
-        // } catch (err) {
-        //     console.error("An error occurred while checking review status.", err);
-        //     setMessageAndMode("An error occurred. Please try again later.", "failure");
-        //     navigate("/");
-        // }
     }
 
     useEffect(() => {
@@ -288,16 +228,20 @@ const OrderPage = () => {
                                         Write a Review
                                     </button>
                                 ) : (
-                                    <>
-                                        <button className='w-full h-5 rounded cursor-not-allowed bg-neutral-300 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
-                                            Write a Review
+                                    <button className='w-full h-5 rounded cursor-not-allowed bg-neutral-300 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                                        Write a Review
+                                    </button>
+                                )}
+                                {["pending", "preparing"].includes(order?.order_status) ? (
+                                    <div className='w-full flex-1 flex justify-center items-center'>
+                                        <button onClick={() => { showCancelConfirmPopup(true) }} className='w-full h-5 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                                            Cancel Order
                                         </button>
-                                        <div className='w-full flex-1 flex justify-center items-center'>
-                                            <button onClick={() => { showCancelConfirmPopup(true) }} className='w-full h-5 rounded bg-neutral-800 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
-                                                Cancel Order
-                                            </button>
-                                        </div>
-                                    </>
+                                    </div>
+                                ) : (
+                                    <button className='w-full h-5 rounded cursor-not-allowed bg-neutral-300 text-white p-4 whitespace-nowrap text-nowrap flex justify-center items-center font-poppins text-md mt-2'>
+                                        Cancel Order
+                                    </button>
                                 )}
                             </>
                         )}

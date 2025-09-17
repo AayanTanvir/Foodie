@@ -75,21 +75,6 @@ export const RestaurantContextProvider = ({ children }) => {
             setMessageAndMode("An error occurred.", "failure");
         }
 
-        // try {
-        //     const res = await axiosClient.get(`/restaurants/${restaurantUUID}/menu_item_modifiers/`);
-
-        //     if (res.status === 200) {
-        //         setMenuItemModifiers(res.data || null);
-        //     } else {
-        //         console.error("Unexpected response status", res.status);
-        //         setMessageAndMode("Unexpected response", "failure");
-        //         setMenuItemModifiers(null);
-        //     }
-        // } catch (error) {
-        //     setMessageAndMode("An error occurred.", "failure");
-        //     console.error("Error fetching menu item modifiers:", error);
-        //     setMenuItemModifiers(null);
-        // }
     }
 
     const getSideItems = () => {
@@ -109,21 +94,6 @@ export const RestaurantContextProvider = ({ children }) => {
             setMessageAndMode("An error occurred.", "failure");
             setDiscounts([]);
         }
-        // try {
-        //     const response = await axiosClient.get(`/restaurants/${restaurantUUID}/discounts/`);
-        //     if (response.status === 200) {
-        //         setDiscounts(response.data);
-        //     } else {
-        //         setMessageAndMode("Unexpected response", "failure");
-        //         console.error("Unexpected response:", response);
-        //         setDiscounts([]);
-        //     }
-
-        // } catch (error) {
-        //     setMessageAndMode("An error occurred.", "failure");
-        //     console.error("Error fetching discounts:", error);
-        //     setDiscounts([]);
-        // }
     };
 
     useEffect(() => {

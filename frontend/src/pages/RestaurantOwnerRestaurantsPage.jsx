@@ -38,22 +38,6 @@ const RestaurantOwnerRestaurantsPage = () => {
             navigate("/");
         }
 
-        // try {
-        //     const res = await axiosClient.get(`/owner/restaurants/`);
-
-        //     if (res.status === 200) {
-        //         setOwnedRestaurants(res.data);
-        //     } else {
-        //         setMessageAndMode("Unexpected response", "failure");
-        //         console.error("unexpected response status: ", res.status);
-        //         navigate("/");
-        //     }
-
-        // } catch (err) {
-        //     console.error("Error while fetching owned restaurants", err);
-        //     setMessageAndMode("An error occurred", "failure");
-        //     navigate('/');
-        // }
     }
 
     useEffect(() => {

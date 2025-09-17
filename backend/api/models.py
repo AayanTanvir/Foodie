@@ -23,6 +23,10 @@ class CustomUser(AbstractUser):
     
     objects = CustomUserManager()
     
+    @property
+    def user_order_count(self):
+        return self.orders.count()
+    
     def __str__(self):
         return str(self.username)
     

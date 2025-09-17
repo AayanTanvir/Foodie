@@ -31,6 +31,7 @@ import RestaurantOwnerRestaurantsPage from '../pages/RestaurantOwnerRestaurantsP
 import RestaurantOwnerRestaurantPage from '../pages/RestaurantOwnerRestaurantPage';
 import RestaurantOwnerOrdersPage from '../pages/RestaurantOwnerOrdersPage';
 import Footer from './Footer';
+import CreateEditRestaurantPage from '../pages/CreateEditRestaurantPage';
 
 const AppContent = () => {
     let { showOTPForm } = useContext(AuthContext);
@@ -58,12 +59,16 @@ const AppContent = () => {
                         <Route element={ <OrderPage/> } path='/orders/:order_uuid'/>
                         <Route element={ <OrdersPage/> } path='/u/:user_uuid/orders'/>
                         <Route element={ <ProfilePage/> } path='/u/:user_uuid'/>
-                        
+
+                        <Route element={ <CreateEditRestaurantPage create={true} /> } path='/create/restaurant' />
+                        <Route element={ <CreateEditRestaurantPage create={false} /> } path='/edit/restaurant/:uuid' />
+
                         <Route element={ <RestaurantOwnerRoutes/> }>
                             <Route element={ <RestaurantOwnerDashboard/> } path='/restaurant-owner/dashboard'/>
                             <Route element={ <RestaurantOwnerRestaurantsPage/> } path='/restaurant-owner/restaurants'/>
                             <Route element={ <RestaurantOwnerRestaurantPage/> } path='/restaurant-owner/restaurants/:uuid'/>
                             <Route element={ <RestaurantOwnerOrdersPage /> } path='/restaurant-owner/orders' />
+
                         </Route>
 
                         <Route element={ <AdminRoutes/> }>

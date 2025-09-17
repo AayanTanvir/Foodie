@@ -114,23 +114,6 @@ const CheckoutPage = () => {
             clearCart();
         }
 
-        // try {
-        //     const res = await axiosClient.post("/orders/create/", payload);
-        //     if (res.status === 201) {
-        //         clearCart();
-        //         navigate(`/orders/${res.data?.uuid}`);
-        //     } else {
-        //         console.error("Unexpected response:", res);
-        //         setMessageAndMode("Unexpected response. Please try again later.", "failure");
-        //         navigate("/");
-        //         clearCart();
-        //     }
-        // } catch (error) {
-        //     console.error("An error occurred while placing the order.", error);
-        //     setMessageAndMode("An error occurred. Please try again later.", "failure");
-        //     clearCart();
-        //     navigate("/");
-        // }
     }
 
     return (

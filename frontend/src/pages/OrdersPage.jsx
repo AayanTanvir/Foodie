@@ -22,21 +22,6 @@ const OrdersPage = () => {
             setOrders(null);
             navigate('/');
         }
-
-        // try {
-        //     const res = await axiosClient.get(`/users/${user_uuid}/orders/`);
-        //     if (res.status === 200) {
-        //         setOrders(res.data);
-        //     } else {
-        //         console.error('Unexpected response status:', res.status);
-        //         setOrders(null);
-        //         navigate('/');
-        //     }
-        // } catch (error) {
-        //     console.error('There was a problem with the fetch operation:', error);
-        //     setOrders(null);
-        //     navigate('/');
-        // }
     }
 
     useEffect(() => {

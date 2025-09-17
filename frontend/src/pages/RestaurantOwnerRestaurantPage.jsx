@@ -42,22 +42,6 @@ const RestaurantOwnerRestaurantPage = () => {
             setMessageAndMode("An error occurred.", "failure");
             navigate("/");
         }
-
-        // try {
-        //     const res = await axiosClient.get(`/restaurants/${uuid}/`);
-
-        //     if (res.status === 200) {
-        //         setRestaurant(res.data);
-        //     } else {
-        //         setMessageAndMode("Unexpected response", "failure");
-        //         console.error("unexpected response status: ", res.status);
-        //         navigate("/");
-        //     }
-        // } catch (err) {
-        //     console.error("Error while fetching restaurant details", err);
-        //     setMessageAndMode("An error occurred", "failure");
-        //     navigate('/');
-        // }
     }
 
     const fetchDiscounts = async () => {
@@ -72,23 +56,6 @@ const RestaurantOwnerRestaurantPage = () => {
             setMessageAndMode("An error occurred.", "failure");
             navigate("/");
         }
-
-        // try {
-        //     const res = await axiosClient.get(`/restaurants/${uuid}/discounts/`);
-
-        //     if (res.status === 200) {
-        //         setRestaurantDiscounts(res.data);
-        //     } else {
-        //         setMessageAndMode("Unexpected response", "failure");
-        //         console.error("unexpected response status: ", res.status);
-        //         navigate("/");
-        //     }
-        // } catch (err) {
-        //     console.error("Error while fetching restaurant details", err);
-        //     setMessageAndMode("An error occurred", "failure");
-        //     navigate('/');
-        // }
-
     }
 
     const fetchMostOrderedItems = async () => {
@@ -103,22 +70,6 @@ const RestaurantOwnerRestaurantPage = () => {
             setMessageAndMode("An error occurred.", "failure");
             navigate("/");
         }
-
-        // try {
-        //     const res = await axiosClient.get(`owner/restaurants/${uuid}/stats/most_ordered/?period=${mostOrderedItemPeriod}`);
-
-        //     if (res.status === 200) {
-        //         setMostOrderedItems(res.data);
-        //     } else {
-        //         setMessageAndMode("Unexpected response", "failure");
-        //         console.error("unexpected response status: ", res.status);
-        //         navigate("/");
-        //     }
-        // } catch (err) {
-        //     console.error("Error while fetching restaurant details", err);
-        //     setMessageAndMode("An error occurred", "failure");
-        //     navigate('/');
-        // }
     }
 
     const fetchHighestRatedItems = async () => {
@@ -133,22 +84,6 @@ const RestaurantOwnerRestaurantPage = () => {
             setMessageAndMode("An error occurred.", "failure");
             navigate("/");
         }
-        
-        // try {
-        //     const res = await axiosClient.get(`owner/restaurants/${uuid}/stats/highest_rated/`);
-
-        //     if (res.status === 200) {
-        //         setHighestRatedItems(res.data);
-        //     } else {
-        //         setMessageAndMode("Unexpected response", "failure");
-        //         console.error("unexpected response status: ", res.status);
-        //         navigate("/");
-        //     }
-        // } catch (err) {
-        //     console.error("Error while fetching restaurant details", err);
-        //     setMessageAndMode("An error occurred", "failure");
-        //     navigate('/');
-        // }
     }
 
     const discountInfo = (discount) => {
@@ -306,10 +241,10 @@ const RestaurantOwnerRestaurantPage = () => {
                                 <>
                                     <h1 className='w-full h-fit mb-2 font-poppins text-neutral-800 text-2xl cursor-default'>Info</h1>
                                     <div className='w-full h-fit flex flex-col justify-start items-start'>
-                                        <p className='text-md font-roboto font-semibold text-neutral-600 mb-2 cursor-default'>Category - <span className='font-normal'>{restaurant.restaurant_category}</span></p>
-                                        <p className='text-md font-roboto font-semibold text-neutral-600 mb-2 cursor-default'>Timing - <span className='font-normal'>{formattedTimings}</span></p>
-                                        <p className='text-md font-roboto font-semibold text-neutral-600 mb-2 cursor-default'>Address - <span className='font-normal'>{restaurant.address}</span></p>
-                                        <p className='text-md font-roboto font-semibold text-neutral-600 mb-2 cursor-default'>Phone - <span className='font-normal'>{restaurant.phone}</span></p>
+                                        <p className='text-md font-roboto font-semibold text-neutral-600 mb-2 cursor-default'>Category - <span className='font-normal'>{restaurant.restaurant_category || "Unknown"}</span></p>
+                                        <p className='text-md font-roboto font-semibold text-neutral-600 mb-2 cursor-default'>Timing - <span className='font-normal'>{formattedTimings || "Unknown"}</span></p>
+                                        <p className='text-md font-roboto font-semibold text-neutral-600 mb-2 cursor-default'>Address - <span className='font-normal'>{restaurant.address || "Unknown"}</span></p>
+                                        <p className='text-md font-roboto font-semibold text-neutral-600 mb-2 cursor-default'>Phone - <span className='font-normal'>{restaurant.phone || "Unknown"}</span></p>
                                     </div>
                                 </>
                             )}

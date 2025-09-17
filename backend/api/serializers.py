@@ -380,11 +380,12 @@ class OrderListSerializer(serializers.ModelSerializer):
         
 
 class CustomUserReadSerializer(serializers.ModelSerializer):
+    order_count = serializers.IntegerField(source="user_order_count", read_only=True)
     
     class Meta:
         model = CustomUser
         fields = [
-            'date_joined', 'uuid', 'username', 'email', 'is_email_verified',
+            'date_joined', 'uuid', 'username', 'email', 'is_email_verified', 'order_count'
         ]
 
 
