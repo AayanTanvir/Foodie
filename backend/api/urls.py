@@ -13,6 +13,7 @@ urlpatterns = [
     path('email-verification/verify-otp/', OTPVerificationAPIView.as_view()),
     
     path('restaurants/', RestaurantListAPIView.as_view()),
+    path('restaurants/categories/', RestaurantCategoriesAPIView.as_view()),
     path('restaurants/<uuid:uuid>/', RestaurantAPIView.as_view()),
     path('restaurants/<uuid:uuid>/discounts/', RestaurantDiscountsAPIView.as_view()),
     path('restaurants/<uuid:uuid>/menu_item_modifiers/', MenuItemModifierAPIView.as_view()),

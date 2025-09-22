@@ -113,7 +113,7 @@ const RestaurantOwnerRestaurantsPage = () => {
                                         </div>
                                     </div>
                                 ))}
-                                <div onClick={() => {  }} className='w-full h-48 border-[1.5px] border-emerald-500 transition duration-150 ease-out hover:bg-green-100 rounded flex justify-center items-center cursor-pointer gap-2'>
+                                <div onClick={() => { navigate('/create-restaurant') }} className='w-full h-48 border-[1.5px] border-emerald-500 transition duration-150 ease-out hover:bg-green-100 rounded flex justify-center items-center cursor-pointer gap-2'>
                                     <span className='text-emerald-500 text-4xl'>
                                         <IoCreateOutline />
                                     </span>

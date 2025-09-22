@@ -5,6 +5,7 @@ import { CartContextProvider } from './context/CartContext';
 import { RestaurantContextProvider } from './context/RestaurantContext';
 import AppContent from './components/AppContent';
 import { GlobalContextProvider } from './context/GlobalContext';
+import { CreateRestaurantContextProvider } from './context/CreateRestaurantContext';
 
 
 function App() {
@@ -14,7 +15,9 @@ function App() {
                 <AuthProvider>
                     <RestaurantContextProvider>
                         <CartContextProvider>
-                            <AppContent />
+                            <CreateRestaurantContextProvider>
+                                <AppContent />
+                            </CreateRestaurantContextProvider>
                         </CartContextProvider>
                     </RestaurantContextProvider>
                 </AuthProvider>

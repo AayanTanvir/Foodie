@@ -20,6 +20,7 @@ export const RestaurantContextProvider = ({ children }) => {
     const [showReviewsPopup, setShowReviewsPopup] = useState(false);
     const [reviewsPopupMode, setReviewsPopupMode] = useState("read");
     const [reviewItems, setReviewItems] = useState([]);
+
     let { user } = useContext(AuthContext);
     let { setMessageAndMode } = useContext(GlobalContext);
     const navigate = useNavigate();

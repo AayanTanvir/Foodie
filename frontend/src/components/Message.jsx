@@ -11,7 +11,7 @@ const Message = ({ mode }) => {
         setMounted(true);
     }, []);
 
-    const baseClasses = `absolute top-14 left-4 w-fit h-10 text-center py-2 px-4 rounded shadow-lg z-50 transform transition-transform duration-500 ease-in-out ${
+    const baseClasses = `fixed top-14 left-4 w-fit h-10 text-center py-2 px-4 rounded shadow-lg z-50 transform transition-transform duration-500 ease-in-out ${
         mounted ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
     }`;
     

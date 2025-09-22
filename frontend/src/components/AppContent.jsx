@@ -60,7 +60,7 @@ const AppContent = () => {
                         <Route element={ <OrdersPage/> } path='/u/:user_uuid/orders'/>
                         <Route element={ <ProfilePage/> } path='/u/:user_uuid'/>
 
-                        <Route element={ <CreateEditRestaurantPage create={true} /> } path='/create/restaurant' />
+                        <Route element={ <CreateEditRestaurantPage create={true} /> } path='/create-restaurant' />
                         <Route element={ <CreateEditRestaurantPage create={false} /> } path='/edit/restaurant/:uuid' />
 
                         <Route element={ <RestaurantOwnerRoutes/> }>

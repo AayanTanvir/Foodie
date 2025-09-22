@@ -645,3 +645,13 @@ class ClearUserNotifications(generics.GenericAPIView):
 
         Notification.objects.filter(user=user).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class RestaurantCategoriesAPIView(generics.GenericAPIView):
+
+    def get(self, request):
+        categories = [
+            {"value": choice[0], "label": choice[1]}
+            for choice in Restaurant.RestaurantCategories.choices
+        ]
+        return Response(categories, status=status.HTTP_200_OK)

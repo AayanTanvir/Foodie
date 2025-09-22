@@ -48,9 +48,8 @@ class Restaurant(models.Model):
         ITALIAN = 'italian', 'Italian'
         MEXICAN = 'mexican', 'Mexican'
         OTHER = 'other', 'Other'
-        
-        __empty__ = '----------'
     
+
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     name = models.CharField(max_length=255, unique=True) 
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="restaurants")
