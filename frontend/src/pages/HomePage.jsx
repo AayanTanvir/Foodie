@@ -4,7 +4,7 @@ import AllRestaurants from "../components/AllRestaurants";
 import { RestaurantContext } from "../context/RestaurantContext";
 
 
-const HomePage = () => {    
+const HomePage = () => {
     let { restaurants } = useContext(RestaurantContext);
 
     return (

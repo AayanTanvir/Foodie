@@ -127,8 +127,28 @@ class RestaurantDiscountSerializer(serializers.ModelSerializer):
         model = Discount
         fields = ['uuid', 'valid_from', 'valid_to', 'discount_type', 'amount',
                   'min_order_amount', 'is_valid']
-    
-    
+
+
+# This needs its own api call
+#also add validation if the restaurant has reached it's discount limit of 3
+#minimum order amount cannot be less than 100
+class RestaurantDiscountCreateSerializer(serializers.ModelSerializer):
+
+    def validate(self, attrs):
+        if attrs.get('valid_from') >= attrs.get('valid_to'):
+            raise ValidationError("Invalid expiration date")
+        
+        if attrs.get('valid_from') < timezone.now().date():
+            raise ValidationError("valid_from cannot be in the past")
+        
+        return attrs
+
+    class Meta:
+        model = Discount
+        fields = ['valid_from', 'valid_to', 'discount_type', 'amount', 'min_order_amount']
+        extra_kwargs = {field: { 'write_only': True, 'required': True } for field in fields}
+
+
 class RestaurantSerializer(serializers.ModelSerializer):
     menu_items = MenuItemSerializer(many=True)
     is_open = serializers.SerializerMethodField(method_name='is_open')
@@ -156,7 +176,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
             'closing_time', 'is_verified', 'created_at', 'menu_items',
             'item_categories', 'rating',
         ]
-        
+
         
 class RestaurantListSerializer(serializers.ModelSerializer):
     is_open = serializers.SerializerMethodField()
@@ -177,6 +197,8 @@ class RestaurantListSerializer(serializers.ModelSerializer):
         fields = ['uuid', 'name', 'slug', 'image',
                   'category', 'is_verified', 'is_open', 'opening_time',
                   'closing_time', 'popularity',]
+
+
         
 
 class OwnedRestaurantsListSerializer(serializers.ModelSerializer):
@@ -198,7 +220,42 @@ class OwnedRestaurantsListSerializer(serializers.ModelSerializer):
         fields = ['uuid', 'name', 'slug', 'image',
                   'category', 'is_verified', 'total_orders', 'opening_time',
                   'closing_time', 'rating']
+
+
+class RestaurantCreateSerializer(serializers.ModelSerializer):
+    owner_uuid = serializers.UUIDField(source='owner.uuid', required=True, write_only=True)
+    
+    def validate_category(self, value):
+        if value not in Restaurant.RestaurantCategories.values:
+            raise ValidationError("Invalid category value")
+        return value
+
+    def validate_owner_uuid(self, value):
+        if not CustomUser.objects.filter(uuid=value).exists():
+            raise serializers.ValidationError("User with this UUID does not exist.")
+        return value
+    
+    def create(self, validated_data):
+        owner_data = validated_data.pop('owner')
+        owner = CustomUser.objects.get(uuid=owner_data["uuid"])
+
+        restaurant = Restaurant.objects.create(owner=owner, **validated_data)
         
+        return restaurant
+    
+    class Meta:
+        model = Restaurant
+        fields = ['uuid', 'name', 'owner_uuid', 'image', 'address', 'phone', 'category', 'opening_time', 'closing_time']
+        extra_kwargs = {
+            'name': { 'write_only': True, 'required': True },
+            'image': { 'write_only': True, 'required': True },
+            'category': { 'write_only': True, 'required': True },
+            'address': { 'write_only': True, 'required': True },
+            'phone': { 'write_only': True, 'required': True },
+            'opening_time': { 'write_only': True, 'required': True },
+            'closing_time': { 'write_only': True, 'required': True },
+        }
+
 
 class MenuItemModifierChoiceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -315,7 +372,7 @@ class OrderWriteSerializer(serializers.ModelSerializer):
         
         order_item_serializer_for_create = OrderItemWriteSerializer(context={'order':order})
 
-        for item_validated_sub_data  in order_items_data:
+        for item_validated_sub_data in order_items_data:
             order_item_serializer_for_create.create(validated_data=item_validated_sub_data)
 
         return order

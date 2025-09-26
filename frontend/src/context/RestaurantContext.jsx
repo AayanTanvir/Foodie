@@ -73,7 +73,9 @@ export const RestaurantContextProvider = ({ children }) => {
             setMenuItemModifiers(res.data);
         } else {
             setMenuItemModifiers(null);
-            setMessageAndMode("An error occurred.", "failure");
+            setRestaurantUUID("");
+            localStorage.removeItem("restaurantUUID");
+            setMessageAndMode("An error occurred. Try refreshing", "failure");
         }
 
     }
@@ -92,8 +94,10 @@ export const RestaurantContextProvider = ({ children }) => {
         if (res) {
             setDiscounts(res.data);
         } else {
-            setMessageAndMode("An error occurred.", "failure");
             setDiscounts([]);
+            setRestaurantUUID("");
+            localStorage.removeItem("restaurantUUID");
+            setMessageAndMode("An error occurred. Try refreshing", "failure");
         }
     };
 

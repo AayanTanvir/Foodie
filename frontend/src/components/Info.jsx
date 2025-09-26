@@ -10,7 +10,7 @@ const Info = ({ info="", classes="" }) => {
 			<div className='w-fit h-fit relative'>
 				{showInfo && 
 					<div className='absolute bg-white border border-neutral-500 p-2 rounded-md shadow-md min-w-[15rem] max-w-[30rem] z-30'>
-						<p className='font-opensans text-[0.8rem] text-wrap'>{info}</p>
+						<p className='font-opensans text-[0.8rem] text-wrap whitespace-pre-line'>{info}</p>
 					</div>
 				}
 			</div>

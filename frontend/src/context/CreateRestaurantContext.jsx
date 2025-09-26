@@ -10,8 +10,7 @@ export const CreateRestaurantContextProvider = ({ children }) => {
 	const [menuItemCategories, setMenuItemCategories] = useState([]);
 	const [menuItemModifiers, setMenuItemModifiers] = useState([]);
 	const [modifierChoices, setModifierChoices] = useState({});
-
-
+    const [discounts, setDiscounts] = useState([]);
 
     let context = {
         restaurantInfo, setRestaurantInfo,
@@ -19,6 +18,7 @@ export const CreateRestaurantContextProvider = ({ children }) => {
 		menuItemCategories, setMenuItemCategories,
 		menuItemModifiers, setMenuItemModifiers,
 		modifierChoices, setModifierChoices,
+        discounts, setDiscounts,
     }
 
     return (

@@ -54,13 +54,13 @@ class Restaurant(models.Model):
     name = models.CharField(max_length=255, unique=True) 
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="restaurants")
     slug = models.SlugField(unique=True, blank=True)
-    image = models.ImageField(upload_to="restaurants/", blank=True, null=True, default="restaurants/default.jpg")
+    image = models.ImageField(upload_to="restaurants/", null=True, default="restaurants/default.jpg")
     address = models.TextField(default="", unique=True)
-    phone = models.CharField(max_length=15, blank=True, null=True, default="")
+    phone = models.CharField(max_length=15, default="")
     category = models.CharField(max_length=25, choices=RestaurantCategories.choices, default=RestaurantCategories.OTHER)
     opening_time = models.TimeField()
     closing_time = models.TimeField()
-    is_verified = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def save(self, *args, **kwargs):
@@ -77,7 +77,6 @@ class Restaurant(models.Model):
             return self.opening_time <= now < self.closing_time
         else:
             return now >= self.opening_time or now < self.closing_time
-
     
     @property
     def popularity(self):
@@ -94,7 +93,7 @@ class Restaurant(models.Model):
         return round(rating, 2)
     
     def __str__(self):
-        return self.name
+        return f"{self.name} | {self.uuid}"
     
     
 class MenuItem(models.Model):
@@ -290,8 +289,8 @@ class Discount(models.Model):
     
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="discounts")
-    valid_from = models.DateTimeField()
-    valid_to = models.DateTimeField()
+    valid_from = models.DateField()
+    valid_to = models.DateField()
     discount_type = models.CharField(max_length=25, choices=DiscountType.choices, default=DiscountType.PERCENTAGE)
     amount = models.IntegerField()
     min_order_amount = models.IntegerField()
@@ -301,13 +300,9 @@ class Discount(models.Model):
     @property
     def is_valid(self):
         local_tz = pytz.timezone('Asia/Karachi')
-        now = timezone.now().astimezone(local_tz)
+        now = timezone.now().astimezone(local_tz).date()
         
         return now >= self.valid_from and now <= self.valid_to
-    
-    def clean(self):
-        if self.valid_from >= self.valid_to:
-            raise ValidationError("Invalid expiration date")        
     
     def __str__(self):
         if self.discount_type == self.DiscountType.PERCENTAGE:

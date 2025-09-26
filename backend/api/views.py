@@ -655,3 +655,8 @@ class RestaurantCategoriesAPIView(generics.GenericAPIView):
             for choice in Restaurant.RestaurantCategories.choices
         ]
         return Response(categories, status=status.HTTP_200_OK)
+
+
+class RestaurantCreateAPIView(generics.CreateAPIView):
+    queryset = Restaurant.objects.all()
+    serializer_class = RestaurantCreateSerializer

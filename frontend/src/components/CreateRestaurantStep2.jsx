@@ -5,24 +5,22 @@ import { CiImageOn } from "react-icons/ci";
 import Info from './Info';
 import { GlobalContext } from "../context/GlobalContext"
 import { CreateRestaurantContext } from '../context/CreateRestaurantContext';
+import { useNavigate } from 'react-router-dom';
 
 const CreateRestaurantStep2 = () => {
 
 	const { 
 		menuItems, setMenuItems,
 		menuItemCategories, setMenuItemCategories, 
-		menuItemModifiers, setMenuItemModifiers, 
+		menuItemModifiers, setMenuItemModifiers,
 		modifierChoices, setModifierChoices
 	} = useContext(CreateRestaurantContext);
-	// const [menuItems, setMenuItems] = useState([]);
-	// const [menuItemCategories, setMenuItemCategories] = useState([]);
-	// const [menuItemModifiers, setMenuItemModifiers] = useState([]);
-	// const [modifierChoices, setModifierChoices] = useState({});
 	const { setMessageAndMode } = useContext(GlobalContext);
-
+	const navigate = useNavigate();
+	const [canContinue, setCanContinue] = useState(false);
 
 	const handleAddMenuItem = () => {
-		setMenuItems(prev => [...prev, { name: "", description: "", price: 0, image: null, category: "", is_side_item: false }]);
+		setMenuItems(prev => [...prev, { name: "", description: "", price: 1, image: null, category: "", is_side_item: false }]);
 	}
 
 	const handleRemoveMenuItem = (index) => {
@@ -50,9 +48,43 @@ const CreateRestaurantStep2 = () => {
 		});
 	};
 
+	const checkCanContinue = () => {
+		if (menuItems.length < 1 || menuItemCategories.length < 1) {
+			setCanContinue(false);
+			return
+		}
+
+		if (menuItemModifiers.length >= 1) {
+			
+			if (Object.entries(modifierChoices).length === 0) {
+				setCanContinue(false);
+				return
+			}
+			
+			const areModifiersFaulty = menuItemModifiers.some(modifier => modifier.name === "" || modifier.menu_item === "")
+			let areModifierChoicesFaulty = false;
+			Object.entries(modifierChoices).forEach(choice => {
+				const choicesArr = choice[1];
+				areModifierChoicesFaulty = choicesArr.some(choice => choice.label === "");
+			})
+			
+			if (areModifiersFaulty || areModifierChoicesFaulty) {
+				setCanContinue(false);
+				return
+			}
+		}
+
+		setCanContinue(true);
+	}
+
+	useEffect(() => {
+		checkCanContinue();
+	}, [menuItems, menuItemCategories, menuItemModifiers, modifierChoices])
+
+
 	return (
 		<div className='w-full h-fit flex flex-col justify-center items-center gap-4 mt-5'>
-			<h1 className='text-3xl font-poppins font-bold text-neutral-700'>Menu Items</h1>
+			<h1 className='text-3xl font-poppins font-bold text-neutral-700'>Menu Items *</h1>
 			<div className='w-full min-h-[5rem] rounded border-[1.5px] border-neutral-800/50 flex flex-col justify-start items-start gap-4 p-4'>
 				{menuItems.map((item, index) => (
 					<div key={index} className='w-full min-h-24 rounded-sm border-[1.5px] border-neutral-800/50 flex flex-col justify-start items-start gap-4 p-4 relative'>
@@ -62,7 +94,7 @@ const CreateRestaurantStep2 = () => {
 
 						<div className='w-full flex-1 flex justify-start items-start gap-6'>
 							<div className='w-fit h-full flex flex-col justify-start items-start gap-2'>
-								<FormControl required sx={{ minWidth: 120, width: '250px' }}>
+								<FormControl required sx={{ width: '20rem' }}>
 									<TextField 
 										label="Name *"
 										variant="outlined"
@@ -140,7 +172,7 @@ const CreateRestaurantStep2 = () => {
 								/>
 							</div>
 							<div className='w-fit h-full flex flex-col justify-start items-start gap-2'>
-								<FormControl required sx={{ minWidth: 120, width: '250px' }}>
+								<FormControl required sx={{ width: '10rem' }}>
 									<InputLabel htmlFor="price" sx={{ color: '#a3a3a3', '&.Mui-focused': { color: '#737373' } }}>Amount</InputLabel>
 									<OutlinedInput
 										id="price"
@@ -148,18 +180,26 @@ const CreateRestaurantStep2 = () => {
 										value={item.price}
 										onInput={(e) => {
 											e.target.value = e.target.value.replace(/[^0-9]/g, "");
-
-											if (e.target.value > 100000) {
-												e.target.value = 100000;
-											}
 										}}
 										onChange={(e) => {
-											const newPrice = e.target.value;
 											setMenuItems(prev => {
+												let newPrice = Number(e.target.value);
+												if (e.target.value === "") {
+													newPrice = ""
+												}
 												const updated = [...prev];
 												updated[index].price = newPrice;
 												return updated;
 											});
+										}}
+										onBlur={() => {
+											if (item.price === "" || item.price < 1 || item.price > 10000) {
+												setMenuItems(prev => {
+													const updated = [...prev];
+													updated[index].price = 0;
+													return updated;
+												});
+											}
 										}}
 										startAdornment={<InputAdornment position="start" sx={{ color: '#404040' }}>Rs.</InputAdornment>}
 										label="Amount"
@@ -200,11 +240,13 @@ const CreateRestaurantStep2 = () => {
 										id={`category-select-${index}`}
 										value={item.category}
 										label="Category *"
-										onChange={e => setMenuItems(prev => {
-											const updated = [...prev];
-											updated[index].category = e.target.value;
-											return updated;
-										})}
+										onChange={(e) => {
+											setMenuItems(prev => {
+												const updated = [...prev];
+												updated[index].category = e.target.value;
+												return updated;
+											})
+										}}
 										sx={{
 											minWidth: 120,
 											width: '250px',
@@ -260,7 +302,7 @@ const CreateRestaurantStep2 = () => {
 										}}
 									/>
 									{item.image ? <img src={URL.createObjectURL(item.image)} alt="" className='min-w-20 max-h-20 rounded'/> : <CiImageOn className='text-4xl text-neutral-700'/>}
-									<h2 className='text-sm font-poppins text-neutral-700 truncate'>{item.image ? item.image.name : 'Menu Item Image'}</h2>
+									<h2 className='text-sm font-poppins text-neutral-700 truncate'>{item.image ? item.image.name : 'Menu Item Image *'}</h2>
 								</label>
 							</div>
 							<div className='w-fit h-full flex justify-center items-start'>
@@ -275,7 +317,7 @@ const CreateRestaurantStep2 = () => {
 									<div className='min-h-5 min-w-5 border-[1px] border-neutral-700 rounded-full p-1 flex justify-center items-center'>
 										{item.is_side_item && <div className='min-w-3 min-h-3 bg-neutral-700 rounded-full'></div>}
 									</div>
-									<h2 className='text-lg text-neutral-700 font-poppins select-none'>Side Item *</h2>
+									<h2 className='text-lg text-neutral-700 font-poppins select-none'>Side Item</h2>
 									<Info info='Check this option if this menu item a side item. Side items are Supplements that can be ordered along with other items for example: Sauces, Beverages'/>
 								</div>
 							</div>
@@ -303,7 +345,7 @@ const CreateRestaurantStep2 = () => {
 			<div className='w-full h-fit flex justify-start items-start mt-12 gap-4'>
 				<div className='w-[45%] min-h-[5rem] flex flex-col justify-center items-center gap-2'>
 					<div className='flex justify-center items-center gap-2'>
-						<h1 className='text-3xl font-poppins font-bold text-neutral-700'>Categories</h1>
+						<h1 className='text-3xl font-poppins font-bold text-neutral-700'>Categories *</h1>
 						<Info info="Create different categories to organize your menu items in! These help the customer find what they're looking for"/>
 					</div>
 
@@ -491,7 +533,7 @@ const CreateRestaurantStep2 = () => {
 											<Select
 												labelId={`menu-item-select-label-${index}`}
 												id={`menu-item-select-${index}`}
-												value={modifier.menu_item ?? ""}
+												value={modifier.menu_item}
 												label="Menu Item *"
 												onChange={(e) => {
 													setMenuItemModifiers(prev => {
@@ -513,12 +555,13 @@ const CreateRestaurantStep2 = () => {
 													},
 												}}
 											>
-												{menuItems.map((item, index) => (
-													<MenuItem key={index} value={item}>{item.name}</MenuItem>
-												))}
-												{menuItems.length === 0 && (
+												{menuItems.length === 0 ? (
 													<MenuItem disabled>No Items Created.</MenuItem>
-												)}
+												) : 
+													menuItems.map((item, index) => (
+														<MenuItem key={index} value={item.name}>{item.name}</MenuItem>
+													))
+												}
 											</Select>
 										</FormControl>
 									</div>
@@ -540,9 +583,8 @@ const CreateRestaurantStep2 = () => {
 														}}
 														onChange={(e) => {
 															setModifierChoices(prev => {
-																const newLabel = e.target.value;
 																const choicesArrCopy = [...prev[index]];
-																choicesArrCopy[choiceIndex].label = newLabel;
+																choicesArrCopy[choiceIndex].label = e.target.value;
 																return {...prev, [index]: choicesArrCopy};
 															});
 														}}
@@ -579,19 +621,28 @@ const CreateRestaurantStep2 = () => {
 															value={choice.price}
 															onInput={(e) => {
 																e.target.value = e.target.value.replace(/[^0-9]/g, "");
-
-																if (e.target.value > 100000) {
-																	e.target.value = 100000;
-																}
 															}}
 															onChange={(e) => {
-																const newPrice = e.target.value;
+																let newPrice = Number(e.target.value);
+																if (e.target.value === "") {
+																	newPrice = "";
+																}
 																setModifierChoices(prev => {
 																	const copy = {...prev};
 																	const choicesArr = [...copy[index]];
 																	choicesArr[choiceIndex].price = newPrice;
 																	return {...prev, [index]: choicesArr};
 																});
+															}}
+															onBlur={() => {
+																if (choice.price === "" || choice.price < 1 || choice.price > 10000) {
+																	setModifierChoices(prev => {
+																		const copy = {...prev};
+																		const choicesArr = [...copy[index]];
+																		choicesArr[choiceIndex].price = 0;
+																		return {...prev, [index]: choicesArr};
+																	});
+																}
 															}}
 															startAdornment={<InputAdornment position="start">Rs.</InputAdornment>}
 															label="Amount"
@@ -642,7 +693,7 @@ const CreateRestaurantStep2 = () => {
 											onClick={() => { 
 												setModifierChoices(prev => {
 													const copy = {...prev};
-													copy[index] = [...(copy[index] ?? []), { label: "", price: 0 }];
+													copy[index] = [...(copy[index] ?? []), { label: "", price: 1 }];
 													return copy;
 												})
 											}} 
@@ -675,7 +726,7 @@ const CreateRestaurantStep2 = () => {
 						<button
 							type='button'
 							onClick={() => { 
-								setMenuItemModifiers(prev => [...prev, { name: "", is_required: false, is_multiselect: false, menu_item: {}, }])
+								setMenuItemModifiers(prev => [...prev, { name: "", is_required: false, is_multiselect: false, menu_item: "", }])
 							}} 
 							className='group w-full h-24 rounded-sm border-[1.5px] border-emerald-500/50 hover:bg-emerald-500/70 hover:text-white transition-all duration-150 ease-in-out text-3xl font-poppins font-semibold text-emerald-500 px-5 flex justify-between items-center'
 						>
@@ -693,6 +744,9 @@ const CreateRestaurantStep2 = () => {
 				</div>
 			</div>
 
+			<div className='w-full h-fit flex justify-start items-center mt-10'>
+				<button type='button' onClick={() => { navigate('/create-restaurant?step=3') }} disabled={!canContinue} className='w-32 h-12 bg-neutral-800 rounded text-xl font-roboto font-semibold text-white hover:bg-neutral-700 disabled:bg-neutral-500 disabled:cursor-not-allowed'>Continue</button>
+			</div>
 
 			<div className='w-full h-16'/>
 		</div>
