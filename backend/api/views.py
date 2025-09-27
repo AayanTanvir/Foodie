@@ -18,6 +18,7 @@ from .serializers import *
 import random, jwt
 from operator import attrgetter
 from urllib.parse import urlparse
+import json
 
 
 class TablePageNumberPagination(PageNumberPagination):
@@ -660,3 +661,47 @@ class RestaurantCategoriesAPIView(generics.GenericAPIView):
 class RestaurantCreateAPIView(generics.CreateAPIView):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantCreateSerializer
+
+
+class MenuItemsCreateAPIView(generics.CreateAPIView):
+    queryset = MenuItem.objects.all()
+    serializer_class = MenuItemCreateSerializer
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["restaurant_uuid"] = self.kwargs.get("uuid")
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            items = json.loads(request.data.get("items", "[]"))
+        except json.JSONDecodeError:
+            return Response({"detail": "Invalid items JSON"}, status=status.HTTP_400_BAD_REQUEST)
+
+        for item in items:
+            image_key = item.get("_image_key")
+            if image_key:
+                item["image"] = request.FILES[image_key]
+
+        serializer = self.get_serializer(data=items, many=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+
+
+class MenuItemCategoriesCreateAPIView(generics.CreateAPIView):
+    queryset = MenuItemCategory.objects.all()
+    serializer_class = MenuItemCategoryCreateSerializer
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["restaurant_uuid"] = self.kwargs.get("uuid")
+        return context
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

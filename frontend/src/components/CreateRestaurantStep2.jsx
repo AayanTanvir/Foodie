@@ -8,6 +8,7 @@ import { CreateRestaurantContext } from '../context/CreateRestaurantContext';
 import { useNavigate } from 'react-router-dom';
 
 const CreateRestaurantStep2 = () => {
+	// Make menu item names unique along with categories
 
 	const { 
 		menuItems, setMenuItems,

@@ -107,12 +107,59 @@ class MenuItemSerializer(serializers.ModelSerializer):
         model = MenuItem
         fields = ['uuid', 'restaurant_uuid', 'restaurant_name', 'name', 'description', 'category', 'price',
                   'image', 'is_available', 'is_side_item', 'created_at', 'popularity']
+
+
+class MenuItemCreateSerializer(serializers.ModelSerializer):
+    category_uuid = serializers.UUIDField(source='category.uuid', required=True, write_only=True)
+
+    def validate_category_uuid(self, value):
+        if not MenuItemCategory.objects.filter(uuid=value).exists():
+            raise ValidationError("Invalid MenuItemCategory UUID")
+        return value
+    
+    def create(self, validated_data):
+        category_data = validated_data.pop("category")
+        restaurant_uuid = self.context["restaurant_uuid"]
         
+        restaurant = Restaurant.objects.get(uuid=restaurant_uuid)
+        category = MenuItemCategory.objects.get(uuid=category_data["uuid"])
+        
+        menu_item = MenuItem.objects.create(category=category, restaurant=restaurant, **validated_data)
+        return menu_item
+
+    class Meta:
+        model = MenuItem
+        fields = ['name', 'description', 'price', 'category_uuid', 'image', 'is_side_item']
+        extra_kwargs = {
+            'name': { 'required': True },
+            'description': { 'write_only': True },
+            'price': { 'write_only': True, 'required': True },
+            'image': { 'write_only': True, 'required': True },
+            'is_side_item': { 'write_only': True, 'required': True },
+        }
+
 
 class MenuItemCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = MenuItemCategory
         fields = ['name']
+
+
+class MenuItemCategoryCreateSerializer(serializers.ModelSerializer):
+
+    def create(self, validated_data):
+        restaurant_uuid = self.context["restaurant_uuid"]
+        restaurant = Restaurant.objects.get(uuid=restaurant_uuid)
+        
+        category = MenuItemCategory.objects.create(restaurant=restaurant, **validated_data)
+        return category
+    
+    class Meta:
+        model = MenuItemCategory
+        fields = ['uuid', 'name']
+        extra_kwargs = {
+            'name': { 'required': True },
+        }
     
     
 class RestaurantDiscountSerializer(serializers.ModelSerializer):
@@ -198,8 +245,6 @@ class RestaurantListSerializer(serializers.ModelSerializer):
                   'category', 'is_verified', 'is_open', 'opening_time',
                   'closing_time', 'popularity',]
 
-
-        
 
 class OwnedRestaurantsListSerializer(serializers.ModelSerializer):
     category = serializers.SerializerMethodField()

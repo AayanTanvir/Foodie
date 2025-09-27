@@ -36,9 +36,10 @@ export const RestaurantContextProvider = ({ children }) => {
             setRestaurantUUID(uuid);
             localStorage.setItem("restaurantUUID", uuid);
         } else {
-            setMessageAndMode("An error occurred");
+            setMessageAndMode("An error occurred", "failure");
             setRestaurant(null);
             setRestaurantUUID("");
+            localStorage.removeItem("restaurantUUID");
             navigate('/');
         }
     }
@@ -53,7 +54,7 @@ export const RestaurantContextProvider = ({ children }) => {
             setRestaurants(res.data);
         } else {
             setRestaurants(null);
-            setMessageAndMode("An error occurred");
+            setMessageAndMode("An error occurred", "failure");
         }
     };
 

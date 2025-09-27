@@ -125,8 +125,9 @@ class MenuItem(models.Model):
     def __str__(self):
         return f"{self.name}"
     
-    
+
 class MenuItemCategory(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField(max_length=255)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="menu_item_categories")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -137,7 +138,7 @@ class MenuItemCategory(models.Model):
         ]
     
     def __str__(self):
-        return f"{self.name} - {self.restaurant.name}"
+        return f"{self.name} - {self.restaurant.name} | {self.uuid}"
     
 
 class Order(models.Model):

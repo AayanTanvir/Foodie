@@ -98,15 +98,12 @@ const CreateRestaurantConfirmation = () => {
 		setDiscounts([]);
 	}
 
-	const handleCancel = () => {
-		clearData();
+	const getCategoryUUIDFromName = (createdCategories, categoryName) => {
+		category = createdCategories.find(c => c.name === categoryName);
+		return category.uuid;
+	} 
 
-		setMessageAndMode("Successfully cancelled restaurant creation", "success");
-		navigate("/");
-	}
-	
-	const handleOpen = async () => {
-		// First we send a request to create the restaurant
+	const createRestaurant = async () => {
 		const restaurantData = new FormData();
 
 		restaurantData.append("name", restaurantInfo.name);
@@ -116,25 +113,91 @@ const CreateRestaurantConfirmation = () => {
 		restaurantData.append("category", restaurantInfo.category);
 		restaurantData.append("opening_time", restaurantInfo.opening_time);
 		restaurantData.append("closing_time", restaurantInfo.closing_time);
+		restaurantData.append("image", restaurantInfo.image);
 
-		if (restaurantInfo.image) {
-			restaurantData.append("image", restaurantInfo.image);
-		}
-
-		const res = await sendRequest({
+		const restaurantResponse = await sendRequest({
 			method: "post",
 			to: "/restaurants/create/",
 			postData: restaurantData,
 			desiredStatus: 201,
 		});
 
-		if (res.status === 201) {
-			const restaurantUUID = res.data?.uuid;
-			console.log(restaurantUUID);
+		if (restaurantResponse.status !== 201) {
+			setMessageAndMode("An error occurred.", "failure");
+			clearData();
+			navigate("/");
+		}
+			
+		const restaurantUUID = restaurantResponse.data?.uuid;
+		return restaurantUUID;
+	}
+
+	const createMenuCategories = async (restaurantUUID) => {
+		const menuItemCategoriesData = menuItemCategories.map(category => ({ name: category }));
+
+		const menuCategoriesResponse = await sendRequest({
+			method: 'post',
+			to: `/restaurants/${restaurantUUID}/menu_item_categories/create/`,
+			postData: menuItemCategoriesData,
+			desiredStatus: 201
+		});
+
+		if (menuCategoriesResponse.status !== 201) {
+			setMessageAndMode("An error occurred.", "failure");
+			clearData();
+			navigate("/");
+		}
+
+		const menuCategories = menuCategoriesResponse.data;
+		return menuCategories;
+	}
+
+	const createMenuItems = async (menuCategories, restaurantUUID) => {
+		const menuItemsData = new FormData();
+
+		const itemsPayload = menuItems.map((item, i) => {
+			const { image, category, ...rest } = item;
+			const menu_category = menuCategories.find(c => c.name === category);
+			return { ...rest, 'category_uuid': menu_category.uuid, '_image_key': `image_${i}` };
+		});
+
+		menuItemsData.append('items', JSON.stringify(itemsPayload));
+
+		menuItems.forEach((item, i) => {
+			menuItemsData.append(`image_${i}`, item.image);
+		})
+
+		const menuItemsResponse = await sendRequest({
+			method: 'post',
+			to: `/restaurants/${restaurantUUID}/menu_items/create/`,
+			postData: menuItemsData,
+			desiredStatus: 201
+		});
+
+		if (menuItemsResponse.status === 201) {
+			setMessageAndMode("SUCCESS OMGGG", "success");
 		} else {
 			setMessageAndMode("An error occurred.", "failure");
 			clearData();
 			navigate("/");
+		}
+	}
+
+	const handleCancel = () => {
+		clearData();
+		setMessageAndMode("Successfully cancelled restaurant creation", "success");
+		navigate("/");
+	}
+	
+	const handleOpen = async () => {
+		try {
+			const restaurantUUID = await createRestaurant();
+			const menuCategories = await createMenuCategories(restaurantUUID);
+			await createMenuItems(menuCategories, restaurantUUID);
+
+		} catch (err) {
+			console.error(err || "An error occurred.")
+			setMessageAndMode("An error occurred.", "failure");
 		}
 	}
 
